@@ -22,10 +22,9 @@ await pg.waitForSelector('button.slide');
 const passi = await pg.locator('.pc').count(), slide = await pg.locator('button.slide').count();
 if (passi !== 2 || slide !== 2) fail(`attesi 2 passi e 2 slide, trovati ${passi} e ${slide}`);
 
-// scheda: si chiude e si riapre
-await pg.click('.pc-t >> nth=0');
-if (!(await pg.locator('.pc >> nth=0').evaluate((e) => e.classList.contains('collapsed')))) fail('la scheda non si è chiusa');
-await pg.click('.pc-t >> nth=0');
+// riepilogo: una riga sola, niente avvisi per un messaggio pulito
+if (!/2 passi, 2 slide/.test(await pg.locator('#sum-t').innerText())) fail('riepilogo inatteso: ' + await pg.locator('#sum-t').innerText());
+if (await pg.locator('#sum').getAttribute('data-state') !== 'ok') fail('il riepilogo dovrebbe essere verde');
 
 // ingrandimento: apre, scorre con la tastiera, chiude con Esc
 await pg.click('button.slide >> nth=0');

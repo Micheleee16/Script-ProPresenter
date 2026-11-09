@@ -8,11 +8,9 @@ function applyTheme(m){
   b.setAttribute('aria-label',lbl+'. Tocca per cambiare.');b.title=lbl;b.setAttribute('data-m',m);
 }
 
-// ---------- punti di partenza ----------
 function firstProblem(){
   var el=qs('#plist .pc.err')||qs('#plist .pc.has-warn');
-  if(el){goCard(el.parentNode.getAttribute('data-pid'));return;}
-  var s=$('s-img');s.scrollIntoView({behavior:reduced()?'auto':'smooth',block:'center'});
+  if(el)goCard(el.parentNode.getAttribute('data-pid'));
 }
 
 function bindMessage(){
@@ -28,6 +26,7 @@ function bindMessage(){
       }).catch(fail);
     }else fail();
   });
+  // un file di testo trascinato sul riquadro viene letto
   function hasFiles(e){return e.dataTransfer&&Array.prototype.indexOf.call(e.dataTransfer.types||[],'Files')>=0;}
   wrap.addEventListener('dragenter',function(e){if(!hasFiles(e))return;e.preventDefault();dep++;wrap.classList.add('drag');});
   wrap.addEventListener('dragover',function(e){if(hasFiles(e))e.preventDefault();});
@@ -49,20 +48,12 @@ function bindRules(){
 
 function bindOutput(){
   $('plist').addEventListener('click',function(e){
-    var t=e.target.closest?e.target.closest('.pc-t[aria-expanded]'):null;
-    if(t){toggleCard(t.closest('li'));return;}
     var b=e.target.closest?e.target.closest('button.slide'):null;
     if(b)openViewer(parseInt(b.getAttribute('data-i'),10));
   });
-  $('issues').addEventListener('click',function(e){
-    var a=e.target.closest?e.target.closest('a'):null;if(!a)return;
-    e.preventDefault();
-    if(a.hasAttribute('data-pid'))goCard(a.getAttribute('data-pid'));
-    else{var g=$(a.getAttribute('data-go'));if(g)g.scrollIntoView({behavior:reduced()?'auto':'smooth',block:'center'});}
-  });
   $('sum-go').addEventListener('click',firstProblem);
   $('ack').addEventListener('change',renderDock);
-  $('nome').addEventListener('input',function(){state.done=null;mark('m4','',4);stepState(4,'');renderDock();});
+  $('nome').addEventListener('input',function(){state.done=null;renderDock();});
   $('dlbtn').addEventListener('click',function(){download(false);});
   $('dlpro').addEventListener('click',function(){download(true);});
   $('theme').addEventListener('click',function(){
@@ -73,18 +64,14 @@ function bindOutput(){
 
 // ---------- avvio ----------
 (function(){
-  $('hint-ic').innerHTML=ICON.message;$('paste-ic').innerHTML=ICON.paste;
   $('vclose').innerHTML=ICON.x;$('vprev').innerHTML=ICON.left;$('vnext').innerHTML=ICON.right;
-  $('rm-bg').innerHTML=ICON.x;$('rm-sep').innerHTML=ICON.x;
   qs('.i-down').innerHTML=ICON.down;qs('.i-spin').innerHTML=ICON.spin;qs('.i-ok').innerHTML=ICON.check;
-  $('rules-ic').innerHTML=ICON.sliders;$('rules-chev').innerHTML=ICON.chev;$('iss-chev').innerHTML=ICON.chev;
   var m=store('versi.tema');applyTheme(m==='light'||m==='dark'?m:'auto');
   $('nome').value=defaultName();loadRules();
   window.addEventListener('dragover',function(e){e.preventDefault();});
   window.addEventListener('drop',function(e){e.preventDefault();});
   ['bg','sep'].forEach(bindSlot);
   bindMessage();bindRules();bindOutput();bindViewer();
-  paintSlot('bg');paintSlot('sep');
   analyze();restoreImages();
   if(window.matchMedia&&window.matchMedia('(hover:hover)').matches)$('msg').focus();
   window.__versi={readMessage:readMessage,group:group,buildPresentation:buildPresentation,analyze:analyze,makeZip:makeZip};

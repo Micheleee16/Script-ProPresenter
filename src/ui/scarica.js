@@ -29,6 +29,6 @@ function download(onlyPro){
       return;
     }
     state.busy=false;
-    mark('m4','done',4);stepState(4,'done');renderDock();
+    renderDock();
   },reduced()?0:500);
 }

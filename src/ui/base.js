@@ -26,9 +26,10 @@ var ICON={
   auto:svg('<circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17"/><path d="M12 3.5a8.5 8.5 0 010 17z" fill="currentColor" stroke="none"/>'),
   spin:svg('<path d="M12 3.5a8.5 8.5 0 108.5 8.5" opacity=".95"/>')
 };
-var EMPTYTXT={bg:'Senza sfondo le slide restano scure.',sep:'Senza immagine i passi si susseguono senza stacco.'};
+var EMPTYTXT={bg:'Senza sfondo, le slide restano scure.',sep:'Senza immagine, i passi si susseguono senza stacco.'};
+var MISSTXT={bg:'Manca: le slide saranno senza sfondo.',sep:'Manca: tra un passo e l\'altro non ci sarà nessuna immagine.'};
 var DEFAULTS={corto:120,max:200,lungo:240};
-var state={res:null,img:{bg:null,sep:null},flat:[],cur:0,done:null,busy:false,issuesSeen:false,counts:{err:0,warn:0,slides:0,passages:0}};
+var state={res:null,img:{bg:null,sep:null},flat:[],cur:0,done:null,busy:false,counts:{err:0,warn:0,slides:0,passages:0}};
 
 // ---------- memoria del browser (può non essere disponibile: la pagina funziona lo stesso) ----------
 function store(k,v){
@@ -56,34 +57,5 @@ function toast(msg){
   var t=$('toast');t.textContent=msg;t.classList.add('show');
   clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove('show');},3400);
 }
-// numero che scorre fino al nuovo valore
-function tween(el,to){
-  var from=parseInt(el.textContent,10)||0;
-  if(el._raf)cancelAnimationFrame(el._raf);
-  if(from===to||reduced()){el.textContent=to;return;}
-  var t0=null,dur=450;
-  function step(t){
-    if(t0===null)t0=t;
-    var p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,3);
-    el.textContent=Math.round(from+(to-from)*e);
-    if(p<1)el._raf=requestAnimationFrame(step);
-  }
-  el._raf=requestAnimationFrame(step);
-}
 function hash(s){var x=5381,i;for(i=0;i<s.length;i++)x=((x<<5)+x+s.charCodeAt(i))|0;return (x>>>0).toString(36);}
 function isMac(){return /Mac|iPhone|iPad/.test(navigator.platform||navigator.userAgent||'');}
-
-// ---------- pulsanti dello stato "fatto" nei passi ----------
-function mark(id,st,n){
-  var el=$(id),prev=el.dataset.st||'';
-  el.className='badge'+(st?' '+st:'');
-  el.innerHTML=st==='done'?ICON.check:(st==='attn'||st==='bad'?'!':n);
-  if(prev!==st){el.dataset.st=st;if(st)replay(el,'bump');}
-}
-var STEPSTATE={};
-function stepState(n,st){
-  var li=qs('#steps li[data-s="'+n+'"]');if(!li)return;
-  if(STEPSTATE[n]===st)return;STEPSTATE[n]=st;
-  li.dataset.state=st||'';
-  qs('.dot',li).innerHTML=st==='done'?ICON.check:(st==='attn'||st==='bad'?'!':'<span class="num">'+n+'</span>');
-}

@@ -9,8 +9,8 @@ del pastore in una presentazione ProPresenter 7 con l'aspetto del template "Mess
 
 ```
 src/index.html        struttura della pagina (con due segnaposto: stile e script)
-src/ui/stile.css      aspetto: colori chiari e scuri, animazioni, versione per telefono
-src/ui/*.js           interfaccia: base (strumenti), anteprima, controllo (analisi e schede),
+src/ui/stile.css      aspetto: una sola colonna, colori chiari e scuri, animazioni sobrie, telefono
+src/ui/*.js           interfaccia: base (strumenti), anteprima, controllo (riepilogo, schede e barra Scarica),
                       scarica, immagini (si ricordano per la volta dopo), ingrandimento, avvio
 src/engine/*.js       engine: formato Protocol Buffers, RTF, libri, lettura del messaggio,
                       raggruppamento in slide, costruzione della presentazione, zip

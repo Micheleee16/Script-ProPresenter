@@ -26,17 +26,19 @@ var DB={
 
 function uniqueNames(){var a=state.img.bg,b=state.img.sep;if(a&&b&&a.name===b.name){var m=b.name.match(/^(.*?)(\.[^.]*)?$/);b.name=m[1]+'_2'+(m[2]||'');}}
 function paintSlot(k){
-  var im=state.img[k],th=$('th-'+k),fn=$('fn-'+k),sl=$('slot-'+k);
+  var im=state.img[k],th=$('th-'+k),fn=$('fn-'+k),sl=$('slot-'+k),r=state.res;
+  var needed=k==='bg'?!!r:!!(r&&r.passages.length>1);   // l'immagine tra i passi serve solo con più passi
   if(im){
     th.style.backgroundImage='url("'+im.url+'")';th.innerHTML='';
-    fn.textContent=im.name+' · '+im.w+'×'+im.h;
-    $('rm-'+k).hidden=false;$('tg-'+k).hidden=!im.remembered;
-    sl.classList.add('filled');$('lt-'+k).textContent='Cambia';
+    var bad=Math.abs(im.w/im.h-16/9)>0.02;
+    fn.textContent=im.name+' ('+im.w+'×'+im.h+')'+(im.remembered?'\nSalvata dalla volta scorsa.':'')+(bad?'\nNon è 16:9: sullo schermo potrebbe essere tagliata o deformata.':'');
+    $('rm-'+k).hidden=false;$('lt-'+k).textContent='Cambia';
+    sl.classList.add('filled');sl.classList.toggle('warn',bad);
   }else{
-    th.style.backgroundImage='';th.innerHTML='<span class="ph">'+ICON.plus+'<span>Aggiungi</span></span>';
-    fn.textContent=EMPTYTXT[k];
-    $('rm-'+k).hidden=true;$('tg-'+k).hidden=true;
-    sl.classList.remove('filled');$('lt-'+k).textContent='';
+    th.style.backgroundImage='';th.innerHTML=ICON.image;
+    fn.textContent=needed?MISSTXT[k]:EMPTYTXT[k];
+    $('rm-'+k).hidden=true;$('lt-'+k).textContent='Scegli immagine';
+    sl.classList.remove('filled');sl.classList.toggle('warn',needed);
   }
 }
 function remember(k,im){
@@ -68,7 +70,7 @@ function restoreImages(){
       if(!v||state.img[k])return;
       var bytes=new Uint8Array(v.bytes),url=URL.createObjectURL(new Blob([bytes],{type:v.type||'image/png'}));
       state.img[k]={name:v.name,type:v.type,bytes:bytes,url:url,w:v.w,h:v.h,remembered:true};
-      uniqueNames();paintSlot(k);render();
+      uniqueNames();render();
     }).catch(function(){});
   });
 }
@@ -78,7 +80,7 @@ function bindSlot(k){
   $('rm-'+k).addEventListener('click',function(){
     var im=state.img[k];if(im)URL.revokeObjectURL(im.url);
     state.img[k]=null;state.done=null;DB.del(k).catch(function(){});
-    paintSlot(k);render();
+    render();
   });
   sl.addEventListener('dragenter',function(e){e.preventDefault();depth++;sl.classList.add('drag');});
   sl.addEventListener('dragover',function(e){e.preventDefault();});
