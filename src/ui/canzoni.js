@@ -61,6 +61,12 @@ function songView(G){
   return {items:items,blocks:blocks,errors:errors,slides:slides,nWarn:nWarn,info:info};
 }
 
+function lineHtml(side,key,gi,text,shown){
+  var ed=state.editing;
+  if(ed&&ed.key===key&&ed.side===side&&ed.i===gi)
+    return '<span class="editor"><input class="ed-in" type="text" value="'+h(text)+'" aria-label="Modifica la riga" spellcheck="false"><span class="ed-btns"><button type="button" class="btn small primary" data-act="ed-save">Salva</button><button type="button" class="btn small" data-act="ed-split">Spezza qui</button><button type="button" class="btn small ghost" data-act="ed-cancel">Annulla</button></span><span class="ed-hint">Metti il cursore dove vuoi andare a capo e premi «Spezza qui». Invio salva, Esc annulla.</span></span>';
+  return '<button type="button" class="ln" data-act="edit" data-side="'+side+'" data-i="'+gi+'" title="Correggi o spezza la riga" aria-label="Correggi o spezza la riga: '+h(text)+'"><span class="tx">'+h(shown)+'</span><span class="pen">'+ICON.pen+'</span></button>';
+}
 function songPairsHtml(s,r){
   var a=chunksOf(s.it,s.itJ),b=chunksOf(s.en,s.enJ),n=Math.max(a.length,b.length);
   function starts(ch){var out=[],k=0;ch.forEach(function(c){out.push(k);k+=c.length;});return out;}
@@ -73,13 +79,13 @@ function songPairsHtml(s,r){
       var gi=sa[k]+j,btn='';
       if(j<il.length-1)btn='<button type="button" class="cj" data-act="split" data-side="it" data-i="'+gi+'">Traduzione diversa dalla successiva</button>';
       else if(k<a.length-1)btn='<button type="button" class="cj merge" data-act="merge" data-side="it" data-i="'+gi+'">Stessa traduzione della successiva</button>';
-      out+='<div class="cell it" style="grid-area:'+(row+j)+'/1"><span class="no">'+(++slideNo)+'</span><span class="ln">'+h(l.toUpperCase())+'</span>'+btn+'</div>';
+      out+='<div class="cell it" style="grid-area:'+(row+j)+'/1"><span class="no">'+(++slideNo)+'</span>'+lineHtml('it',s.key,gi,l,l.toUpperCase())+btn+'</div>';
     });
     if(!el)out+='<div class="cell empty" style="grid-area:'+row+'/2/span '+rows+'">Manca la traduzione inglese</div>';
     else{
       var html='<div class="cell en" style="grid-area:'+row+'/2/span '+rows+'">';
       el.forEach(function(l,j){
-        html+='<span class="ln">'+h(l)+'</span>';
+        html+=lineHtml('en',s.key,sb[k]+j,l,l);
         if(j<el.length-1)html+='<button type="button" class="cj" data-act="split" data-side="en" data-i="'+(sb[k]+j)+'">Separa qui</button>';
       });
       if(k<b.length-1)html+='<button type="button" class="cj merge" data-act="merge" data-side="en" data-i="'+(sb[k]+el.length-1)+'">Unisci con la successiva</button>';
@@ -115,7 +121,7 @@ function renderSong(){
 
   // elenco delle sezioni
   var items=v.items.map(function(c,idx){
-    var sig=hash(JSON.stringify([c.s.name,c.s.it,c.s.en,c.s.itJ,c.s.enJ,c.r.error,c.notes,c.i,c.n,c.first]));
+    var sig=hash(JSON.stringify([c.s.name,c.s.it,c.s.en,c.s.itJ,c.s.enJ,c.r.error,c.notes,c.i,c.n,c.first,state.editing&&state.editing.key===c.s.key?state.editing:0]));
     return {key:c.o.id,sig:sig,pid:idx,html:songCardHtml(c)};
   });
   reconcile($('c-list'),items,'c-');
@@ -190,6 +196,31 @@ function downloadSong(){
 }
 
 // ---------- azioni sulle sezioni ----------
+function songEditApply(newLines){
+  var G=state.song,m=G.model,ed=state.editing;
+  if(!m||!ed)return;
+  var info=ed.side==='it'?m.itInfo:m.enInfo,box=$(ed.side==='it'?'c-it':'c-en');
+  box.value=editSongText(box.value.replace(/\r/g,''),info.lib,ed.key,ed.i,newLines);
+  state.editing=null;state.done=null;
+  delete G.manual[ed.key];                       // le righe sono cambiate: l'abbinamento si ricalcola
+  analyzeSong();
+}
+function songEdit(act,btn){
+  var ed=state.editing,box=btn.closest('.editor'),inp=box&&qs('.ed-in',box);
+  if(act==='ed-cancel'){state.editing=null;renderSong();return;}
+  if(!ed||!inp)return;
+  var m=state.song.model,info=ed.side==='it'?m.itInfo:m.enInfo,old=info.lib[ed.key].lines[ed.i];
+  if(act==='ed-save'){
+    var v=inp.value.replace(/\s+/g,' ').trim();
+    if(!v){toast('La riga non può restare vuota.');return;}
+    if(v===old){state.editing=null;renderSong();return;}
+    songEditApply([v]);
+  }else if(act==='ed-split'){
+    var pos=inp.selectionStart,a=inp.value.slice(0,pos).replace(/\s+/g,' ').trim(),b=inp.value.slice(pos).replace(/\s+/g,' ').trim();
+    if(!a||!b){toast('Metti il cursore nel punto in cui vuoi spezzare la riga, tra due parole.');inp.focus();return;}
+    songEditApply([a,b]);
+  }
+}
 function songAct(act,id,btn){
   var G=state.song,m=G.model,idx=-1;
   G.order.forEach(function(o,i){if(o.id===id)idx=i;});
@@ -223,14 +254,28 @@ function songOrderFromHeader(){
 }
 function bindSong(){
   var tm=null;
-  ['c-it','c-en'].forEach(function(id){$(id).addEventListener('input',function(){clearTimeout(tm);tm=setTimeout(analyzeSong,200);});});
+  ['c-it','c-en'].forEach(function(id){$(id).addEventListener('input',function(){state.editing=null;clearTimeout(tm);tm=setTimeout(analyzeSong,200);});});
   $('c-clear').addEventListener('click',function(){
-    var G=state.song;$('c-it').value='';$('c-en').value='';G.manual={};G.touched=false;G.order=null;G.extra={};
+    var G=state.song;state.editing=null;$('c-it').value='';$('c-en').value='';G.manual={};G.touched=false;G.order=null;G.extra={};
     analyzeSong();$('c-it').focus();
   });
   $('c-list').addEventListener('click',function(e){
     var b=e.target.closest?e.target.closest('button[data-act]'):null;if(!b||b.disabled)return;
-    var li=b.closest('li');if(li)songAct(b.getAttribute('data-act'),li.getAttribute('data-key'),b);
+    var act=b.getAttribute('data-act'),li=b.closest('li');
+    if(act==='edit'){
+      var key=null;state.song.order.forEach(function(o){if(li&&o.id===li.getAttribute('data-key'))key=o.key;});
+      state.editing={key:key,side:b.getAttribute('data-side'),i:parseInt(b.getAttribute('data-i'),10)};
+      renderSong();
+      var inp=qs('#c-list .ed-in');if(inp){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);}
+      return;
+    }
+    if(act.indexOf('ed-')===0){songEdit(act,b);return;}
+    if(li)songAct(act,li.getAttribute('data-key'),b);
+  });
+  $('c-list').addEventListener('keydown',function(e){
+    var inp=e.target.closest?e.target.closest('.ed-in'):null;if(!inp)return;
+    if(e.key==='Enter'){e.preventDefault();songEdit('ed-save',qs('[data-act="ed-save"]',inp.closest('.editor')));}
+    else if(e.key==='Escape'){e.preventDefault();state.editing=null;renderSong();}
   });
   $('c-add-btn').addEventListener('click',function(){
     var G=state.song,m=G.model,k=$('c-add').value;if(!m||!k)return;

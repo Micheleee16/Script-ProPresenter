@@ -56,7 +56,7 @@ function sameLines(a,b){
 // righe di accordi tolte, righe che non appartengono a nessuna sezione.
 function parseSongText(raw,lang){
   var title='',arr=null,occ=[],cur=null,chords=[],strays=[],warns=[];
-  raw.replace(/\r/g,'').split('\n').forEach(function(l0){
+  raw.replace(/\r/g,'').split('\n').forEach(function(l0,idx){
     var l=l0.replace(/ /g,' ').trim();
     if(!l)return;
     if(/^\d{1,3}$/.test(l))return;                         // numero di pagina
@@ -64,18 +64,19 @@ function parseSongText(raw,lang){
     if(a){if(!arr)arr=a;if(!title&&a.prefix)title=cleanTitle(a.prefix);return;}
     if(/^\[[^\]]*\]$/.test(l))return;                      // [VIVE WORSHIP]
     var h=sectionHeader(l);
-    if(h){cur={type:h.type,n:h.n,key:h.key,name:h.name,count:h.count,lines:[]};occ.push(cur);return;}
+    if(h){cur={type:h.type,n:h.n,key:h.key,name:h.name,count:h.count,lines:[],src:[]};occ.push(cur);return;}
     if(isChordLine(l)){chords.push(l);return;}
     if(!cur){if(!title)title=cleanTitle(l);else strays.push(l);return;}
-    cur.lines.push(l);
+    cur.lines.push(l);cur.src.push(idx);
   });
   var lib={},order=[];
   occ.forEach(function(o){
     var s=lib[o.key];
-    if(!s)lib[o.key]={key:o.key,type:o.type,name:o.name,lines:o.lines.slice()};
+    if(!s)lib[o.key]={key:o.key,type:o.type,name:o.name,lines:o.lines.slice(),srcs:[o.src]};
     else if(o.lines.length){
-      if(!s.lines.length)s.lines=o.lines.slice();
-      else if(!sameLines(s.lines,o.lines))warns.push(lang+': "'+o.name+'" compare più volte con testo diverso. Uso la prima volta.');
+      if(!s.lines.length){s.lines=o.lines.slice();s.srcs=[o.src];}
+      else if(sameLines(s.lines,o.lines))s.srcs.push(o.src);
+      else warns.push(lang+': "'+o.name+'" compare più volte con testo diverso. Uso la prima volta.');
     }
     for(var r=0;r<o.count;r++)order.push(o.key);
   });
@@ -154,4 +155,16 @@ function songBlocks(song){
 function slideFit(itLines){
   var rows=0;itLines.forEach(function(l){rows+=Math.max(1,Math.ceil(l.length/26));});
   return rows;
+}
+
+// Sostituisce nel testo la riga j di una sezione (in tutte le copie uguali) con una o più righe nuove:
+// serve per correggere una parola o per spezzare una riga in due, direttamente dalla tabella.
+// lib = la libreria di parseSongText del testo; raw = il testo da cui è stata letta (senza \r).
+function editSongText(raw,lib,key,j,newLines){
+  var s=lib[key];if(!s||!s.srcs)return raw;
+  var lines=raw.split('\n'),old=s.lines[j],clean=function(x){return (x||'').replace(/\u00a0/g,' ').trim();},at=[];
+  s.srcs.forEach(function(src){if(src[j]!==undefined&&clean(lines[src[j]])===clean(old))at.push(src[j]);});
+  at.sort(function(a,b){return b-a;});
+  at.forEach(function(i){Array.prototype.splice.apply(lines,[i,1].concat(newLines));});
+  return lines.join('\n');
 }

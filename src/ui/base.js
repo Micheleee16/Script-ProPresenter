@@ -27,12 +27,13 @@ var ICON={
   up:svg('<path d="M7 14l5-5 5 5"/>'),
   copy:svg('<rect x="8.5" y="8.5" width="11" height="11" rx="2.2"/><path d="M5 15V6.7A2.2 2.2 0 017.2 4.5H15"/>'),
   trash:svg('<path d="M5 7h14M10 11v5.5M14 11v5.5M7 7l.8 12h8.4L17 7M9.5 7V4.8h5V7"/>'),
+  pen:svg('<path d="M4.5 19.5l3.6-.9L19 7.7l-2.7-2.7L5.4 15.9z"/><path d="M14.6 6.7l2.7 2.7"/>'),
   spin:svg('<path d="M12 3.5a8.5 8.5 0 108.5 8.5" opacity=".95"/>')
 };
 var EMPTYTXT={bg:'Senza sfondo, le slide restano scure.',sep:'Senza immagine, i passi si susseguono senza stacco.'};
 var MISSTXT={bg:'Manca: le slide saranno senza sfondo.',sep:'Manca: tra un passo e l\'altro non ci sarà nessuna immagine.'};
 var DEFAULTS={corto:120,max:200,lungo:240};
-var state={mode:'bibbia',nameTouched:false,song:{model:null,manual:{},order:null,touched:false,uid:0,view:null,video:true,extra:{}},res:null,img:{bg:null,sep:null},flat:[],cur:0,done:null,busy:false,verified:false,ov:{},counts:{err:0,warn:0,slides:0,passages:0}};
+var state={editing:null,mode:'bibbia',nameTouched:false,song:{model:null,manual:{},order:null,touched:false,uid:0,view:null,video:true,extra:{}},res:null,img:{bg:null,sep:null},flat:[],cur:0,done:null,busy:false,verified:false,ov:{},counts:{err:0,warn:0,slides:0,passages:0}};
 
 // ---------- memoria del browser (può non essere disponibile: la pagina funziona lo stesso) ----------
 function store(k,v){

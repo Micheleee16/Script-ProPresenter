@@ -251,3 +251,49 @@ test('esempio: colori e identificativi dei gruppi sono quelli del modello', () =
   assert.ok(byName.Bridge.some((x) => x.f === 5));
   assert.ok(!byName.Intro.some((x) => x.f === 5));
 });
+
+// ---------------- correzioni dalla tabella ----------------
+const clean = (p) => p.lib;
+const reparse = (raw, l) => E.parseSongText(raw, l);
+
+test('spezzare una riga inglese cambia tutte le copie uguali e le righe tornano in pari', () => {
+  const raw = F('taste-en.txt').replace(/\r/g, '');
+  const p = reparse(raw, 'Inglese');
+  const j = p.lib.chorus.lines.findIndex((l) => l.startsWith('You are good, You are good and'));
+  const nuovo = E.editSongText(raw, p.lib, 'chorus', j, ['You are good, You are good', 'and have always been']);
+  const q = reparse(nuovo, 'Inglese');
+  assert.equal(q.lib.chorus.lines.length, 6);
+  assert.deepEqual(q.warns, []);                                   // tutte le copie del Chorus sono state cambiate
+  assert.equal(nuovo.split('and have always been').length - 1, 3); // il Chorus compare 3 volte nel testo
+  const m = E.makeSong(it, q);
+  const r = E.sectionSlides(m.secs.chorus);
+  assert.equal(r.error, null);
+  assert.deepEqual(r.slides.map((s) => s.en.join(' ')), ['You are good, You are good', 'and have always been', 'Your promise says I’ll never lack anything', 'I have tasted and seen', 'that You are always faithful and', 'You are always good']);
+});
+
+test('correggere una parola cambia solo quella riga, anche se altre righe hanno lo stesso testo', () => {
+  const raw = F('taste-it.txt').replace(/\r/g, '');
+  const p = reparse(raw, 'Italiano');
+  assert.equal(p.lib.chorus.lines[1], 'Sempre lo sarai');
+  assert.equal(p.lib.chorus.lines[5], 'Sempre lo sarai');
+  const nuovo = E.editSongText(raw, p.lib, 'chorus', 1, ['Per sempre lo sarai']);
+  const q = reparse(nuovo, 'Italiano');
+  assert.equal(q.lib.chorus.lines[1], 'Per sempre lo sarai');
+  assert.equal(q.lib.chorus.lines[5], 'Sempre lo sarai');           // l'altra non cambia
+  assert.deepEqual(q.lib.bridge.lines, p.lib.bridge.lines);
+  assert.deepEqual(q.lib.outro.lines, p.lib.outro.lines);
+  assert.equal(nuovo.split('\n').length, raw.split('\n').length);   // nessuna riga persa o aggiunta
+});
+
+test('modificare una sola copia (testo diverso) non tocca le altre', () => {
+  const base = 'Chorus\nUno due\nTre quattro\n\nVerse 1\nCinque\n\nChorus\nUno due\nTre diverso\n';
+  const p = reparse(base, 'Italiano');
+  const nuovo = E.editSongText(base, p.lib, 'chorus', 0, ['Uno', 'due']);
+  assert.equal(nuovo, 'Chorus\nUno\ndue\nTre quattro\n\nVerse 1\nCinque\n\nChorus\nUno due\nTre diverso\n');   // solo la copia che la pagina usa
+});
+
+test('una riga che non esiste più nel testo non viene toccata', () => {
+  const raw = F('taste-it.txt');
+  const p = reparse(raw, 'Italiano');
+  assert.equal(E.editSongText(raw.replace('Tu eri lì', 'Tu eri qui'), p.lib, 'bridge', 1, ['X']).includes('X'), false);
+});

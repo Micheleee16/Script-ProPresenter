@@ -108,6 +108,23 @@ await pg.waitForFunction(() => document.getElementById('c-sum').dataset.state ==
 if (!(await pg.locator('#dlbtn').isDisabled())) fail('con righe che non tornano non si deve poter scaricare');
 await pg.click(chorus + ' >> button[data-act="merge"][data-side="it"] >> nth=0');
 await pg.waitForFunction(() => document.getElementById('c-sum').dataset.state !== 'err');
+// correggere dalla tabella: spezzare una riga inglese e correggere una parola italiana
+const enBox = () => pg.inputValue('#c-en'), itBox = () => pg.inputValue('#c-it');
+await pg.click(chorus + ' >> .cell.en >> button.ln >> nth=0');
+await pg.waitForSelector('#c-list .ed-in');
+await pg.evaluate(() => { const i = document.querySelector('#c-list .ed-in'); i.focus(); i.setSelectionRange('You are good, You are good'.length, 'You are good, You are good'.length); });
+await pg.click('#c-list [data-act="ed-split"]');
+await pg.waitForFunction(() => !document.querySelector('#c-list .ed-in'));
+if (!(await enBox()).includes('You are good, You are good\nand have always been')) fail('"Spezza qui" non ha scritto le due righe nel testo inglese');
+if (await pg.locator('#c-sum[data-state="err"]').count()) fail('dopo aver spezzato la riga il Chorus dovrebbe tornare in pari');
+await pg.click(chorus + ' >> .cell.it >> button.ln >> nth=1');
+await pg.fill('#c-list .ed-in', 'Per sempre lo sarai');
+await pg.press('#c-list .ed-in', 'Enter');
+await pg.waitForFunction(() => !document.querySelector('#c-list .ed-in'));
+if (!(await itBox()).includes('Per sempre lo sarai')) fail('la correzione non è finita nel testo italiano');
+await pg.click(chorus + ' >> .cell.it >> button.ln >> nth=0'); await pg.press('#c-list .ed-in', 'Escape');
+if (await pg.locator('#c-list .ed-in').count()) fail('Esc dovrebbe chiudere la modifica');
+
 // ordine dell'intestazione e sezione aggiunta
 await pg.click('#c-ord-hd');
 if ((await nCard()) !== 20) fail('l\'ordine dell\'intestazione dovrebbe avere 20 sezioni, ha ' + (await nCard()));
