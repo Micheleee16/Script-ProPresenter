@@ -213,10 +213,13 @@ button.slide:hover::after{box-shadow:inset 0 0 0 2px rgba(255,255,255,.5)}
 .ib:disabled{opacity:.3;cursor:default}
 .ib .ic{width:20px;height:20px}
 .ib .flip{display:grid;transform:rotate(180deg)}
-.pairs{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+.pairs{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;align-items:stretch}
 .ph{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .cell{display:grid;align-content:start;gap:2px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--sunk);min-width:0}
-.cell.it .ln{font-weight:700;letter-spacing:.01em;font-size:15.5px;overflow-wrap:anywhere}
+.cell.it{grid-template-columns:auto 1fr;column-gap:12px;align-items:center}
+.cell.it .no{grid-row:1;grid-column:1;align-self:start;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);font-size:12px;font-weight:650;color:var(--muted)}
+.cell.it .cj{grid-column:2}
+.cell.it .ln{grid-row:1;grid-column:2;align-self:center;min-height:24px;display:flex;align-items:center;font-weight:700;letter-spacing:.01em;font-size:15.5px;overflow-wrap:anywhere}
 .cell.en .ln{color:var(--muted);font-size:15px;overflow-wrap:anywhere}
 .cell.empty{border-style:dashed;border-color:var(--err-line);background:var(--err-bg);color:var(--err);font-size:14.5px;align-content:center}
 .cj{justify-self:start;margin:2px 0;padding:2px 8px;border:1px dashed var(--line-strong);border-radius:999px;background:none;color:var(--muted);font-size:12.5px;transition:background .2s,color .2s,border-color .2s}
@@ -332,6 +335,7 @@ dialog.show::backdrop{opacity:1}
   .sec h2{font-size:22px}
   .img{grid-template-columns:110px minmax(0,1fr);gap:12px}
   .pairs{grid-template-columns:1fr}
+  .pairs>*{grid-area:auto !important}
   .ph:nth-child(2){display:none}
   .cell.en{margin-bottom:6px}
   .acts{margin-left:0;width:100%;justify-content:flex-end}
@@ -475,7 +479,7 @@ dialog.show::backdrop{opacity:1}
 
     <section class="sec m-canzoni" id="c-out" aria-labelledby="h-cout" hidden>
       <h2 id="h-cout"><span class="n">2</span>Ordine e righe</h2>
-      <p class="sub" id="c-sub">Qui vedi le slide, una per riga o gruppo di righe. A sinistra l'italiano, che va sulla slide; a destra l'inglese, che va nelle note. Passa sopra una riga per unirla alla successiva.</p>
+      <p class="sub" id="c-sub">Qui vedi le slide, una per riga o gruppo di righe. Ogni riga italiana è una slide; a destra la traduzione inglese, che va nelle note. Quando una riga inglese traduce più righe italiane, le slide di quelle righe hanno la stessa traduzione.</p>
       <div class="empty" id="c-empty">
         <p>Incolla i due testi qui sopra. Per ogni sezione serve il nome su una riga, seguito dalle righe del testo:</p>
         <pre class="fmt">Verse 1
@@ -1033,13 +1037,17 @@ function makeSong(it,en){
   return {title:en.title||it.title,secs:secs,order:order,arrangement:en.arrangement||it.arrangement,chords:en.chords.concat(it.chords),strays:en.strays.concat(it.strays),warns:warns};
 }
 // Le slide di una sezione, oppure il motivo per cui non si può farle.
+// Ogni slide ha UNA riga italiana. Se una riga inglese traduce più righe italiane, le slide
+// di quelle righe hanno la stessa riga inglese nelle note.
 function sectionSlides(s){
   if(!s.it.length&&!s.en.length)return {blank:true,slides:[],error:null};
   if(!s.hasIt||!s.it.length)return {slides:[],error:'Manca il testo italiano di "'+s.name+'".'};
   if(!s.hasEn||!s.en.length)return {slides:[],error:'Manca il testo inglese di "'+s.name+'".'};
   var a=chunksOf(s.it,s.itJ),b=chunksOf(s.en,s.enJ);
-  if(a.length!==b.length)return {slides:[],error:'"'+s.name+'": l\'italiano ha '+a.length+(a.length===1?' slide':' slide')+' e l\'inglese '+b.length+'. Unisci o separa le righe finché sono uguali.',counts:[a.length,b.length]};
-  return {slides:a.map(function(x,i){return {it:x,en:b[i]};}),error:null};
+  if(a.length!==b.length)return {slides:[],error:'"'+s.name+'": ci sono '+a.length+' gruppi di righe italiane e '+b.length+' di righe inglesi. Devono essere uguali: unisci o separa le righe.',counts:[a.length,b.length]};
+  var out=[];
+  a.forEach(function(c,i){c.forEach(function(l){out.push({it:[l],en:b[i]});});});
+  return {slides:out,error:null};
 }
 // I blocchi della canzone, pronti per costruire il file (o con l'elenco degli errori).
 function songBlocks(song){
@@ -1488,7 +1496,7 @@ function songView(G){
     else r.slides.forEach(function(sl,j){
       var rows=slideFit(sl.it);
       if(rows>2&&first){
-        notes.push({k:'w',msg:'La slide '+(j+1)+' ha '+rows+' righe italiane: potrebbe non entrare nello schermo. Separa le righe, oppure spezza la riga inglese nel testo.'});
+        notes.push({k:'w',msg:'La riga della slide '+(j+1)+' è molto lunga: andrà su '+rows+' righe e potrebbe non entrare nello schermo.'});
         nWarn++;
       }
     });
@@ -1504,27 +1512,37 @@ function songView(G){
 }
 
 function songPairsHtml(s,r){
-  var a=chunksOf(s.it,s.itJ),b=chunksOf(s.en,s.enJ),rows=Math.max(a.length,b.length);
-  function starts(ch){var out=[],n=0;ch.forEach(function(c){out.push(n);n+=c.length;});return out;}
-  var sa=starts(a),sb=starts(b),out='<div class="pairs"><div class="ph">Sulla slide (italiano)</div><div class="ph">Nelle note (inglese)</div>';
-  function cell(side,ch,st,k){
-    var c=ch[k];
-    if(!c)return '<div class="cell empty">Manca una slide</div>';
-    var html='<div class="cell '+side+'">';
-    c.forEach(function(l,j){
-      html+='<span class="ln">'+h(side==='it'?l.toUpperCase():l)+'</span>';
-      if(j<c.length-1)html+='<button type="button" class="cj" data-act="split" data-side="'+side+'" data-i="'+(st[k]+j)+'">Separa qui</button>';
+  var a=chunksOf(s.it,s.itJ),b=chunksOf(s.en,s.enJ),n=Math.max(a.length,b.length);
+  function starts(ch){var out=[],k=0;ch.forEach(function(c){out.push(k);k+=c.length;});return out;}
+  var sa=starts(a),sb=starts(b),row=2,slideNo=0;
+  var out='<div class="pairs"><div class="ph" style="grid-area:1/1">Sulla slide (italiano), una riga per slide</div><div class="ph" style="grid-area:1/2">Nelle note (inglese)</div>';
+  for(var k=0;k<n;k++){
+    var il=a[k]||[],el=b[k],rows=Math.max(1,il.length);
+    if(!il.length)out+='<div class="cell empty" style="grid-area:'+row+'/1">Manca la riga italiana</div>';
+    il.forEach(function(l,j){
+      var gi=sa[k]+j,btn='';
+      if(j<il.length-1)btn='<button type="button" class="cj" data-act="split" data-side="it" data-i="'+gi+'">Traduzione diversa dalla successiva</button>';
+      else if(k<a.length-1)btn='<button type="button" class="cj merge" data-act="merge" data-side="it" data-i="'+gi+'">Stessa traduzione della successiva</button>';
+      out+='<div class="cell it" style="grid-area:'+(row+j)+'/1"><span class="no">'+(++slideNo)+'</span><span class="ln">'+h(l.toUpperCase())+'</span>'+btn+'</div>';
     });
-    if(k<ch.length-1)html+='<button type="button" class="cj merge" data-act="merge" data-side="'+side+'" data-i="'+(st[k]+c.length-1)+'">Unisci con la successiva</button>';
-    return html+'</div>';
+    if(!el)out+='<div class="cell empty" style="grid-area:'+row+'/2/span '+rows+'">Manca la traduzione inglese</div>';
+    else{
+      var html='<div class="cell en" style="grid-area:'+row+'/2/span '+rows+'">';
+      el.forEach(function(l,j){
+        html+='<span class="ln">'+h(l)+'</span>';
+        if(j<el.length-1)html+='<button type="button" class="cj" data-act="split" data-side="en" data-i="'+(sb[k]+j)+'">Separa qui</button>';
+      });
+      if(k<b.length-1)html+='<button type="button" class="cj merge" data-act="merge" data-side="en" data-i="'+(sb[k]+el.length-1)+'">Unisci con la successiva</button>';
+      out+=html+'</div>';
+    }
+    row+=rows;
   }
-  for(var k=0;k<rows;k++)out+=cell('it',a,sa,k)+cell('en',b,sb,k);
   return out+'</div>';
 }
 function songCardHtml(c){
   var s=c.s,btn=function(act,label,icon,dis){return '<button type="button" class="ib" data-act="'+act+'" aria-label="'+label+': '+h(s.name)+'" title="'+label+'"'+(dis?' disabled':'')+'>'+icon+'</button>';};
   var acts='<span class="acts">'+btn('up','Sposta su',ICON.up,c.i===0)+btn('down','Sposta giù','<span class="flip">'+ICON.up+'</span>',c.i===c.n-1)+btn('dup','Duplica',ICON.copy,false)+btn('del','Elimina',ICON.trash,false)+'</span>';
-  var meta=c.r.blank?'slide vuota con SONGS':pl(c.r.slides.length||0,'slide','slide');
+  var meta=c.r.blank?'slide vuota con SONGS':(c.r.error?'da sistemare':pl(c.r.slides.length,'slide','slide'));
   var body=c.r.blank?'':(c.first?songPairsHtml(s,c.r):'<p class="same">Stesse slide della prima «'+h(s.name)+'»: le righe si sistemano lì e valgono per tutte le copie.</p>');
   var notes=c.notes.length?'<ul class="notes">'+c.notes.map(noteHtml).join('')+'</ul>':'';
   var cls=c.notes.some(function(n){return n.k==='e';})?' err':(c.notes.length?' has-warn':'')+(c.first?'':' copy');

@@ -126,13 +126,17 @@ function makeSong(it,en){
   return {title:en.title||it.title,secs:secs,order:order,arrangement:en.arrangement||it.arrangement,chords:en.chords.concat(it.chords),strays:en.strays.concat(it.strays),warns:warns};
 }
 // Le slide di una sezione, oppure il motivo per cui non si può farle.
+// Ogni slide ha UNA riga italiana. Se una riga inglese traduce più righe italiane, le slide
+// di quelle righe hanno la stessa riga inglese nelle note.
 function sectionSlides(s){
   if(!s.it.length&&!s.en.length)return {blank:true,slides:[],error:null};
   if(!s.hasIt||!s.it.length)return {slides:[],error:'Manca il testo italiano di "'+s.name+'".'};
   if(!s.hasEn||!s.en.length)return {slides:[],error:'Manca il testo inglese di "'+s.name+'".'};
   var a=chunksOf(s.it,s.itJ),b=chunksOf(s.en,s.enJ);
-  if(a.length!==b.length)return {slides:[],error:'"'+s.name+'": l\'italiano ha '+a.length+(a.length===1?' slide':' slide')+' e l\'inglese '+b.length+'. Unisci o separa le righe finché sono uguali.',counts:[a.length,b.length]};
-  return {slides:a.map(function(x,i){return {it:x,en:b[i]};}),error:null};
+  if(a.length!==b.length)return {slides:[],error:'"'+s.name+'": ci sono '+a.length+' gruppi di righe italiane e '+b.length+' di righe inglesi. Devono essere uguali: unisci o separa le righe.',counts:[a.length,b.length]};
+  var out=[];
+  a.forEach(function(c,i){c.forEach(function(l){out.push({it:[l],en:b[i]});});});
+  return {slides:out,error:null};
 }
 // I blocchi della canzone, pronti per costruire il file (o con l'elenco degli errori).
 function songBlocks(song){

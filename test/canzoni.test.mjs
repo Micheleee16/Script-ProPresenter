@@ -82,23 +82,36 @@ test('nessuna riga persa: tutte le righe dei testi sono nelle sezioni', () => {
 // ---------------- abbinamento ----------------
 const rows = (k) => E.sectionSlides(song.secs[k]).slides.map((s) => [s.it.join(' / '), s.en.join(' / ')]);
 
+test('ogni slide ha una sola riga italiana', () => {
+  for (const k of Object.keys(song.secs)) for (const sl of E.sectionSlides(song.secs[k]).slides) assert.equal(sl.it.length, 1);
+  const tot = Object.values(song.secs).reduce((n, s) => n + s.it.length, 0);
+  assert.equal(Object.keys(song.secs).reduce((n, k) => n + E.sectionSlides(song.secs[k]).slides.length, 0), tot);
+});
+
 test('righe in pari numero: una slide per riga', () => {
   const r = E.sectionSlides(song.secs.verse1);
   assert.equal(r.slides.length, 4);
   assert.deepEqual(r.slides[0], { it: ['Come il sole che sorge al mattino'], en: ['Sure as the sun rises up every morning'] });
 });
 
-test('Chorus: 6 righe italiane e 5 inglesi, la proposta unisce le prime due', () => {
-  assert.deepEqual(rows('chorus')[0], ['Buono sei, buono sei / Sempre lo sarai', 'You are good, You are good and have always been']);
-  assert.equal(rows('chorus').length, 5);
+test('Chorus: 6 righe italiane, 6 slide; le prime due hanno la stessa riga inglese', () => {
+  const r = rows('chorus');
+  assert.equal(r.length, 6);
+  assert.deepEqual(r[0], ['Buono sei, buono sei', 'You are good, You are good and have always been']);
+  assert.deepEqual(r[1], ['Sempre lo sarai', 'You are good, You are good and have always been']);
+  assert.deepEqual(r[2], ['Hai promesso che niente mi mancherà', 'Your promise says I’ll never lack anything']);
+  assert.deepEqual(r[5], ['Sempre lo sarai', 'You are always good']);
 });
 
-test('Bridge: 7 righe italiane e 3 inglesi, la proposta fa 3 slide', () => {
+test('Bridge: 7 righe italiane, 7 slide; la traduzione si ripete sulle righe che copre', () => {
   const r = rows('bridge');
-  assert.equal(r.length, 3);
-  assert.equal(r[0][0], 'Quando ero solo e perso / Tu eri lì');
-  assert.equal(r[1][0], 'Ero rotto e legato / E sono libero');
-  assert.equal(r[2][0], 'Apri i tuoi occhi e / Vedrai un grande re / Grande e potente è');
+  assert.equal(r.length, 7);
+  assert.deepEqual(r.map((x) => x[1]), [
+    'When I was lost and searching You answered me', 'When I was lost and searching You answered me',
+    'When I was bound and broken You delivered me', 'When I was bound and broken You delivered me',
+    'Open your eyes and see Mighty and Great is He (Mighty and Great is He)',
+    'Open your eyes and see Mighty and Great is He (Mighty and Great is He)',
+    'Open your eyes and see Mighty and Great is He (Mighty and Great is He)']);
 });
 
 test('la proposta non perde né riordina righe, e ha lo stesso numero di slide', () => {
@@ -120,7 +133,7 @@ test('se i numeri non tornano la sezione non è utilizzabile e lo dice', () => {
   const s = JSON.parse(JSON.stringify(song.secs.chorus));
   s.itJ = s.itJ.map(() => false);                               // 6 slide italiane contro 5 inglesi
   const r = E.sectionSlides(s);
-  assert.match(r.error, /italiano ha 6 slide e l'inglese 5/);
+  assert.match(r.error, /6 gruppi di righe italiane e 5 di righe inglesi/);
   assert.deepEqual(r.slides, []);
   const m = JSON.parse(JSON.stringify(song.secs.chorus)); m.hasEn = false; m.en = [];
   assert.match(E.sectionSlides(m).error, /Manca il testo inglese/);
@@ -142,6 +155,7 @@ const all = E.songBlocks(song);
 test('la canzone di prova si costruisce e si rilegge senza problemi', () => {
   assert.deepEqual(all.errors, []);
   assert.equal(all.blocks.length, 19);
+  assert.ok(all.blocks.every((b) => b.slides.every((sl) => sl.it.length === 1)));
   assert.deepEqual(build(all.blocks).problems, []);
   assert.deepEqual(build(all.blocks, false).problems, []);
 });

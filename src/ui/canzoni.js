@@ -46,7 +46,7 @@ function songView(G){
     else r.slides.forEach(function(sl,j){
       var rows=slideFit(sl.it);
       if(rows>2&&first){
-        notes.push({k:'w',msg:'La slide '+(j+1)+' ha '+rows+' righe italiane: potrebbe non entrare nello schermo. Separa le righe, oppure spezza la riga inglese nel testo.'});
+        notes.push({k:'w',msg:'La riga della slide '+(j+1)+' è molto lunga: andrà su '+rows+' righe e potrebbe non entrare nello schermo.'});
         nWarn++;
       }
     });
@@ -62,27 +62,37 @@ function songView(G){
 }
 
 function songPairsHtml(s,r){
-  var a=chunksOf(s.it,s.itJ),b=chunksOf(s.en,s.enJ),rows=Math.max(a.length,b.length);
-  function starts(ch){var out=[],n=0;ch.forEach(function(c){out.push(n);n+=c.length;});return out;}
-  var sa=starts(a),sb=starts(b),out='<div class="pairs"><div class="ph">Sulla slide (italiano)</div><div class="ph">Nelle note (inglese)</div>';
-  function cell(side,ch,st,k){
-    var c=ch[k];
-    if(!c)return '<div class="cell empty">Manca una slide</div>';
-    var html='<div class="cell '+side+'">';
-    c.forEach(function(l,j){
-      html+='<span class="ln">'+h(side==='it'?l.toUpperCase():l)+'</span>';
-      if(j<c.length-1)html+='<button type="button" class="cj" data-act="split" data-side="'+side+'" data-i="'+(st[k]+j)+'">Separa qui</button>';
+  var a=chunksOf(s.it,s.itJ),b=chunksOf(s.en,s.enJ),n=Math.max(a.length,b.length);
+  function starts(ch){var out=[],k=0;ch.forEach(function(c){out.push(k);k+=c.length;});return out;}
+  var sa=starts(a),sb=starts(b),row=2,slideNo=0;
+  var out='<div class="pairs"><div class="ph" style="grid-area:1/1">Sulla slide (italiano), una riga per slide</div><div class="ph" style="grid-area:1/2">Nelle note (inglese)</div>';
+  for(var k=0;k<n;k++){
+    var il=a[k]||[],el=b[k],rows=Math.max(1,il.length);
+    if(!il.length)out+='<div class="cell empty" style="grid-area:'+row+'/1">Manca la riga italiana</div>';
+    il.forEach(function(l,j){
+      var gi=sa[k]+j,btn='';
+      if(j<il.length-1)btn='<button type="button" class="cj" data-act="split" data-side="it" data-i="'+gi+'">Traduzione diversa dalla successiva</button>';
+      else if(k<a.length-1)btn='<button type="button" class="cj merge" data-act="merge" data-side="it" data-i="'+gi+'">Stessa traduzione della successiva</button>';
+      out+='<div class="cell it" style="grid-area:'+(row+j)+'/1"><span class="no">'+(++slideNo)+'</span><span class="ln">'+h(l.toUpperCase())+'</span>'+btn+'</div>';
     });
-    if(k<ch.length-1)html+='<button type="button" class="cj merge" data-act="merge" data-side="'+side+'" data-i="'+(st[k]+c.length-1)+'">Unisci con la successiva</button>';
-    return html+'</div>';
+    if(!el)out+='<div class="cell empty" style="grid-area:'+row+'/2/span '+rows+'">Manca la traduzione inglese</div>';
+    else{
+      var html='<div class="cell en" style="grid-area:'+row+'/2/span '+rows+'">';
+      el.forEach(function(l,j){
+        html+='<span class="ln">'+h(l)+'</span>';
+        if(j<el.length-1)html+='<button type="button" class="cj" data-act="split" data-side="en" data-i="'+(sb[k]+j)+'">Separa qui</button>';
+      });
+      if(k<b.length-1)html+='<button type="button" class="cj merge" data-act="merge" data-side="en" data-i="'+(sb[k]+el.length-1)+'">Unisci con la successiva</button>';
+      out+=html+'</div>';
+    }
+    row+=rows;
   }
-  for(var k=0;k<rows;k++)out+=cell('it',a,sa,k)+cell('en',b,sb,k);
   return out+'</div>';
 }
 function songCardHtml(c){
   var s=c.s,btn=function(act,label,icon,dis){return '<button type="button" class="ib" data-act="'+act+'" aria-label="'+label+': '+h(s.name)+'" title="'+label+'"'+(dis?' disabled':'')+'>'+icon+'</button>';};
   var acts='<span class="acts">'+btn('up','Sposta su',ICON.up,c.i===0)+btn('down','Sposta giù','<span class="flip">'+ICON.up+'</span>',c.i===c.n-1)+btn('dup','Duplica',ICON.copy,false)+btn('del','Elimina',ICON.trash,false)+'</span>';
-  var meta=c.r.blank?'slide vuota con SONGS':pl(c.r.slides.length||0,'slide','slide');
+  var meta=c.r.blank?'slide vuota con SONGS':(c.r.error?'da sistemare':pl(c.r.slides.length,'slide','slide'));
   var body=c.r.blank?'':(c.first?songPairsHtml(s,c.r):'<p class="same">Stesse slide della prima «'+h(s.name)+'»: le righe si sistemano lì e valgono per tutte le copie.</p>');
   var notes=c.notes.length?'<ul class="notes">'+c.notes.map(noteHtml).join('')+'</ul>':'';
   var cls=c.notes.some(function(n){return n.k==='e';})?' err':(c.notes.length?' has-warn':'')+(c.first?'':' copy');
