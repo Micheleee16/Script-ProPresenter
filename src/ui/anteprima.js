@@ -1,18 +1,27 @@
 function slideLen(sl){return finalVerses(sl).map(function(v){return v[0]+' '+v[1];}).join(' ').length;}
-function slideMarkup(sl,label,rl,tag,idx){
-  var fv=finalVerses(sl),tot=slideLen(sl),long=tot>rl.lungo,bg=state.img.bg;
-  var body=fv.map(function(v,k){return '<span class="n">'+v[0]+'</span>'+h(v[1])+(k<fv.length-1?' ':'');}).join('');
-  var cls='slide'+(bg?' hasbg':'')+(long?' long':'');
-  var style=bg?' style="background-image:linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2)),url('+bg.url+')"':'';
+
+// k = posizione della slide nel suo passo (serve solo per scaglionare l'animazione)
+function slideMarkup(sl,label,rl,tag,k){
+  var fv=finalVerses(sl),long=slideLen(sl)>rl.lungo;
+  var body=fv.map(function(v,j){return '<span class="n">'+v[0]+'</span>'+h(v[1])+(j<fv.length-1?' ':'');}).join('');
+  var cls='slide'+(long?' long':'');
   var inner='<span class="stext"><span>'+body+'</span></span><span class="sref">'+h(label)+'</span>'+(fv.length>1?'<span class="tag">2 versetti</span>':'')+(long?'<span class="tag l">Lunga: controlla</span>':'');
-  if(tag==='button')return '<button type="button" class="'+cls+'" data-i="'+idx+'"'+style+' aria-label="Ingrandisci: '+h(label)+', versetti '+fv.map(function(v){return v[0];}).join(' e ')+'">'+inner+'</button>';
-  return '<div class="'+cls+'"'+style+'>'+inner+'</div>';
+  if(tag==='button')return '<button type="button" class="'+cls+'" style="--i:'+Math.min(k,14)+'" aria-label="Ingrandisci: '+h(label)+', versetti '+fv.map(function(v){return v[0];}).join(' e ')+'">'+inner+'</button>';
+  return '<div class="'+cls+'">'+inner+'</div>';
 }
 
-function emptyState(){
-  return '<div class="empty"><h3>Qui vedrai le slide prima di scaricarle</h3>'+
-    '<p>Incolla il messaggio nel passo 1. Per ogni passo servono il riferimento e i versetti con il loro numero, così:</p>'+
-    '<div class="fmt">Romani 6:5-11\n5 Testo del primo versetto\n6 Testo del secondo versetto</div>'+
-    '<p>Puoi incollare più passi di seguito. Quello che non è un passo biblico, come i saluti, viene ignorato.</p></div>';
-}
+function noteHtml(n){return '<li class="note'+(n.k==='e'?' e':'')+'">'+(n.k==='e'?ICON.err:ICON.warn)+'<span>'+h(n.msg)+'</span></li>';}
 
+// una "scheda" è un passo (con le sue slide) oppure un passo escluso per errore
+function cardHtml(c){
+  var sep='';
+  if(c.sepBefore)sep=c.sepOn
+    ?'<div class="sep"><span class="t"></span>Immagine tra i passi</div>'
+    :'<div class="sep none"><span class="t"></span>Qui andrebbe l\'immagine tra i passi, ma manca</div>';
+  if(c.err)return sep+'<article class="pc err"><header class="pc-h"><span class="pc-t" style="cursor:default"><h3>'+h(c.ref)+'</h3></span><span class="pill err">Esclusa dalla presentazione</span></header><ul class="notes">'+noteHtml({k:'e',msg:c.msg})+'</ul></article>';
+  return sep+'<article class="pc'+(c.notes.length?' has-warn':'')+'">'+
+    '<header class="pc-h"><button type="button" class="pc-t" aria-expanded="true">'+ICON.chev+'<h3>'+h(c.label)+'</h3></button>'+
+    '<span class="meta">'+pl(c.verses,'versetto','versetti')+' in '+pl(c.slides,'slide','slide')+'</span>'+
+    (c.notes.length?'<span class="pill warn">'+ICON.warn+'Da controllare</span>':'')+'</header>'+
+    '<div class="pc-b"><div class="in"><div>'+(c.notes.length?'<ul class="notes">'+c.notes.map(noteHtml).join('')+'</ul>':'')+'<div class="slides">'+c.slidesHtml+'</div></div></div></div></article>';
+}

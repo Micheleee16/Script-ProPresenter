@@ -9,8 +9,9 @@ del pastore in una presentazione ProPresenter 7 con l'aspetto del template "Mess
 
 ```
 src/index.html        struttura della pagina (con due segnaposto: stile e script)
-src/ui/stile.css      aspetto
-src/ui/*.js           interfaccia: stato, anteprima, controllo, download, immagini, ingrandimento
+src/ui/stile.css      aspetto: colori chiari e scuri, animazioni, versione per telefono
+src/ui/*.js           interfaccia: base (strumenti), anteprima, controllo (analisi e schede),
+                      scarica, immagini (si ricordano per la volta dopo), ingrandimento, avvio
 src/engine/*.js       engine: formato Protocol Buffers, RTF, libri, lettura del messaggio,
                       raggruppamento in slide, costruzione della presentazione, zip
 template/             Messaggio_Modena.pro, il template originale (incorporato nella pagina in base64)
@@ -23,7 +24,8 @@ dist/Versi.html       il file finale, generato: non modificarlo a mano
 
 ```bash
 node build.mjs     # rigenera dist/Versi.html dai sorgenti
-node --test test/*.test.mjs   # esegue i test
+node --test test/*.test.mjs   # esegue i test dell'engine
+node test/ui-fumo.mjs         # prova l'interfaccia nel browser (serve Playwright)
 ```
 
 Dopo ogni modifica ai sorgenti: `node build.mjs`, poi i test (verificano anche che `dist/` sia aggiornato).

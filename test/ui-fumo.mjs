@@ -4,15 +4,57 @@ import { fileURLToPath } from 'node:url';
 const { chromium } = createRequire(import.meta.url)('playwright');
 
 const url = 'file://' + fileURLToPath(new URL('../dist/Versi.html', import.meta.url));
-const b = await chromium.launch(); const pg = await b.newPage();
-const errori = [];
-pg.on('pageerror', (e) => errori.push(e.message)); pg.on('console', (m) => m.type() === 'error' && errori.push(m.text()));
+const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64');
+const msg = 'Romani 6:5-6\n5 Testo di prova uno\n6 Testo di prova due\n\nAtti 2:1-2\n1 Testo di prova tre\n2 Testo di prova quattro';
+
+const b = await chromium.launch(); const ctx = await b.newContext({ acceptDownloads: true }); const pg = await ctx.newPage();
+const errori = []; const fail = (m) => errori.push(m);
+pg.on('pageerror', (e) => fail('pageerror: ' + e.message)); pg.on('console', (m) => m.type() === 'error' && fail('console: ' + m.text()));
 await pg.goto(url);
-await pg.fill('#msg', 'Romani 6:5-6\n5 Testo di prova uno\n6 Testo di prova due\n\nAtti 2:1-2\n1 Testo di prova tre\n2 Testo di prova quattro');
-await pg.waitForSelector('.slide');
-const slide = await pg.locator('button.slide').count();
-const passi = await pg.locator('.passage').count();
+
+// stato iniziale: vuoto e scaricare non si può
+if (!(await pg.locator('#empty').isVisible())) fail('manca lo stato vuoto');
+if (!(await pg.locator('#dlbtn').isDisabled())) fail('il pulsante dovrebbe essere disabilitato');
+
+// messaggio -> 2 passi, 2 slide
+await pg.fill('#msg', msg);
+await pg.waitForSelector('button.slide');
+const passi = await pg.locator('.pc').count(), slide = await pg.locator('button.slide').count();
+if (passi !== 2 || slide !== 2) fail(`attesi 2 passi e 2 slide, trovati ${passi} e ${slide}`);
+
+// scheda: si chiude e si riapre
+await pg.click('.pc-t >> nth=0');
+if (!(await pg.locator('.pc >> nth=0').evaluate((e) => e.classList.contains('collapsed')))) fail('la scheda non si è chiusa');
+await pg.click('.pc-t >> nth=0');
+
+// ingrandimento: apre, scorre con la tastiera, chiude con Esc
+await pg.click('button.slide >> nth=0');
+await pg.waitForSelector('dialog.show');
+await pg.keyboard.press('ArrowRight');
+if (!/Slide 2 di 2/.test(await pg.locator('#vinfo').innerText())) fail('la freccia destra non ha cambiato slide');
+await pg.keyboard.press('Escape');
+await pg.waitForFunction(() => !document.getElementById('viewer').open);
+
+// immagini: si caricano, compaiono i riquadri, si tolgono
+await pg.setInputFiles('#f-bg', { name: 'Sfondo prova.png', mimeType: 'image/png', buffer: PNG });
+await pg.waitForSelector('#slot-bg.filled');
+if (!(await pg.locator('#plist.bg-on').count())) fail('lo sfondo non è applicato all\'anteprima');
+await pg.click('#rm-bg');
+if (await pg.locator('#slot-bg.filled').count()) fail('lo sfondo non è stato tolto');
+
+// scarica
 const [dl] = await Promise.all([pg.waitForEvent('download'), pg.click('#dlbtn')]);
-console.log({ slide, passi, file: dl.suggestedFilename(), errori });
+await pg.waitForFunction(() => document.getElementById('dlbtn').dataset.state === 'done');
+if (!/\.pro$/.test(dl.suggestedFilename())) fail('nome file inatteso: ' + dl.suggestedFilename());
+
+// tema: cambia e resta valido
+await pg.click('#theme');
+if (!(await pg.locator('#theme').getAttribute('data-m'))) fail('il pulsante del tema non risponde');
+
+// svuota: torna allo stato vuoto
+await pg.click('#clear');
+if (!(await pg.locator('#empty').isVisible())) fail('dopo "Svuota" dovrebbe tornare lo stato vuoto');
+
+console.log({ passi, slide, file: dl.suggestedFilename(), errori });
 await b.close();
-if (errori.length || passi !== 2 || slide < 2) process.exit(1);
+if (errori.length) process.exit(1);

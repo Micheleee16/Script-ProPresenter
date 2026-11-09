@@ -2,91 +2,201 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <title>Versi</title>
+<script>try{var t=localStorage.getItem('versi.tema');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <style>
 @@STILE@@
 </style>
 </head>
 <body>
-<div class="page">
+<a class="skip" href="#s-msg">Vai al contenuto</a>
+
+<div class="app">
   <header class="top">
-    <h1>Versi</h1>
-    <p>Trasforma il messaggio del pastore nelle slide dei versetti per ProPresenter.</p>
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 40 40" aria-hidden="true">
+        <rect width="40" height="40" rx="11" fill="#1b3150"/>
+        <path d="M20 12.5c-2.6-1.7-6-2.2-9.5-1.6v15.9c3.5-.6 6.9-.1 9.5 1.6 2.6-1.7 6-2.2 9.5-1.6V10.9c-3.5-.6-6.9-.1-9.5 1.6z" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M20 12.5v15.9" stroke="#e3b650" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <h1>Versi</h1>
+        <p>Dal messaggio del pastore alle slide per ProPresenter</p>
+      </div>
+    </div>
+    <nav class="steps" aria-label="Avanzamento">
+      <ol id="steps">
+        <li data-s="1"><a href="#s-msg"><span class="dot"><span class="num">1</span></span><span class="lb">Messaggio</span></a></li>
+        <li data-s="2"><a href="#s-img"><span class="dot"><span class="num">2</span></span><span class="lb">Immagini</span></a></li>
+        <li data-s="3"><a href="#out"><span class="dot"><span class="num">3</span></span><span class="lb">Controllo</span></a></li>
+        <li data-s="4"><a href="#dock"><span class="dot"><span class="num">4</span></span><span class="lb">Scarica</span></a></li>
+      </ol>
+    </nav>
+    <button class="icon-btn" id="theme" type="button" aria-label="Tema"></button>
   </header>
+
   <main class="layout">
     <div class="col-in">
-      <section class="step" aria-labelledby="h-msg">
-        <div class="sh"><span class="mark" id="m1" aria-hidden="true">1</span><h2 id="h-msg">Incolla il messaggio</h2></div>
-        <p class="help">Va bene anche il testo copiato da WhatsApp: orari e nomi vengono ignorati. Davanti a ogni versetto deve esserci il suo numero.</p>
-        <textarea id="msg" spellcheck="false" aria-describedby="count" placeholder="Incolla qui il messaggio del pastore"></textarea>
+
+      <section class="card" id="s-msg" aria-labelledby="h-msg">
+        <header class="ch">
+          <span class="badge" id="m1" aria-hidden="true">1</span>
+          <div>
+            <h2 id="h-msg">Incolla il messaggio</h2>
+            <p class="sub">Va bene anche copiato da WhatsApp: orari e nomi vengono ignorati.</p>
+          </div>
+        </header>
+        <div class="field" id="msgwrap">
+          <textarea id="msg" spellcheck="false" aria-label="Messaggio del pastore" aria-describedby="count"></textarea>
+          <div class="hint" aria-hidden="true">
+            <span class="hint-ic" id="hint-ic"></span>
+            <b>Incolla qui il messaggio</b>
+            <span>con riferimento e numero di ogni versetto,<br>oppure trascina qui un file di testo</span>
+          </div>
+        </div>
         <div class="under">
-          <span class="count" id="count" aria-live="polite">Nessun testo incollato</span>
+          <span class="chip" id="count" aria-live="polite">Nessun testo incollato</span>
           <div class="btns">
-            <button class="btn" id="paste" type="button">Incolla dagli appunti</button>
-            <button class="btn quiet" id="clear" type="button">Svuota</button>
+            <button class="btn" id="paste" type="button"><span id="paste-ic"></span>Incolla</button>
+            <button class="btn ghost" id="clear" type="button">Svuota</button>
           </div>
         </div>
       </section>
 
-      <section class="step" aria-labelledby="h-img">
-        <div class="sh"><span class="mark" id="m2" aria-hidden="true">2</span><h2 id="h-img">Aggiungi le immagini <span class="opt">(facoltativo)</span></h2></div>
-        <p class="help">Trascina un file sul riquadro, oppure scegli dal computer. Quello che manca non viene inserito e te lo segnalo.</p>
-        <div class="slot" id="slot-bg">
-          <div class="thumb" id="th-bg">nessuna immagine</div>
-          <div><h3>Sfondo dei versetti</h3><span class="fn" id="fn-bg">Senza sfondo, le slide restano scure.</span>
-            <div class="row"><label class="btn"><span id="lt-bg">Scegli immagine</span><input type="file" id="f-bg" accept="image/*" hidden></label><button class="btn quiet" id="rm-bg" type="button" hidden>Togli</button></div></div>
-        </div>
-        <div class="slot" id="slot-sep">
-          <div class="thumb" id="th-sep">nessuna immagine</div>
-          <div><h3>Immagine tra un passo e l'altro</h3><span class="fn" id="fn-sep">Senza immagine, i passi si susseguono senza stacco.</span>
-            <div class="row"><label class="btn"><span id="lt-sep">Scegli immagine</span><input type="file" id="f-sep" accept="image/*" hidden></label><button class="btn quiet" id="rm-sep" type="button" hidden>Togli</button></div></div>
+      <section class="card" id="s-img" aria-labelledby="h-img">
+        <header class="ch">
+          <span class="badge" id="m2" aria-hidden="true">2</span>
+          <div>
+            <h2 id="h-img">Immagini <span class="opt">facoltative</span></h2>
+            <p class="sub">Trascina un file su un riquadro, oppure toccalo per scegliere. Le ricordo per la prossima volta.</p>
+          </div>
+        </header>
+        <div class="tiles">
+          <div class="tile" id="slot-bg">
+            <label class="tile-main">
+              <input class="sr" type="file" id="f-bg" accept="image/*">
+              <span class="thumb" id="th-bg"></span>
+              <span class="tl"><b>Sfondo dei versetti</b><span class="fn" id="fn-bg"></span><span class="act" id="lt-bg"></span></span>
+            </label>
+            <button class="x" id="rm-bg" type="button" hidden aria-label="Togli lo sfondo dei versetti"></button>
+            <span class="tag" id="tg-bg" hidden>Dalla volta scorsa</span>
+          </div>
+          <div class="tile" id="slot-sep">
+            <label class="tile-main">
+              <input class="sr" type="file" id="f-sep" accept="image/*">
+              <span class="thumb" id="th-sep"></span>
+              <span class="tl"><b>Tra un passo e l'altro</b><span class="fn" id="fn-sep"></span><span class="act" id="lt-sep"></span></span>
+            </label>
+            <button class="x" id="rm-sep" type="button" hidden aria-label="Togli l'immagine tra i passi"></button>
+            <span class="tag" id="tg-sep" hidden>Dalla volta scorsa</span>
+          </div>
         </div>
       </section>
 
-      <section class="step" aria-labelledby="h-rules">
-        <details class="rules">
-          <summary id="h-rules">Come vengono divise le slide</summary>
-          <div class="grid">
-            <p>Di norma c'è un versetto per slide, e un versetto non viene mai spezzato.</p>
-            <label for="corto">Un versetto è corto se ha meno di (caratteri)</label><input id="corto" type="number" inputmode="numeric" min="20" max="400" value="120">
-            <label for="max">Due versetti stanno insieme solo se non superano (caratteri)</label><input id="max" type="number" inputmode="numeric" min="60" max="600" value="200">
-            <label for="lungo">Avvisami se una slide supera (caratteri)</label><input id="lungo" type="number" inputmode="numeric" min="100" max="800" value="240">
-            <div style="grid-column:1/-1"><button class="textlink" id="reset" type="button">Ripristina i valori iniziali</button></div>
-          </div>
-        </details>
-      </section>
+      <details class="card rules" id="rules">
+        <summary><span class="sm-ic" id="rules-ic"></span><span>Come vengono divise le slide</span><span class="chev" id="rules-chev"></span></summary>
+        <div class="rules-b">
+          <p>Di norma c'è un versetto per slide, e un versetto non viene mai spezzato.</p>
+          <label for="corto">Un versetto è corto se ha meno di</label><span class="num-in"><input id="corto" type="number" inputmode="numeric" min="20" max="400" value="120"><i>caratteri</i></span>
+          <label for="max">Due versetti stanno insieme solo se non superano</label><span class="num-in"><input id="max" type="number" inputmode="numeric" min="60" max="600" value="200"><i>caratteri</i></span>
+          <label for="lungo">Avvisami se una slide supera</label><span class="num-in"><input id="lungo" type="number" inputmode="numeric" min="100" max="800" value="240"><i>caratteri</i></span>
+          <div class="rules-f"><button class="link" id="reset" type="button">Ripristina i valori iniziali</button></div>
+        </div>
+      </details>
     </div>
 
     <div class="col-out">
-      <section aria-labelledby="h-rev">
-        <div class="sh"><span class="mark" id="m3" aria-hidden="true">3</span><h2 id="h-rev">Controlla le slide</h2></div>
-        <div id="out"></div>
+      <section id="out" class="out" aria-labelledby="h-rev">
+        <header class="ch out-h">
+          <span class="badge" id="m3" aria-hidden="true">3</span>
+          <div>
+            <h2 id="h-rev">Controlla le slide</h2>
+            <p class="sub" id="rev-sub">Appena incolli il messaggio vedi qui l'anteprima, con lo sfondo vero.</p>
+          </div>
+        </header>
+
+        <div class="empty" id="empty">
+          <div class="empty-art" aria-hidden="true">
+            <div class="ea-msg"><i></i><i></i><i class="s"></i></div>
+            <svg viewBox="0 0 24 24" class="ea-arrow" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+            <div class="ea-slide"><i></i><i></i><i class="s"></i></div>
+          </div>
+          <h3>Qui compaiono le slide prima di scaricarle</h3>
+          <p>Per ogni passo servono il riferimento e i versetti, ciascuno con il suo numero:</p>
+          <pre class="fmt">Romani 6:5-11
+5 Testo del primo versetto
+6 Testo del secondo versetto</pre>
+          <p class="small">Puoi incollare più passi di seguito. Quello che non è un passo biblico, come i saluti, viene ignorato e te lo segnalo.</p>
+        </div>
+
+        <div id="review" hidden>
+          <div class="sum" id="sum" data-state="ok" role="status">
+            <span class="sum-ic" id="sum-ic"></span>
+            <div class="sum-tx"><h3 id="sum-t"></h3><p id="sum-p"></p></div>
+            <dl class="stats">
+              <div><dt>passi</dt><dd id="st-p">0</dd></div>
+              <div><dt>slide</dt><dd id="st-s">0</dd></div>
+              <div class="st-w"><dt>avvisi</dt><dd id="st-w">0</dd></div>
+            </dl>
+            <button class="btn sum-go" id="sum-go" type="button" hidden>Vai al primo punto</button>
+          </div>
+          <details class="issd" id="issd" hidden>
+            <summary><span id="iss-n"></span><span class="chev" id="iss-chev"></span></summary>
+            <ul class="issues" id="issues"></ul>
+          </details>
+          <ol class="plist" id="plist"></ol>
+          <details class="ignored" id="ign" hidden>
+            <summary id="ign-s"></summary>
+            <ul id="ign-l"></ul>
+          </details>
+        </div>
       </section>
 
-      <section class="dock" aria-labelledby="h-dl">
-        <div class="sh"><span class="mark" id="m4" aria-hidden="true">4</span><h2 id="h-dl">Scarica la presentazione</h2></div>
-        <div class="row">
-          <div class="field"><label for="nome">Nome in ProPresenter</label><input id="nome" type="text" autocomplete="off"></div>
-          <div class="act">
-            <button id="dlbtn" class="btn primary" type="button" disabled>Scarica</button>
-            <span class="sub" id="dlsub">Presentazione (.pro)</span>
+      <section class="dock" id="dock" aria-labelledby="h-dl">
+        <h2 class="sr" id="h-dl">Scarica la presentazione</h2>
+        <div class="dock-row">
+          <span class="badge" id="m4" aria-hidden="true">4</span>
+          <div class="nm">
+            <label for="nome">Nome in ProPresenter</label>
+            <input id="nome" type="text" autocomplete="off" spellcheck="false">
           </div>
+          <button id="dlbtn" class="btn primary dl" type="button" data-state="idle" disabled>
+            <span class="dl-ic"><span class="i-down"></span><span class="i-spin"></span><span class="i-ok"></span></span>
+            <span class="dl-t">Scarica</span>
+          </button>
         </div>
-        <label class="ack" id="ackwrap" hidden><input type="checkbox" id="ack"><span id="acktext">Ho letto gli errori: scarica solo i passi corretti.</span></label>
-        <p class="status" id="dlstatus" role="status" aria-live="polite">Incolla un messaggio per poter scaricare.</p>
-        <button class="textlink" id="dlpro" type="button" hidden>Scarica solo la presentazione (.pro), senza le immagini</button>
+        <label class="ack" id="ackwrap" hidden>
+          <input type="checkbox" id="ack"><span class="sw" aria-hidden="true"></span><span id="acktext"></span>
+        </label>
+        <div class="dock-f">
+          <p class="status" id="dlstatus" role="status" aria-live="polite"></p>
+          <p class="fine"><span id="dlsub">Presentazione (.pro)</span><button class="link" id="dlpro" type="button" hidden>Scarica solo la presentazione, senza le immagini</button></p>
+        </div>
       </section>
     </div>
   </main>
 </div>
 
 <dialog id="viewer" aria-label="Slide ingrandita">
-  <div class="vh"><strong id="vtitle"></strong><button class="btn" id="vclose" type="button">Chiudi</button></div>
-  <div class="vb" id="vslide"></div>
-  <div class="vn"><button class="btn" id="vprev" type="button">Precedente</button><span class="info" id="vinfo"></span><button class="btn" id="vnext" type="button">Successiva</button></div>
+  <div class="v-h">
+    <div class="v-t"><strong id="vtitle"></strong><span id="vinfo"></span></div>
+    <button class="icon-btn" id="vclose" type="button" aria-label="Chiudi"></button>
+  </div>
+  <div class="v-stage" id="vstage">
+    <button class="v-nav" id="vprev" type="button" aria-label="Slide precedente"></button>
+    <div class="v-slide" id="vslide"></div>
+    <button class="v-nav" id="vnext" type="button" aria-label="Slide successiva"></button>
+  </div>
+  <div class="v-f">
+    <div class="v-bar" aria-hidden="true"><i id="vbar"></i></div>
+    <p id="vnote" class="v-note"></p>
+    <p class="v-keys" aria-hidden="true"><kbd>←</kbd> <kbd>→</kbd> per scorrere, <kbd>Esc</kbd> per chiudere</p>
+  </div>
 </dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 @@SCRIPT@@
