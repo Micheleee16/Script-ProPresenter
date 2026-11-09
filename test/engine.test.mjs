@@ -132,3 +132,26 @@ test('avviso: riferimento scritto dopo il testo', () => {
   assert.equal(r.passages.length, 1);
   assert.match(r.warns.map((x) => x.msg).join(' '), /riferimento è scritto dopo il testo/);
 });
+
+// ---- dimensioni dell'immagine nel template ----
+function mediaSize(cueBytes) {
+  const act = E.parse(cueBytes).filter((x) => x.f === 10)[1].v;           // la seconda azione della cue: lo sfondo
+  const dim = E.path(act, 20, 5, 5, 1, 5);
+  const o = E.parse(dim).map((x) => Buffer.from(x.v).readDoubleLE(0));
+  return o;
+}
+function cuesBytes(bytes) { return E.parse(bytes).filter((x) => x.f === 13).map((x) => x.v); }
+
+test('le dimensioni dell\'immagine nel template vengono aggiornate', () => {
+  const r = read(`Romani 6:5-6\n5 ${T('a')}\n6 ${T('b')}\n\nAtti 2:1-2\n1 ${T('c')}\n2 ${T('d')}`);
+  const cues = cuesBytes(pres(r.passages, { bg: { name: 'x.png', w: 1280, h: 720 }, sep: { name: 'y.png', w: 1000, h: 500 } }));
+  const nomi = cues.map((c) => Buffer.from(E.parse(c)[1].v).toString());
+  const sep = cues[nomi.indexOf('Separatore')], verso = cues[0];
+  assert.deepEqual(mediaSize(verso), [1280, 720]);
+  assert.deepEqual(mediaSize(sep), [1000, 500]);
+});
+
+test('senza dimensioni note il template resta com\'è', () => {
+  const r = read(`Romani 6:5-6\n5 ${T('a')}\n6 ${T('b')}`);
+  assert.deepEqual(mediaSize(cuesBytes(pres(r.passages, { bg: { name: 'x.png' }, sep: null }))[0]), [1920, 1080]);
+});

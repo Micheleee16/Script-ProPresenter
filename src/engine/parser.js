@@ -6,7 +6,7 @@ function cleanText(t){return norm(t).replace(/^[«» ]+|[«» ]+$/g,'');}
 var PUNCT=/[\.;:,!?»”)"’'…]$/;
 
 function findStarts(body,s,e,warn){
-  var starts=[[s,0]],pos=0,n=s+1;
+  var starts=[[s,0]],pos=0,n=s+1,loose=[];
   for(;;){
     if(e&&n>e)break;
     var re=new RegExp('(^|\\s)'+n+'\\s+(?=\\S)','g'),cands=[],m;
@@ -25,10 +25,11 @@ function findStarts(body,s,e,warn){
       if(pick.punct)warn('Il numero '+n+' compare '+cands.length+' volte nel testo. Ho scelto quello dopo la punteggiatura: controlla che il versetto '+n+' inizi nel punto giusto.');
       else warn('Il numero '+n+' compare '+cands.length+' volte nel testo e nessuno segue una punteggiatura o un a capo. Ho scelto il primo: controlla che il versetto '+n+' inizi nel punto giusto.');
     }else if(!pick.punct){
-      warn('Il versetto '+n+' inizia dopo una parola senza punteggiatura né a capo: controlla che il numero '+n+' sia davvero l\'inizio del versetto '+n+' (e non, per esempio, "'+n+' volte").');
+      loose.push(n);
     }
     starts.push([n,pick.idx]);pos=pick.end;n++;
   }
+  if(loose.length)warn((loose.length===1?'Il versetto '+loose[0]+' inizia':'I versetti '+loose.join(', ')+' iniziano')+' dopo una parola senza punteggiatura né a capo. Controlla che '+(loose.length===1?'quel numero sia':'quei numeri siano')+' davvero '+(loose.length===1?'l\'inizio del versetto':'l\'inizio dei versetti')+' (e non, per esempio, "'+loose[0]+' volte").');
   return starts;
 }
 
@@ -53,7 +54,8 @@ function readMessage(raw){
       var chap=parseInt(hd.m[2],10),s=hd.m[3]?parseInt(hd.m[3],10):1,e=hd.m[4]?parseInt(hd.m[4],10):null;
       body=body.replace(new RegExp('^\\s*'+s+'\\s+'),'');
       var nome=hd.b+' '+chap+':'+s+(e&&e!==s?'-'+e:'');
-      var W=function(msg){warns.push({pid:id,ref:nome,msg:msg});};
+      var pw=[];   // avvisi del passo: si registrano solo se il passo viene incluso, con il riferimento definitivo
+      var W=function(msg){pw.push(msg);};
       if(preForLast!==null&&i===heads.length-1)W('Il riferimento è scritto dopo il testo: ho usato come versetti il testo che lo precede. Controlla che sia giusto.');
       var E=function(msg){errs.push({pid:id,ref:nome,msg:msg});};
       var starts=findStarts(body,s,e,W),verses=[];
@@ -74,6 +76,7 @@ function readMessage(raw){
       if(!e&&verses.length>1){nome=lab;W('Il riferimento non dice fino a che versetto arriva: ho riconosciuto i versetti dal '+s+' al '+lastn+'. Controlla che ci siano tutti.');}
       if(verses.some(function(v){return !v[1];})){E('Un versetto è vuoto. Questo passo non sarà nella presentazione.');return;}
       verses.forEach(function(v){if(/\d/.test(v[1]))W('Il versetto '+v[0]+' contiene una cifra: controlla che non sia un numero di versetto.');});
+      pw.forEach(function(msg){warns.push({pid:id,ref:nome,msg:msg});});
       out.push({pid:id,book:hd.b,chap:chap,verses:verses,label:lab});
     });
   });
