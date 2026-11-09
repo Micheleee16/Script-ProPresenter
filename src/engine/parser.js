@@ -33,8 +33,25 @@ function findStarts(body,s,e,warn){
   return starts;
 }
 
+// Parole del testo ricevuto che non sono finite nei versetti, nell'ordine in cui compaiono.
+// I versetti sono pezzi del testo ricevuto, quindi si cercano come sequenza: ogni parola del testo
+// che non è la prossima parola attesa di un versetto è rimasta fuori.
+function leftover(body,verses){
+  var vw=[];
+  verses.forEach(function(v){(v[1].normalize('NFC').toLowerCase().match(/[\p{L}\p{M}]+/gu)||[]).forEach(function(w){vw.push(w);});});
+  var re=/[\p{L}\p{M}]+/gu,m,j=0,total=0,left=0,runs=[],start=-1,end=-1,prevLeft=false;
+  while((m=re.exec(body))){
+    total++;
+    var w=m[0].normalize('NFC').toLowerCase();
+    if(j<vw.length&&w===vw[j]){j++;if(prevLeft){runs.push(norm(body.slice(start,end)));prevLeft=false;}}
+    else{left++;if(!prevLeft){start=m.index;prevLeft=true;}end=m.index+m[0].length;}
+  }
+  if(prevLeft)runs.push(norm(body.slice(start,end)));
+  return {total:total,left:left,runs:runs};
+}
+
 function readMessage(raw){
-  var warns=[],errs=[],ignored=[],out=[],pid=0,m;
+  var warns=[],errs=[],ignored=[],out=[],pid=0,m,cw=0,cl=0;
   raw=raw.replace(/\r/g,'');
   var msgs=[],last=0;
   WA.lastIndex=0;
@@ -62,9 +79,7 @@ function readMessage(raw){
       for(var j=0;j<starts.length;j++){
         var num=starts[j][0],st=starts[j][1],nxt=j+1<starts.length?starts[j+1][1]:body.length,txt=body.slice(st,nxt);
         if(j===starts.length-1){
-          var parts=txt.split(/\n[ \t]*\n/);
-          if(parts.length>1&&parts.slice(1).join(' ').trim())W('Ho lasciato fuori il testo dopo la riga vuota: "'+norm(parts.slice(1).join(' ')).slice(0,80)+'".');
-          txt=parts[0];
+          txt=txt.split(/\n[ \t]*\n/)[0];   // quello che segue una riga vuota non è del versetto: lo segnala il controllo sul testo perso
         }
         if(j>0)txt=txt.replace(new RegExp('^'+num+'\\s+'),'');
         verses.push([num,cleanText(txt)]);
@@ -76,10 +91,15 @@ function readMessage(raw){
       if(!e&&verses.length>1){nome=lab;W('Il riferimento non dice fino a che versetto arriva: ho riconosciuto i versetti dal '+s+' al '+lastn+'. Controlla che ci siano tutti.');}
       if(verses.some(function(v){return !v[1];})){E('Un versetto è vuoto. Questo passo non sarà nella presentazione.');return;}
       verses.forEach(function(v){if(/\d/.test(v[1]))W('Il versetto '+v[0]+' contiene una cifra: controlla che non sia un numero di versetto.');});
+      var lo=leftover(body,verses);cw+=lo.total;cl+=lo.left;
+      if(lo.left){
+        var shown=lo.runs.slice(0,3).map(function(x){return '"'+(x.length>70?x.slice(0,70)+'…':x)+'"';}).join(' · ')+(lo.runs.length>3?' · …':'');
+        W('Nel messaggio c\'è del testo che non è finito nelle slide ('+lo.left+(lo.left===1?' parola':' parole')+'): '+shown+'. Se fa parte di un versetto, togli la riga vuota o aggiungi il numero; se non serve, ignora questo avviso.');
+      }
       pw.forEach(function(msg){warns.push({pid:id,ref:nome,msg:msg});});
       out.push({pid:id,book:hd.b,chap:chap,verses:verses,label:lab});
     });
   });
-  return {passages:out,warns:warns,errs:errs,ignored:ignored};
+  return {passages:out,warns:warns,errs:errs,ignored:ignored,check:{words:cw,left:cl}};
 }
 

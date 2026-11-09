@@ -34,6 +34,30 @@ if (!/Slide 2 di 2/.test(await pg.locator('#vinfo').innerText())) fail('la frecc
 await pg.keyboard.press('Escape');
 await pg.waitForFunction(() => !document.getElementById('viewer').open);
 
+// unire e separare i versetti dall'ingrandimento
+await pg.click('button.slide >> nth=0');
+await pg.waitForSelector('dialog.show');
+await pg.click('#v-sp');                                   // separa 5 e 6
+await pg.waitForFunction(() => document.querySelectorAll('button.slide').length === 3);
+if (!/Slide 1 di 3/.test(await pg.locator('#vinfo').innerText())) fail('dopo "Separa" dovrebbe restare sulla slide 1 di 3');
+if (!(await pg.locator('.pc-reset').count())) fail('manca "Ripristina la divisione automatica"');
+await pg.click('#v-nj');                                   // riunisce 5 e 6: torna uguale all'automatico
+await pg.waitForFunction(() => document.querySelectorAll('button.slide').length === 2);
+if (await pg.locator('.pc-reset').count()) fail('tornata uguale all\'automatico, non dovrebbe risultare modificata');
+await pg.click('#v-sp');                                   // separa di nuovo e ripristina dalla scheda
+await pg.keyboard.press('Escape');
+await pg.waitForFunction(() => !document.getElementById('viewer').open);
+await pg.click('.pc-reset');
+await pg.waitForFunction(() => document.querySelectorAll('button.slide').length === 2);
+if (await pg.locator('.pc-reset').count()) fail('il ripristino non ha tolto la modifica');
+
+// testo perso: una riga dopo la riga vuota viene segnalata
+await pg.fill('#msg', msg + '\n\nBuona domenica a tutti!');
+await pg.waitForSelector('.pc.has-warn');
+if (!/non è finito nelle slide/.test(await pg.locator('.pc.has-warn .note').first().innerText())) fail('manca l\'avviso sul testo perso');
+await pg.fill('#msg', msg);
+await pg.waitForFunction(() => !document.querySelector('.pc.has-warn'));
+
 // immagini: si caricano, compaiono i riquadri, si tolgono
 await pg.setInputFiles('#f-bg', { name: 'Sfondo prova.png', mimeType: 'image/png', buffer: PNG });
 await pg.waitForSelector('#slot-bg.filled');
@@ -45,6 +69,7 @@ if (await pg.locator('#slot-bg.filled').count()) fail('lo sfondo non è stato to
 const [dl] = await Promise.all([pg.waitForEvent('download'), pg.click('#dlbtn')]);
 await pg.waitForFunction(() => document.getElementById('dlbtn').dataset.state === 'done');
 if (!/\.pro$/.test(dl.suggestedFilename())) fail('nome file inatteso: ' + dl.suggestedFilename());
+if (!/riletto il file/.test(await pg.locator('#dlstatus').innerText())) fail('manca la conferma della rilettura del file');
 
 // tema: cambia e resta valido
 await pg.click('#theme');

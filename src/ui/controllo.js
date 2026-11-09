@@ -77,17 +77,18 @@ function render(){
       items.push({key:ek+'#'+occ[ek],sig:'E'+hash(o.e.msg),pid:o.pid,html:cardHtml({err:true,ref:o.e.ref,msg:o.e.msg})});
       return;
     }
-    var p=o.p,g=group(p.verses,rl.corto,rl.max),notes=[],slides='';
+    var p=o.p;p.ov=state.ov[ovKey(p)];
+    var g=groupWith(p.verses,rl.corto,rl.max,p.ov),notes=[],slides='';
     (byPid[p.pid]||[]).forEach(function(w){notes.push({k:'w',msg:w.msg});});
     g.forEach(function(sl,k){
       var t=slideLen(sl),first=sl[0][0],last=sl[sl.length-1][0],ref=p.book+' '+p.chap+':'+first+(sl.length>1?'-'+last:'');
       if(t>rl.lungo)notes.push({k:'w',msg:'La slide '+ref+' è lunga ('+t+' caratteri): controlla che il testo entri nello schermo.'});
       slides+=slideMarkup(sl,p.label,rl,'button',k);
-      state.flat.push({sl:sl,label:p.label,pid:p.pid});
+      state.flat.push({sl:sl,label:p.label,pid:p.pid,p:p});
     });
     nslide+=g.length;nWarn+=notes.length;
-    var c={label:p.label,verses:p.verses.length,slides:g.length,notes:notes,slidesHtml:slides,sepBefore:ip>0,sepOn:sepOn};
-    var sig=hash(rl.corto+'|'+rl.max+'|'+rl.lungo+'|'+(ip>0?1:0)+(sepOn?1:0)+'|'+JSON.stringify(p.verses)+'|'+JSON.stringify(notes));
+    var c={label:p.label,verses:p.verses.length,slides:g.length,notes:notes,slidesHtml:slides,sepBefore:ip>0,sepOn:sepOn,edited:!!p.ov};
+    var sig=hash(rl.corto+'|'+rl.max+'|'+rl.lungo+'|'+(ip>0?1:0)+(sepOn?1:0)+'|'+JSON.stringify(p.verses)+'|'+JSON.stringify(notes)+'|'+JSON.stringify(p.ov||{}));
     var pk=p.label;occ[pk]=(occ[pk]||0)+1;
     items.push({key:pk+'#'+occ[pk],sig:sig,pid:p.pid,html:cardHtml(c)});
     ip++;
@@ -107,7 +108,7 @@ function render(){
   }
   var head=r.passages.length?pl(r.passages.length,'passo','passi')+', '+pl(nslide,'slide','slide'):'Nessun passo può essere incluso';
   var more=nErr?(nErr===1?'Un passo ha un errore e non sarà nella presentazione. Correggilo nel messaggio: la pagina si aggiorna da sola.':nErr+' passi hanno un errore e non saranno nella presentazione. Correggili nel messaggio: la pagina si aggiorna da sola.')
-    :(nWarn?pl(nWarn,'punto da controllare','punti da controllare')+', segnati in giallo qui sotto.':'Tutto a posto.');
+    :(nWarn?pl(nWarn,'punto da controllare','punti da controllare')+', segnati in giallo qui sotto.':'Tutto a posto. Tutto il testo dei versetti è nelle slide.');
   $('sum-t').textContent=head;$('sum-p').textContent=more;
   var go=$('sum-go');go.hidden=!(nErr||nWarn);go.textContent=nErr?'Vai all\'errore':'Vai al primo';
   $('rev-sub').hidden=!r.passages.length;
@@ -139,7 +140,7 @@ function renderDock(){
   aw.hidden=!c.err;
   if(c.err)$('acktext').textContent=c.err===1?'Ho letto l\'errore: scarica gli altri passi, senza quello escluso.':'Ho letto gli errori: scarica gli altri passi, senza i '+c.err+' esclusi.';
   btn.disabled=(!!c.err&&!$('ack').checked)||state.busy;
-  if(state.done){say('ok',ICON.check,'Scaricato: '+state.done+'. Ora trascinalo in ProPresenter.');return;}
+  if(state.done){say('ok',ICON.check,'Scaricato: '+state.done+'. '+(state.verified?'Ho riletto il file: ogni slide contiene il testo previsto. ':'')+'Ora trascinalo in ProPresenter.');return;}
   if(c.err&&!$('ack').checked){say('','','');return;}   // l'interruttore sopra spiega già cosa fare
   var what=pl(c.passages,'passo','passi')+', '+pl(c.slides,'slide','slide');
   if(c.warn)say('warn',ICON.warn,'Pronto: '+what+'. '+pl(c.warn,'punto','punti')+' da controllare.');

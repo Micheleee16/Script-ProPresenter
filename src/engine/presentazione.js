@@ -54,7 +54,7 @@ function buildPresentation(passages,nome,corto,max,imgs){
   var nw=[];
   passages.forEach(function(p,pi){
     if(pi>0&&imgs.sep)nw.push(buildCue(tplSep,'Separatore',null,null,null,imgs.sep));
-    group(p.verses,corto,max).forEach(function(sl){
+    groupWith(p.verses,corto,max,p.ov).forEach(function(sl){
       var a=sl[0][0],z=sl[sl.length-1][0];
       nw.push(buildCue(tplVerse,p.book+' '+p.chap+':'+a+(z!==a?'-'+z:''),sl,p.label,hdr,imgs.bg||null));
     });

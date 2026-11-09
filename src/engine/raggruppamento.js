@@ -15,3 +15,22 @@ function group(verses,corto,max){
   return out;
 }
 
+
+// Quali versetti la divisione automatica mette insieme: {numero del versetto a sinistra: true}
+function autoJoins(verses,corto,max){
+  var j={};
+  group(verses,corto,max).forEach(function(sl){for(var k=0;k<sl.length-1;k++)j[sl[k][0]]=true;});
+  return j;
+}
+// Divisione automatica con le correzioni fatte a mano.
+// ov = {numero del versetto a sinistra: true (uniti) oppure false (separati)}
+function groupWith(verses,corto,max,ov){
+  if(!ov)return group(verses,corto,max);
+  var auto=autoJoins(verses,corto,max),out=[],cur=[verses[0]];
+  for(var i=1;i<verses.length;i++){
+    var left=verses[i-1][0],joined=ov[left]!==undefined?ov[left]:auto[left]===true;
+    if(joined)cur.push(verses[i]);else{out.push(cur);cur=[verses[i]];}
+  }
+  out.push(cur);
+  return out;
+}

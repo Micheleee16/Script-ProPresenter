@@ -13,7 +13,8 @@ src/ui/stile.css      aspetto: una sola colonna, colori chiari e scuri, animazio
 src/ui/*.js           interfaccia: base (strumenti), anteprima, controllo (riepilogo, schede e barra Scarica),
                       scarica, immagini (si ricordano per la volta dopo), ingrandimento, avvio
 src/engine/*.js       engine: formato Protocol Buffers, RTF, libri, lettura del messaggio,
-                      raggruppamento in slide, costruzione della presentazione, zip
+                      raggruppamento in slide (anche con correzioni a mano), costruzione della presentazione,
+                      rilettura finale del file generato, zip
 template/             Messaggio_Modena.pro, il template originale (incorporato nella pagina in base64)
 build.mjs             assembla dist/Versi.html
 test/                 test automatici (node --test)

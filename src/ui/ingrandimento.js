@@ -12,6 +12,38 @@ function showSlide(i,dir){
   $('vnote').textContent=t>rl.lungo?'Slide lunga: controlla che il testo entri nello schermo.':'';
   $('vbar').style.width=((i+1)/n*100)+'%';
   $('vprev').disabled=i===0;$('vnext').disabled=i===n-1;
+  // quali correzioni sono possibili su questa slide (solo dentro lo stesso passo)
+  var prev=state.flat[i-1],next=state.flat[i+1];
+  var canPrev=!!prev&&prev.p===d.p,canNext=!!next&&next.p===d.p,canSplit=d.sl.length>1;
+  $('v-pj').hidden=!canPrev;$('v-nj').hidden=!canNext;$('v-sp').hidden=!canSplit;
+  $('vedit').hidden=!(canPrev||canNext||canSplit);
+}
+
+// ---------- unire e separare i versetti dall'ingrandimento ----------
+function setJoin(p,left,joined){
+  var key=ovKey(p),ov=state.ov[key]||(state.ov[key]={}),rl=rules();
+  var auto=autoJoins(p.verses,rl.corto,rl.max)[left]===true;
+  if(joined===auto)delete ov[left];else ov[left]=joined;      // uguale all'automatico = nessuna correzione
+  if(!Object.keys(ov).length)delete state.ov[key];
+}
+function editSlide(kind){
+  var d=state.flat[state.cur];if(!d)return;
+  var p=d.p,first=d.sl[0][0];
+  if(kind==='split')d.sl.slice(0,-1).forEach(function(v){setJoin(p,v[0],false);});
+  else if(kind==='next')setJoin(p,d.sl[d.sl.length-1][0],true);
+  else if(kind==='prev'){var pv=state.flat[state.cur-1];setJoin(p,pv.sl[pv.sl.length-1][0],true);first=pv.sl[0][0];}
+  state.done=null;
+  render();
+  // resta sulla slide che contiene lo stesso versetto di prima
+  var idx=0;
+  state.flat.forEach(function(f,i){if(f.p===p&&f.sl.some(function(v){return v[0]===first;}))idx=i;});
+  showSlide(idx,0);
+  replay($('vslide'),'edited');
+}
+function bindEdit(){
+  $('v-pj').addEventListener('click',function(){editSlide('prev');});
+  $('v-sp').addEventListener('click',function(){editSlide('split');});
+  $('v-nj').addEventListener('click',function(){editSlide('next');});
 }
 function openViewer(i){
   var v=$('viewer');if(!v.showModal||viewerOpen)return;

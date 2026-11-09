@@ -259,6 +259,10 @@ dialog.show::backdrop{opacity:1}
 .v-bar{height:4px;border-radius:2px;background:var(--sunk);overflow:hidden}
 .v-bar i{display:block;height:100%;width:0;background:var(--gold);border-radius:2px;transition:width .4s var(--ease)}
 .v-note{font-size:14.5px;color:var(--warn);min-height:1.4em}
+.v-edit{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding-top:12px;border-top:1px solid var(--line)}
+.v-edit-t{font-size:14px;color:var(--muted);margin-right:4px}
+.v-slide.edited .slide{animation:pop .45s var(--spring)}
+.pc-h .pc-reset{margin-left:auto;font-size:14.5px}
 
 /* ============ avviso rapido ============ */
 .toast{position:fixed;left:50%;bottom:max(96px,env(safe-area-inset-bottom));z-index:30;max-width:min(92vw,520px);padding:12px 18px;border-radius:14px;background:var(--navy);color:var(--on-navy);font-size:15.5px;font-weight:500;box-shadow:var(--shadow-l);opacity:0;transform:translate(-50%,20px) scale(.96);pointer-events:none;transition:opacity .3s var(--ease),transform .45s var(--spring)}

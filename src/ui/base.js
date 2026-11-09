@@ -29,7 +29,7 @@ var ICON={
 var EMPTYTXT={bg:'Senza sfondo, le slide restano scure.',sep:'Senza immagine, i passi si susseguono senza stacco.'};
 var MISSTXT={bg:'Manca: le slide saranno senza sfondo.',sep:'Manca: tra un passo e l\'altro non ci sarà nessuna immagine.'};
 var DEFAULTS={corto:120,max:200,lungo:240};
-var state={res:null,img:{bg:null,sep:null},flat:[],cur:0,done:null,busy:false,counts:{err:0,warn:0,slides:0,passages:0}};
+var state={res:null,img:{bg:null,sep:null},flat:[],cur:0,done:null,busy:false,verified:false,ov:{},counts:{err:0,warn:0,slides:0,passages:0}};
 
 // ---------- memoria del browser (può non essere disponibile: la pagina funziona lo stesso) ----------
 function store(k,v){
@@ -59,3 +59,7 @@ function toast(msg){
 }
 function hash(s){var x=5381,i;for(i=0;i<s.length;i++)x=((x<<5)+x+s.charCodeAt(i))|0;return (x>>>0).toString(36);}
 function isMac(){return /Mac|iPhone|iPad/.test(navigator.platform||navigator.userAgent||'');}
+
+// Le correzioni a mano alla divisione delle slide valgono per un passo con quel testo preciso:
+// se il testo cambia (o arriva un messaggio diverso) tornano a zero.
+function ovKey(p){return p.label+'|'+hash(JSON.stringify(p.verses));}

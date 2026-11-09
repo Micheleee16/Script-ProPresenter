@@ -16,7 +16,7 @@ function firstProblem(){
 function bindMessage(){
   var tm=null,wrap=$('msgwrap'),dep=0;
   $('msg').addEventListener('input',function(){clearTimeout(tm);tm=setTimeout(analyze,150);});
-  $('clear').addEventListener('click',function(){$('msg').value='';analyze();$('msg').focus();});
+  $('clear').addEventListener('click',function(){$('msg').value='';state.ov={};analyze();$('msg').focus();});
   $('paste').addEventListener('click',function(){
     function fail(){$('msg').focus();toast('Non posso leggere gli appunti da qui: clicca nel riquadro e premi '+(isMac()?'⌘V':'Ctrl+V')+'.');}
     if(navigator.clipboard&&navigator.clipboard.readText){
@@ -48,6 +48,12 @@ function bindRules(){
 
 function bindOutput(){
   $('plist').addEventListener('click',function(e){
+    var rs=e.target.closest?e.target.closest('.pc-reset'):null;
+    if(rs){
+      var pid=parseInt(rs.closest('li').getAttribute('data-pid'),10),p=state.res&&state.res.passages.filter(function(x){return x.pid===pid;})[0];
+      if(p){delete state.ov[ovKey(p)];state.done=null;render();}
+      return;
+    }
     var b=e.target.closest?e.target.closest('button.slide'):null;
     if(b)openViewer(parseInt(b.getAttribute('data-i'),10));
   });
@@ -56,6 +62,7 @@ function bindOutput(){
   $('nome').addEventListener('input',function(){state.done=null;renderDock();});
   $('dlbtn').addEventListener('click',function(){download(false);});
   $('dlpro').addEventListener('click',function(){download(true);});
+  bindEdit();
   $('theme').addEventListener('click',function(){
     var cur=$('theme').getAttribute('data-m')||'auto',nx=TEMI[(TEMI.indexOf(cur)+1)%TEMI.length];
     applyTheme(nx);store('versi.tema',nx==='auto'?null:nx);

@@ -20,7 +20,7 @@ function cardHtml(c){
     :'<div class="sep none"><span class="t"></span>Qui andrebbe l\'immagine tra i passi, ma manca</div>';
   if(c.err)return sep+'<article class="pc err"><header class="pc-h"><h3>'+h(c.ref)+'</h3><span class="meta">Non sarà nella presentazione</span></header><ul class="notes">'+noteHtml({k:'e',msg:c.msg})+'</ul></article>';
   return sep+'<article class="pc'+(c.notes.length?' has-warn':'')+'">'+
-    '<header class="pc-h"><h3>'+h(c.label)+'</h3><span class="meta">'+pl(c.verses,'versetto','versetti')+' · '+pl(c.slides,'slide','slide')+'</span></header>'+
+    '<header class="pc-h"><h3>'+h(c.label)+'</h3><span class="meta">'+pl(c.verses,'versetto','versetti')+' · '+pl(c.slides,'slide','slide')+(c.edited?' · divisione modificata a mano':'')+'</span>'+(c.edited?'<button type="button" class="link pc-reset">Ripristina la divisione automatica</button>':'')+'</header>'+
     (c.notes.length?'<ul class="notes">'+c.notes.map(noteHtml).join('')+'</ul>':'')+
     '<div class="slides">'+c.slidesHtml+'</div></article>';
 }

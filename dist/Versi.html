@@ -268,6 +268,10 @@ dialog.show::backdrop{opacity:1}
 .v-bar{height:4px;border-radius:2px;background:var(--sunk);overflow:hidden}
 .v-bar i{display:block;height:100%;width:0;background:var(--gold);border-radius:2px;transition:width .4s var(--ease)}
 .v-note{font-size:14.5px;color:var(--warn);min-height:1.4em}
+.v-edit{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding-top:12px;border-top:1px solid var(--line)}
+.v-edit-t{font-size:14px;color:var(--muted);margin-right:4px}
+.v-slide.edited .slide{animation:pop .45s var(--spring)}
+.pc-h .pc-reset{margin-left:auto;font-size:14.5px}
 
 /* ============ avviso rapido ============ */
 .toast{position:fixed;left:50%;bottom:max(96px,env(safe-area-inset-bottom));z-index:30;max-width:min(92vw,520px);padding:12px 18px;border-radius:14px;background:var(--navy);color:var(--on-navy);font-size:15.5px;font-weight:500;box-shadow:var(--shadow-l);opacity:0;transform:translate(-50%,20px) scale(.96);pointer-events:none;transition:opacity .3s var(--ease),transform .45s var(--spring)}
@@ -382,7 +386,7 @@ dialog.show::backdrop{opacity:1}
           <div class="sum-tx"><b id="sum-t"></b><span id="sum-p"></span></div>
           <button class="btn small" id="sum-go" type="button" hidden>Vai al primo</button>
         </div>
-        <p class="sub tap" id="rev-sub">Tocca una slide per ingrandirla.</p>
+        <p class="sub tap" id="rev-sub">Tocca una slide per ingrandirla: lì puoi anche unire o separare i versetti.</p>
         <ol class="plist" id="plist"></ol>
         <details class="ignored" id="ign" hidden>
           <summary id="ign-s"></summary>
@@ -435,6 +439,12 @@ dialog.show::backdrop{opacity:1}
   <div class="v-f">
     <div class="v-bar" aria-hidden="true"><i id="vbar"></i></div>
     <p id="vnote" class="v-note"></p>
+    <div class="v-edit" id="vedit">
+      <span class="v-edit-t">Divisione dei versetti</span>
+      <button class="btn small" id="v-pj" type="button">Unisci con la precedente</button>
+      <button class="btn small" id="v-sp" type="button">Separa i versetti</button>
+      <button class="btn small" id="v-nj" type="button">Unisci con la successiva</button>
+    </div>
   </div>
 </dialog>
 
@@ -475,6 +485,16 @@ function ser(fs){
   return concat(out);
 }
 function path(b){for(var i=1;i<arguments.length;i++){var f=arguments[i],fs=parse(b),hit=null;for(var j=0;j<fs.length;j++)if(fs[j].f===f){hit=fs[j];break;}if(!hit)throw new Error('campo '+f);b=hit.v;}return b;}
+// Come path(), ma con l'n-esimo campo ripetuto: pick(b,[[campo,n],[campo,n],...])
+function pick(b,p){
+  for(var i=0;i<p.length;i++){
+    var fs=parse(b),c=-1,hit=null;
+    for(var j=0;j<fs.length;j++)if(fs[j].f===p[i][0]){c++;if(c===p[i][1]){hit=fs[j];break;}}
+    if(!hit)throw new Error('percorso non trovato');
+    b=hit.v;
+  }
+  return b;
+}
 function edit(b,p,fn){
   var fs=parse(b),f=p[0][0],n=p[0][1],c=-1;
   for(var i=0;i<fs.length;i++){
@@ -503,6 +523,20 @@ function esc(s){
   return o;
 }
 
+
+// Il contrario di esc(): dal testo RTF di una slide al testo semplice.
+var CPR={};Object.keys(CP).forEach(function(u){CPR[CP[u]]=+u;});
+function rtfPlain(s){
+  var i=s.indexOf('\\f0\\fs');if(i>=0)s=s.slice(i);   // salta l'intestazione (font e colori)
+  var o='',m,re=/\\uc0\\u(-?\d+) ?|\\'([0-9a-fA-F]{2})|\\([\\{}])|\\[a-zA-Z]+-?\d* ?|[{}]|([^\\{}]+)/g;
+  while((m=re.exec(s))){
+    if(m[1]!==undefined){var n=+m[1];o+=String.fromCharCode(n<0?n+65536:n);}
+    else if(m[2]!==undefined){var c=parseInt(m[2],16);o+=String.fromCharCode(CPR[c]||c);}
+    else if(m[3]!==undefined)o+=m[3];
+    else if(m[4]!==undefined)o+=m[4];
+  }
+  return o;
+}
 // ====================== libri della Bibbia ======================
 var BOOKS=[["Genesi","gen ge gn"],["Esodo","eso es ex"],["Levitico","lev le lv"],["Numeri","num nu nm"],["Deuteronomio","deu de dt"],["Giosuè","gios giosue gs"],["Giudici","giud gdc"],["Rut","rut ru"],["1 Samuele","1sam 1sa 1sm"],["2 Samuele","2sam 2sa 2sm"],["1 Re","1re 1r"],["2 Re","2re 2r"],["1 Cronache","1cr 1cron 1cronache"],["2 Cronache","2cr 2cron 2cronache"],["Esdra","esd esdra"],["Neemia","nee neemia ne"],["Ester","est ester"],["Giobbe","gb giob giobbe"],["Salmi","sal salmo salmi sl"],["Proverbi","pro prov proverbi pr"],["Ecclesiaste","ecc eccl ecclesiaste"],["Cantico dei Cantici","cant cantico ct"],["Isaia","is isa isaia"],["Geremia","ger geremia"],["Lamentazioni","lam lamentazioni"],["Ezechiele","ez ezech ezechiele"],["Daniele","dan daniele dn"],["Osea","os osea"],["Gioele","gl gioele"],["Amos","am amos"],["Abdia","abd abdia"],["Giona","gn giona"],["Michea","mic michea"],["Naum","na naum"],["Abacuc","abac abacuc"],["Sofonia","sof sofonia"],["Aggeo","agg aggeo"],["Zaccaria","zac zaccaria"],["Malachia","mal malachia"],["Matteo","mt mat matteo"],["Marco","mr mc mar marco"],["Luca","lu lc luc luca"],["Giovanni","gv gio giov giovanni"],["Atti","at att atti"],["Romani","ro rom romani rm"],["1 Corinzi","1co 1cor 1corinzi"],["2 Corinzi","2co 2cor 2corinzi"],["Galati","ga gal galati"],["Efesini","ef efe efes efesini"],["Filippesi","fil filip filippesi fp"],["Colossesi","col colos colossesi"],["1 Tessalonicesi","1te 1tes 1tess 1tessalonicesi"],["2 Tessalonicesi","2te 2tes 2tess 2tessalonicesi"],["1 Timoteo","1ti 1tim 1timoteo"],["2 Timoteo","2ti 2tim 2timoteo"],["Tito","tit tito"],["Filemone","fm filem filemone"],["Ebrei","eb ebr ebrei"],["Giacomo","gc giac giacomo"],["1 Pietro","1pt 1pi 1pie 1pietro"],["2 Pietro","2pt 2pi 2pie 2pietro"],["1 Giovanni","1gv 1gio 1giov 1giovanni"],["2 Giovanni","2gv 2gio 2giov 2giovanni"],["3 Giovanni","3gv 3gio 3giov 3giovanni"],["Giuda","gd giuda"],["Apocalisse","ap apoc apocalisse"]];
 var ALIAS={};
@@ -551,8 +585,25 @@ function findStarts(body,s,e,warn){
   return starts;
 }
 
+// Parole del testo ricevuto che non sono finite nei versetti, nell'ordine in cui compaiono.
+// I versetti sono pezzi del testo ricevuto, quindi si cercano come sequenza: ogni parola del testo
+// che non è la prossima parola attesa di un versetto è rimasta fuori.
+function leftover(body,verses){
+  var vw=[];
+  verses.forEach(function(v){(v[1].normalize('NFC').toLowerCase().match(/[\p{L}\p{M}]+/gu)||[]).forEach(function(w){vw.push(w);});});
+  var re=/[\p{L}\p{M}]+/gu,m,j=0,total=0,left=0,runs=[],start=-1,end=-1,prevLeft=false;
+  while((m=re.exec(body))){
+    total++;
+    var w=m[0].normalize('NFC').toLowerCase();
+    if(j<vw.length&&w===vw[j]){j++;if(prevLeft){runs.push(norm(body.slice(start,end)));prevLeft=false;}}
+    else{left++;if(!prevLeft){start=m.index;prevLeft=true;}end=m.index+m[0].length;}
+  }
+  if(prevLeft)runs.push(norm(body.slice(start,end)));
+  return {total:total,left:left,runs:runs};
+}
+
 function readMessage(raw){
-  var warns=[],errs=[],ignored=[],out=[],pid=0,m;
+  var warns=[],errs=[],ignored=[],out=[],pid=0,m,cw=0,cl=0;
   raw=raw.replace(/\r/g,'');
   var msgs=[],last=0;
   WA.lastIndex=0;
@@ -580,9 +631,7 @@ function readMessage(raw){
       for(var j=0;j<starts.length;j++){
         var num=starts[j][0],st=starts[j][1],nxt=j+1<starts.length?starts[j+1][1]:body.length,txt=body.slice(st,nxt);
         if(j===starts.length-1){
-          var parts=txt.split(/\n[ \t]*\n/);
-          if(parts.length>1&&parts.slice(1).join(' ').trim())W('Ho lasciato fuori il testo dopo la riga vuota: "'+norm(parts.slice(1).join(' ')).slice(0,80)+'".');
-          txt=parts[0];
+          txt=txt.split(/\n[ \t]*\n/)[0];   // quello che segue una riga vuota non è del versetto: lo segnala il controllo sul testo perso
         }
         if(j>0)txt=txt.replace(new RegExp('^'+num+'\\s+'),'');
         verses.push([num,cleanText(txt)]);
@@ -594,11 +643,16 @@ function readMessage(raw){
       if(!e&&verses.length>1){nome=lab;W('Il riferimento non dice fino a che versetto arriva: ho riconosciuto i versetti dal '+s+' al '+lastn+'. Controlla che ci siano tutti.');}
       if(verses.some(function(v){return !v[1];})){E('Un versetto è vuoto. Questo passo non sarà nella presentazione.');return;}
       verses.forEach(function(v){if(/\d/.test(v[1]))W('Il versetto '+v[0]+' contiene una cifra: controlla che non sia un numero di versetto.');});
+      var lo=leftover(body,verses);cw+=lo.total;cl+=lo.left;
+      if(lo.left){
+        var shown=lo.runs.slice(0,3).map(function(x){return '"'+(x.length>70?x.slice(0,70)+'…':x)+'"';}).join(' · ')+(lo.runs.length>3?' · …':'');
+        W('Nel messaggio c\'è del testo che non è finito nelle slide ('+lo.left+(lo.left===1?' parola':' parole')+'): '+shown+'. Se fa parte di un versetto, togli la riga vuota o aggiungi il numero; se non serve, ignora questo avviso.');
+      }
       pw.forEach(function(msg){warns.push({pid:id,ref:nome,msg:msg});});
       out.push({pid:id,book:hd.b,chap:chap,verses:verses,label:lab});
     });
   });
-  return {passages:out,warns:warns,errs:errs,ignored:ignored};
+  return {passages:out,warns:warns,errs:errs,ignored:ignored,check:{words:cw,left:cl}};
 }
 
 // ====================== regola per dividere in slide ======================
@@ -618,6 +672,25 @@ function group(verses,corto,max){
   return out;
 }
 
+
+// Quali versetti la divisione automatica mette insieme: {numero del versetto a sinistra: true}
+function autoJoins(verses,corto,max){
+  var j={};
+  group(verses,corto,max).forEach(function(sl){for(var k=0;k<sl.length-1;k++)j[sl[k][0]]=true;});
+  return j;
+}
+// Divisione automatica con le correzioni fatte a mano.
+// ov = {numero del versetto a sinistra: true (uniti) oppure false (separati)}
+function groupWith(verses,corto,max,ov){
+  if(!ov)return group(verses,corto,max);
+  var auto=autoJoins(verses,corto,max),out=[],cur=[verses[0]];
+  for(var i=1;i<verses.length;i++){
+    var left=verses[i-1][0],joined=ov[left]!==undefined?ov[left]:auto[left]===true;
+    if(joined)cur.push(verses[i]);else{out.push(cur);cur=[verses[i]];}
+  }
+  out.push(cur);
+  return out;
+}
 // ====================== costruzione della presentazione ======================
 function verseRtf(hdr,vs){
   vs=finalVerses(vs);
@@ -674,7 +747,7 @@ function buildPresentation(passages,nome,corto,max,imgs){
   var nw=[];
   passages.forEach(function(p,pi){
     if(pi>0&&imgs.sep)nw.push(buildCue(tplSep,'Separatore',null,null,null,imgs.sep));
-    group(p.verses,corto,max).forEach(function(sl){
+    groupWith(p.verses,corto,max,p.ov).forEach(function(sl){
       var a=sl[0][0],z=sl[sl.length-1][0];
       nw.push(buildCue(tplVerse,p.book+' '+p.chap+':'+a+(z!==a?'-'+z:''),sl,p.label,hdr,imgs.bg||null));
     });
@@ -694,6 +767,37 @@ function buildPresentation(passages,nome,corto,max,imgs){
   return ser(out);
 }
 
+
+// ====================== rilettura finale della presentazione ======================
+// Rilegge il file appena costruito e controlla, slide per slide, che contenga proprio
+// i versetti previsti (numeri e parole, nello stesso ordine) e il riferimento giusto.
+// Restituisce l'elenco dei problemi: vuoto = tutto corrisponde.
+function tokens(s){return s.normalize('NFC').toLowerCase().match(/[\p{L}\p{N}]+/gu)||[];}
+function sameTokens(a,b){if(a.length!==b.length)return false;for(var i=0;i<a.length;i++)if(a[i]!==b[i])return false;return true;}
+function verifyPresentation(bytes,passages,corto,max,imgs){
+  var problems=[],top=parse(bytes),grp=null,cues={},expected=[];
+  top.forEach(function(x){if(x.f===12&&!grp)grp=x;if(x.f===13)cues[td.decode(path(x.v,1,1))]=x.v;});
+  var order=parse(grp.v).filter(function(x){return x.f===2;}).map(function(x){return td.decode(parse(x.v)[0].v);});
+  passages.forEach(function(p,pi){
+    if(pi>0&&imgs&&imgs.sep)expected.push({sep:true});
+    groupWith(p.verses,corto,max,p.ov).forEach(function(sl){
+      var a=sl[0][0],z=sl[sl.length-1][0];
+      expected.push({name:p.label+':'+a+(z!==a?'-'+z:''),text:tokens(finalVerses(sl).map(function(v){return v[0]+' '+v[1];}).join(' ')),ref:tokens(p.label)});
+    });
+  });
+  if(order.length!==expected.length)return ['La presentazione ha '+order.length+' slide, ne erano previste '+expected.length+'.'];
+  var seen={};
+  expected.forEach(function(e,i){
+    var c=cues[order[i]];
+    if(!c){problems.push('Manca la slide '+(i+1)+'.');return;}
+    if(seen[order[i]])problems.push('La slide '+(i+1)+' è un duplicato.');seen[order[i]]=1;
+    if(e.sep)return;
+    var got=tokens(rtfPlain(latin1Str(pick(c,PEL(0).concat([[5,0]]))))),ref=tokens(rtfPlain(latin1Str(pick(c,PEL(1).concat([[5,0]])))));
+    if(!sameTokens(got,e.text))problems.push('Il testo della slide '+(i+1)+' ('+e.name+') non corrisponde ai versetti previsti.');
+    if(!sameTokens(ref,e.ref))problems.push('Il riferimento della slide '+(i+1)+' ('+e.name+') non corrisponde.');
+  });
+  return problems;
+}
 // ====================== zip senza compressione (.probundle) ======================
 var CRCT=(function(){var t=[],c,n,k;for(n=0;n<256;n++){c=n;for(k=0;k<8;k++)c=c&1?(0xEDB88320^(c>>>1)):(c>>>1);t[n]=c>>>0;}return t;})();
 function crc32(b){var c=0xFFFFFFFF;for(var i=0;i<b.length;i++)c=CRCT[(c^b[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
@@ -748,7 +852,7 @@ var ICON={
 var EMPTYTXT={bg:'Senza sfondo, le slide restano scure.',sep:'Senza immagine, i passi si susseguono senza stacco.'};
 var MISSTXT={bg:'Manca: le slide saranno senza sfondo.',sep:'Manca: tra un passo e l\'altro non ci sarà nessuna immagine.'};
 var DEFAULTS={corto:120,max:200,lungo:240};
-var state={res:null,img:{bg:null,sep:null},flat:[],cur:0,done:null,busy:false,counts:{err:0,warn:0,slides:0,passages:0}};
+var state={res:null,img:{bg:null,sep:null},flat:[],cur:0,done:null,busy:false,verified:false,ov:{},counts:{err:0,warn:0,slides:0,passages:0}};
 
 // ---------- memoria del browser (può non essere disponibile: la pagina funziona lo stesso) ----------
 function store(k,v){
@@ -778,6 +882,10 @@ function toast(msg){
 }
 function hash(s){var x=5381,i;for(i=0;i<s.length;i++)x=((x<<5)+x+s.charCodeAt(i))|0;return (x>>>0).toString(36);}
 function isMac(){return /Mac|iPhone|iPad/.test(navigator.platform||navigator.userAgent||'');}
+
+// Le correzioni a mano alla divisione delle slide valgono per un passo con quel testo preciso:
+// se il testo cambia (o arriva un messaggio diverso) tornano a zero.
+function ovKey(p){return p.label+'|'+hash(JSON.stringify(p.verses));}
 function slideLen(sl){return finalVerses(sl).map(function(v){return v[0]+' '+v[1];}).join(' ').length;}
 
 // k = posizione della slide nel suo passo (serve solo per scaglionare l'animazione)
@@ -800,7 +908,7 @@ function cardHtml(c){
     :'<div class="sep none"><span class="t"></span>Qui andrebbe l\'immagine tra i passi, ma manca</div>';
   if(c.err)return sep+'<article class="pc err"><header class="pc-h"><h3>'+h(c.ref)+'</h3><span class="meta">Non sarà nella presentazione</span></header><ul class="notes">'+noteHtml({k:'e',msg:c.msg})+'</ul></article>';
   return sep+'<article class="pc'+(c.notes.length?' has-warn':'')+'">'+
-    '<header class="pc-h"><h3>'+h(c.label)+'</h3><span class="meta">'+pl(c.verses,'versetto','versetti')+' · '+pl(c.slides,'slide','slide')+'</span></header>'+
+    '<header class="pc-h"><h3>'+h(c.label)+'</h3><span class="meta">'+pl(c.verses,'versetto','versetti')+' · '+pl(c.slides,'slide','slide')+(c.edited?' · divisione modificata a mano':'')+'</span>'+(c.edited?'<button type="button" class="link pc-reset">Ripristina la divisione automatica</button>':'')+'</header>'+
     (c.notes.length?'<ul class="notes">'+c.notes.map(noteHtml).join('')+'</ul>':'')+
     '<div class="slides">'+c.slidesHtml+'</div></article>';
 }
@@ -883,17 +991,18 @@ function render(){
       items.push({key:ek+'#'+occ[ek],sig:'E'+hash(o.e.msg),pid:o.pid,html:cardHtml({err:true,ref:o.e.ref,msg:o.e.msg})});
       return;
     }
-    var p=o.p,g=group(p.verses,rl.corto,rl.max),notes=[],slides='';
+    var p=o.p;p.ov=state.ov[ovKey(p)];
+    var g=groupWith(p.verses,rl.corto,rl.max,p.ov),notes=[],slides='';
     (byPid[p.pid]||[]).forEach(function(w){notes.push({k:'w',msg:w.msg});});
     g.forEach(function(sl,k){
       var t=slideLen(sl),first=sl[0][0],last=sl[sl.length-1][0],ref=p.book+' '+p.chap+':'+first+(sl.length>1?'-'+last:'');
       if(t>rl.lungo)notes.push({k:'w',msg:'La slide '+ref+' è lunga ('+t+' caratteri): controlla che il testo entri nello schermo.'});
       slides+=slideMarkup(sl,p.label,rl,'button',k);
-      state.flat.push({sl:sl,label:p.label,pid:p.pid});
+      state.flat.push({sl:sl,label:p.label,pid:p.pid,p:p});
     });
     nslide+=g.length;nWarn+=notes.length;
-    var c={label:p.label,verses:p.verses.length,slides:g.length,notes:notes,slidesHtml:slides,sepBefore:ip>0,sepOn:sepOn};
-    var sig=hash(rl.corto+'|'+rl.max+'|'+rl.lungo+'|'+(ip>0?1:0)+(sepOn?1:0)+'|'+JSON.stringify(p.verses)+'|'+JSON.stringify(notes));
+    var c={label:p.label,verses:p.verses.length,slides:g.length,notes:notes,slidesHtml:slides,sepBefore:ip>0,sepOn:sepOn,edited:!!p.ov};
+    var sig=hash(rl.corto+'|'+rl.max+'|'+rl.lungo+'|'+(ip>0?1:0)+(sepOn?1:0)+'|'+JSON.stringify(p.verses)+'|'+JSON.stringify(notes)+'|'+JSON.stringify(p.ov||{}));
     var pk=p.label;occ[pk]=(occ[pk]||0)+1;
     items.push({key:pk+'#'+occ[pk],sig:sig,pid:p.pid,html:cardHtml(c)});
     ip++;
@@ -913,7 +1022,7 @@ function render(){
   }
   var head=r.passages.length?pl(r.passages.length,'passo','passi')+', '+pl(nslide,'slide','slide'):'Nessun passo può essere incluso';
   var more=nErr?(nErr===1?'Un passo ha un errore e non sarà nella presentazione. Correggilo nel messaggio: la pagina si aggiorna da sola.':nErr+' passi hanno un errore e non saranno nella presentazione. Correggili nel messaggio: la pagina si aggiorna da sola.')
-    :(nWarn?pl(nWarn,'punto da controllare','punti da controllare')+', segnati in giallo qui sotto.':'Tutto a posto.');
+    :(nWarn?pl(nWarn,'punto da controllare','punti da controllare')+', segnati in giallo qui sotto.':'Tutto a posto. Tutto il testo dei versetti è nelle slide.');
   $('sum-t').textContent=head;$('sum-p').textContent=more;
   var go=$('sum-go');go.hidden=!(nErr||nWarn);go.textContent=nErr?'Vai all\'errore':'Vai al primo';
   $('rev-sub').hidden=!r.passages.length;
@@ -945,7 +1054,7 @@ function renderDock(){
   aw.hidden=!c.err;
   if(c.err)$('acktext').textContent=c.err===1?'Ho letto l\'errore: scarica gli altri passi, senza quello escluso.':'Ho letto gli errori: scarica gli altri passi, senza i '+c.err+' esclusi.';
   btn.disabled=(!!c.err&&!$('ack').checked)||state.busy;
-  if(state.done){say('ok',ICON.check,'Scaricato: '+state.done+'. Ora trascinalo in ProPresenter.');return;}
+  if(state.done){say('ok',ICON.check,'Scaricato: '+state.done+'. '+(state.verified?'Ho riletto il file: ogni slide contiene il testo previsto. ':'')+'Ora trascinalo in ProPresenter.');return;}
   if(c.err&&!$('ack').checked){say('','','');return;}   // l'interruttore sopra spiega già cosa fare
   var what=pl(c.passages,'passo','passi')+', '+pl(c.slides,'slide','slide');
   if(c.warn)say('warn',ICON.warn,'Pronto: '+what+'. '+pl(c.warn,'punto','punti')+' da controllare.');
@@ -959,6 +1068,9 @@ function saveBlob(bytes,name){
 }
 function build(onlyPro){
   var r=state.res,rl=rules(),nm=nome(),pro=buildPresentation(r.passages,nm,rl.corto,rl.max,state.img),base=nm.replace(/[\/:\\]/g,'-'),files=[];
+  // rilegge il file appena costruito: se qualcosa non corrisponde al testo previsto, non si scarica
+  var problems=verifyPresentation(pro,r.passages,rl.corto,rl.max,state.img);
+  if(problems.length)throw new Error('il controllo finale ha trovato una differenza. '+problems[0]);
   if(state.img.bg)files.push({name:MEDIA_ZIP+state.img.bg.name,data:state.img.bg.bytes});
   if(state.img.sep)files.push({name:MEDIA_ZIP+state.img.sep.name,data:state.img.sep.bytes});
   if(onlyPro||!files.length)return {name:base+'.pro',bytes:pro};
@@ -973,11 +1085,11 @@ function download(onlyPro){
     try{
       var f=build(onlyPro);
       saveBlob(f.bytes,f.name);
-      state.done=f.name;
+      state.done=f.name;state.verified=true;
       toast('Scaricato: '+f.name);
     }catch(e){
-      state.done=null;
-      var st=$('dlstatus');st._k='';st.className='status bad';st.innerHTML=ICON.err+'<span>Non sono riuscito a creare il file ('+h(e&&e.message||e)+'). Riprova, e se succede ancora avvisa chi mantiene la pagina.</span>';
+      state.done=null;state.verified=false;
+      var st=$('dlstatus');st._k='';st.className='status bad';st.innerHTML=ICON.err+'<span>Non scarico il file perché non è sicuro ('+h(e&&e.message||e)+'). Riprova, e se succede ancora avvisa chi mantiene la pagina.</span>';
       state.busy=false;$('dlbtn').setAttribute('data-state','idle');qs('.dl-t',$('dlbtn')).textContent='Scarica';
       return;
     }
@@ -1088,6 +1200,38 @@ function showSlide(i,dir){
   $('vnote').textContent=t>rl.lungo?'Slide lunga: controlla che il testo entri nello schermo.':'';
   $('vbar').style.width=((i+1)/n*100)+'%';
   $('vprev').disabled=i===0;$('vnext').disabled=i===n-1;
+  // quali correzioni sono possibili su questa slide (solo dentro lo stesso passo)
+  var prev=state.flat[i-1],next=state.flat[i+1];
+  var canPrev=!!prev&&prev.p===d.p,canNext=!!next&&next.p===d.p,canSplit=d.sl.length>1;
+  $('v-pj').hidden=!canPrev;$('v-nj').hidden=!canNext;$('v-sp').hidden=!canSplit;
+  $('vedit').hidden=!(canPrev||canNext||canSplit);
+}
+
+// ---------- unire e separare i versetti dall'ingrandimento ----------
+function setJoin(p,left,joined){
+  var key=ovKey(p),ov=state.ov[key]||(state.ov[key]={}),rl=rules();
+  var auto=autoJoins(p.verses,rl.corto,rl.max)[left]===true;
+  if(joined===auto)delete ov[left];else ov[left]=joined;      // uguale all'automatico = nessuna correzione
+  if(!Object.keys(ov).length)delete state.ov[key];
+}
+function editSlide(kind){
+  var d=state.flat[state.cur];if(!d)return;
+  var p=d.p,first=d.sl[0][0];
+  if(kind==='split')d.sl.slice(0,-1).forEach(function(v){setJoin(p,v[0],false);});
+  else if(kind==='next')setJoin(p,d.sl[d.sl.length-1][0],true);
+  else if(kind==='prev'){var pv=state.flat[state.cur-1];setJoin(p,pv.sl[pv.sl.length-1][0],true);first=pv.sl[0][0];}
+  state.done=null;
+  render();
+  // resta sulla slide che contiene lo stesso versetto di prima
+  var idx=0;
+  state.flat.forEach(function(f,i){if(f.p===p&&f.sl.some(function(v){return v[0]===first;}))idx=i;});
+  showSlide(idx,0);
+  replay($('vslide'),'edited');
+}
+function bindEdit(){
+  $('v-pj').addEventListener('click',function(){editSlide('prev');});
+  $('v-sp').addEventListener('click',function(){editSlide('split');});
+  $('v-nj').addEventListener('click',function(){editSlide('next');});
 }
 function openViewer(i){
   var v=$('viewer');if(!v.showModal||viewerOpen)return;
@@ -1141,7 +1285,7 @@ function firstProblem(){
 function bindMessage(){
   var tm=null,wrap=$('msgwrap'),dep=0;
   $('msg').addEventListener('input',function(){clearTimeout(tm);tm=setTimeout(analyze,150);});
-  $('clear').addEventListener('click',function(){$('msg').value='';analyze();$('msg').focus();});
+  $('clear').addEventListener('click',function(){$('msg').value='';state.ov={};analyze();$('msg').focus();});
   $('paste').addEventListener('click',function(){
     function fail(){$('msg').focus();toast('Non posso leggere gli appunti da qui: clicca nel riquadro e premi '+(isMac()?'⌘V':'Ctrl+V')+'.');}
     if(navigator.clipboard&&navigator.clipboard.readText){
@@ -1173,6 +1317,12 @@ function bindRules(){
 
 function bindOutput(){
   $('plist').addEventListener('click',function(e){
+    var rs=e.target.closest?e.target.closest('.pc-reset'):null;
+    if(rs){
+      var pid=parseInt(rs.closest('li').getAttribute('data-pid'),10),p=state.res&&state.res.passages.filter(function(x){return x.pid===pid;})[0];
+      if(p){delete state.ov[ovKey(p)];state.done=null;render();}
+      return;
+    }
     var b=e.target.closest?e.target.closest('button.slide'):null;
     if(b)openViewer(parseInt(b.getAttribute('data-i'),10));
   });
@@ -1181,6 +1331,7 @@ function bindOutput(){
   $('nome').addEventListener('input',function(){state.done=null;renderDock();});
   $('dlbtn').addEventListener('click',function(){download(false);});
   $('dlpro').addEventListener('click',function(){download(true);});
+  bindEdit();
   $('theme').addEventListener('click',function(){
     var cur=$('theme').getAttribute('data-m')||'auto',nx=TEMI[(TEMI.indexOf(cur)+1)%TEMI.length];
     applyTheme(nx);store('versi.tema',nx==='auto'?null:nx);

@@ -28,6 +28,16 @@ function ser(fs){
   return concat(out);
 }
 function path(b){for(var i=1;i<arguments.length;i++){var f=arguments[i],fs=parse(b),hit=null;for(var j=0;j<fs.length;j++)if(fs[j].f===f){hit=fs[j];break;}if(!hit)throw new Error('campo '+f);b=hit.v;}return b;}
+// Come path(), ma con l'n-esimo campo ripetuto: pick(b,[[campo,n],[campo,n],...])
+function pick(b,p){
+  for(var i=0;i<p.length;i++){
+    var fs=parse(b),c=-1,hit=null;
+    for(var j=0;j<fs.length;j++)if(fs[j].f===p[i][0]){c++;if(c===p[i][1]){hit=fs[j];break;}}
+    if(!hit)throw new Error('percorso non trovato');
+    b=hit.v;
+  }
+  return b;
+}
 function edit(b,p,fn){
   var fs=parse(b),f=p[0][0],n=p[0][1],c=-1;
   for(var i=0;i<fs.length;i++){

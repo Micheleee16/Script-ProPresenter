@@ -6,6 +6,9 @@ function saveBlob(bytes,name){
 }
 function build(onlyPro){
   var r=state.res,rl=rules(),nm=nome(),pro=buildPresentation(r.passages,nm,rl.corto,rl.max,state.img),base=nm.replace(/[\/:\\]/g,'-'),files=[];
+  // rilegge il file appena costruito: se qualcosa non corrisponde al testo previsto, non si scarica
+  var problems=verifyPresentation(pro,r.passages,rl.corto,rl.max,state.img);
+  if(problems.length)throw new Error('il controllo finale ha trovato una differenza. '+problems[0]);
   if(state.img.bg)files.push({name:MEDIA_ZIP+state.img.bg.name,data:state.img.bg.bytes});
   if(state.img.sep)files.push({name:MEDIA_ZIP+state.img.sep.name,data:state.img.sep.bytes});
   if(onlyPro||!files.length)return {name:base+'.pro',bytes:pro};
@@ -20,11 +23,11 @@ function download(onlyPro){
     try{
       var f=build(onlyPro);
       saveBlob(f.bytes,f.name);
-      state.done=f.name;
+      state.done=f.name;state.verified=true;
       toast('Scaricato: '+f.name);
     }catch(e){
-      state.done=null;
-      var st=$('dlstatus');st._k='';st.className='status bad';st.innerHTML=ICON.err+'<span>Non sono riuscito a creare il file ('+h(e&&e.message||e)+'). Riprova, e se succede ancora avvisa chi mantiene la pagina.</span>';
+      state.done=null;state.verified=false;
+      var st=$('dlstatus');st._k='';st.className='status bad';st.innerHTML=ICON.err+'<span>Non scarico il file perché non è sicuro ('+h(e&&e.message||e)+'). Riprova, e se succede ancora avvisa chi mantiene la pagina.</span>';
       state.busy=false;$('dlbtn').setAttribute('data-state','idle');qs('.dl-t',$('dlbtn')).textContent='Scarica';
       return;
     }
