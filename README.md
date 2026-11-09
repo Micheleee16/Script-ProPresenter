@@ -1,0 +1,29 @@
+# Versi
+
+Pagina unica, senza dipendenze e senza server (funziona offline) che trasforma il messaggio
+del pastore in una presentazione ProPresenter 7 con l'aspetto del template "Messaggio Modena".
+
+**Per usarla:** apri `dist/Versi.html` nel browser.
+
+## Struttura
+
+```
+src/index.html        struttura della pagina (con due segnaposto: stile e script)
+src/ui/stile.css      aspetto
+src/ui/*.js           interfaccia: stato, anteprima, controllo, download, immagini, ingrandimento
+src/engine/*.js       engine: formato Protocol Buffers, RTF, libri, lettura del messaggio,
+                      raggruppamento in slide, costruzione della presentazione, zip
+template/             Messaggio_Modena.pro, il template originale (incorporato nella pagina in base64)
+build.mjs             assembla dist/Versi.html
+test/                 test automatici (node --test)
+dist/Versi.html       il file finale, generato: non modificarlo a mano
+```
+
+## Comandi (serve Node 18 o più recente, nessun pacchetto da installare)
+
+```bash
+node build.mjs     # rigenera dist/Versi.html dai sorgenti
+node --test test/*.test.mjs   # esegue i test
+```
+
+Dopo ogni modifica ai sorgenti: `node build.mjs`, poi i test (verificano anche che `dist/` sia aggiornato).

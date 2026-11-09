@@ -1,0 +1,10 @@
+{
+  "name": "versi",
+  "private": true,
+  "type": "module",
+  "description": "Versi: dal messaggio del pastore alla presentazione ProPresenter (pagina unica, offline).",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test test/*.test.mjs"
+  }
+}

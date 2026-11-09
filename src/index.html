@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Versi</title>
+<style>
+@@STILE@@
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="top">
+    <h1>Versi</h1>
+    <p>Trasforma il messaggio del pastore nelle slide dei versetti per ProPresenter.</p>
+  </header>
+  <main class="layout">
+    <div class="col-in">
+      <section class="step" aria-labelledby="h-msg">
+        <div class="sh"><span class="mark" id="m1" aria-hidden="true">1</span><h2 id="h-msg">Incolla il messaggio</h2></div>
+        <p class="help">Va bene anche il testo copiato da WhatsApp: orari e nomi vengono ignorati. Davanti a ogni versetto deve esserci il suo numero.</p>
+        <textarea id="msg" spellcheck="false" aria-describedby="count" placeholder="Incolla qui il messaggio del pastore"></textarea>
+        <div class="under">
+          <span class="count" id="count" aria-live="polite">Nessun testo incollato</span>
+          <div class="btns">
+            <button class="btn" id="paste" type="button">Incolla dagli appunti</button>
+            <button class="btn quiet" id="clear" type="button">Svuota</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="step" aria-labelledby="h-img">
+        <div class="sh"><span class="mark" id="m2" aria-hidden="true">2</span><h2 id="h-img">Aggiungi le immagini <span class="opt">(facoltativo)</span></h2></div>
+        <p class="help">Trascina un file sul riquadro, oppure scegli dal computer. Quello che manca non viene inserito e te lo segnalo.</p>
+        <div class="slot" id="slot-bg">
+          <div class="thumb" id="th-bg">nessuna immagine</div>
+          <div><h3>Sfondo dei versetti</h3><span class="fn" id="fn-bg">Senza sfondo, le slide restano scure.</span>
+            <div class="row"><label class="btn"><span id="lt-bg">Scegli immagine</span><input type="file" id="f-bg" accept="image/*" hidden></label><button class="btn quiet" id="rm-bg" type="button" hidden>Togli</button></div></div>
+        </div>
+        <div class="slot" id="slot-sep">
+          <div class="thumb" id="th-sep">nessuna immagine</div>
+          <div><h3>Immagine tra un passo e l'altro</h3><span class="fn" id="fn-sep">Senza immagine, i passi si susseguono senza stacco.</span>
+            <div class="row"><label class="btn"><span id="lt-sep">Scegli immagine</span><input type="file" id="f-sep" accept="image/*" hidden></label><button class="btn quiet" id="rm-sep" type="button" hidden>Togli</button></div></div>
+        </div>
+      </section>
+
+      <section class="step" aria-labelledby="h-rules">
+        <details class="rules">
+          <summary id="h-rules">Come vengono divise le slide</summary>
+          <div class="grid">
+            <p>Di norma c'è un versetto per slide, e un versetto non viene mai spezzato.</p>
+            <label for="corto">Un versetto è corto se ha meno di (caratteri)</label><input id="corto" type="number" inputmode="numeric" min="20" max="400" value="120">
+            <label for="max">Due versetti stanno insieme solo se non superano (caratteri)</label><input id="max" type="number" inputmode="numeric" min="60" max="600" value="200">
+            <label for="lungo">Avvisami se una slide supera (caratteri)</label><input id="lungo" type="number" inputmode="numeric" min="100" max="800" value="240">
+            <div style="grid-column:1/-1"><button class="textlink" id="reset" type="button">Ripristina i valori iniziali</button></div>
+          </div>
+        </details>
+      </section>
+    </div>
+
+    <div class="col-out">
+      <section aria-labelledby="h-rev">
+        <div class="sh"><span class="mark" id="m3" aria-hidden="true">3</span><h2 id="h-rev">Controlla le slide</h2></div>
+        <div id="out"></div>
+      </section>
+
+      <section class="dock" aria-labelledby="h-dl">
+        <div class="sh"><span class="mark" id="m4" aria-hidden="true">4</span><h2 id="h-dl">Scarica la presentazione</h2></div>
+        <div class="row">
+          <div class="field"><label for="nome">Nome in ProPresenter</label><input id="nome" type="text" autocomplete="off"></div>
+          <div class="act">
+            <button id="dlbtn" class="btn primary" type="button" disabled>Scarica</button>
+            <span class="sub" id="dlsub">Presentazione (.pro)</span>
+          </div>
+        </div>
+        <label class="ack" id="ackwrap" hidden><input type="checkbox" id="ack"><span id="acktext">Ho letto gli errori: scarica solo i passi corretti.</span></label>
+        <p class="status" id="dlstatus" role="status" aria-live="polite">Incolla un messaggio per poter scaricare.</p>
+        <button class="textlink" id="dlpro" type="button" hidden>Scarica solo la presentazione (.pro), senza le immagini</button>
+      </section>
+    </div>
+  </main>
+</div>
+
+<dialog id="viewer" aria-label="Slide ingrandita">
+  <div class="vh"><strong id="vtitle"></strong><button class="btn" id="vclose" type="button">Chiudi</button></div>
+  <div class="vb" id="vslide"></div>
+  <div class="vn"><button class="btn" id="vprev" type="button">Precedente</button><span class="info" id="vinfo"></span><button class="btn" id="vnext" type="button">Successiva</button></div>
+</dialog>
+
+<script>
+@@SCRIPT@@
+</body>
+</html>
