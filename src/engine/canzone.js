@@ -22,15 +22,15 @@ function tplSong(){
   }
   return {top:top,groups:groups,cueOf:cueOf,nameOf:nameOf,groupNamed:groupNamed};
 }
-var SONG_COLOR_GREY=[0.6,0.6,0.6,1];
+var SONG_COLOR_GREY=[0.6,0.6,0.6,1],SONG_COLOR_RED=[0.8,0.16,0.16,1];
 function f32(n){var v=new DataView(new ArrayBuffer(4));v.setFloat32(0,n,true);return new Uint8Array(v.buffer);}
 function colorMsg(c){return ser([{f:1,t:5,v:f32(c[0])},{f:2,t:5,v:f32(c[1])},{f:3,t:5,v:f32(c[2])},{f:4,t:5,v:f32(c[3])}]);}
 // Intestazione di un gruppo, copiata da un gruppo del modello (colore e identificativo compresi)
-function songHeader(T,block){
+function songHeader(T,block,colors){
   var type=block.type,name=block.name,protoName,keepLink=false,color=null;
   if(type==='verse'){protoName=block.name==='Verse 1'?'Verse 1':'Verse 2';keepLink=block.name==='Verse 1';}
   else if(type==='prechorus'||type==='chorus'||type==='bridge'||type==='tag'){protoName=SEC_TYPES[type];keepLink=name===protoName;}
-  else{protoName='Tag';if(type!=='outro')color=SONG_COLOR_GREY;}
+  else{protoName='Tag';color=(colors&&colors[type])||(type==='outro'?null:SONG_COLOR_GREY);}
   var g=T.groupNamed(protoName,keepLink);
   if(g<0)g=T.groupNamed('Verse 1',false);
   var fields=parse(parse(T.groups[g])[0].v),out=[];
@@ -45,6 +45,29 @@ function songHeader(T,block){
 }
 var SONG_IT_PATH=[[10,0],[23,0],[2,0],[1,0],[1,1],[1,0],[13,0]];
 var SONG_NOTE_PATH=[[10,0],[23,0],[2,0],[2,0],[1,0]];
+// Il video di sfondo: di norma quello del modello (Sfondo 1.mov). Con un altro video si cambiano nome e percorsi;
+// durata e dimensioni si aggiornano solo se si conoscono (info = {name, duration, w, h}).
+function songVideoCue(c,info){
+  if(!info||!info.name||info.name==='Sfondo 1.mov')return edit(c,[[2,0]],function(){return te.encode('Sfondo 1.mov');});
+  var name=info.name,url=te.encode('file:///Users/michele/Documents/ProPresenter/Media/Assets/'+encodeURIComponent(name)),rel=te.encode('Media/Assets/'+name),A=[[10,1],[20,0],[5,0]];
+  function set(p,v){c=edit(c,p,function(){return v;});}
+  set([[2,0]],te.encode(name));
+  set([[10,0],[3,0],[2,0]],te.encode(name));
+  set(A.concat([[2,0],[1,0]]),url);
+  set(A.concat([[2,0],[4,0],[2,0]]),rel);
+  set(A.concat([[6,0],[5,0],[1,0],[1,0]]),url);
+  set(A.concat([[6,0],[5,0],[1,0],[4,0],[2,0]]),rel);
+  if(info.duration>0){
+    set([[10,1],[8,0]],f64(info.duration));
+    set(A.concat([[6,0],[3,0],[3,0]]),f64(info.duration));
+    set(A.concat([[6,0],[3,0],[11,0]]),f64(info.duration));
+  }
+  if(info.w>0&&info.h>0){
+    set(A.concat([[6,0],[1,0],[5,0],[1,0]]),f64(info.w));
+    set(A.concat([[6,0],[1,0],[5,0],[2,0]]),f64(info.h));
+  }
+  return c;
+}
 function songCue(proto,sl){
   var b=remap(proto);
   if(!sl)return b;
@@ -69,13 +92,13 @@ function buildSongFile(blocks,nome,opts){
     groupsOut.push(ser(items));
   }
   if(opts.video!==false){
-    var vc=edit(remap(video),[[2,0]],function(){return te.encode('Sfondo 1.mov');});
+    var vc=songVideoCue(remap(video),opts.videoInfo);
     var h0=parse(parse(T.groups[0])[0].v).map(function(x){return x.f===1?{f:1,t:2,v:ser([{f:1,t:2,v:te.encode(uuid4())}])}:x;});
     addGroup(ser(h0),[vc]);
   }
   blocks.forEach(function(bl){
     var cs=bl.blank?[songCue(blank,null)]:bl.slides.map(function(sl){return songCue(lyric,sl);});
-    addGroup(songHeader(T,bl),cs);
+    addGroup(songHeader(T,bl,opts.colors),cs);
   });
   var out=[],ins=false;
   T.top.forEach(function(x){

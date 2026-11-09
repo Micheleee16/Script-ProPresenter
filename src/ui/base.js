@@ -33,7 +33,7 @@ var ICON={
 var EMPTYTXT={bg:'Senza sfondo, le slide restano scure.',sep:'Senza immagine, i passi si susseguono senza stacco.'};
 var MISSTXT={bg:'Manca: le slide saranno senza sfondo.',sep:'Manca: tra un passo e l\'altro non ci sarà nessuna immagine.'};
 var DEFAULTS={corto:120,max:200,lungo:240};
-var state={editing:null,mode:'bibbia',nameTouched:false,song:{fix:{it:[],en:[]},model:null,order:null,touched:false,uid:0,view:null,video:true,extra:{}},res:null,img:{bg:null,sep:null},flat:[],cur:0,done:null,busy:false,verified:false,ov:{},counts:{err:0,warn:0,slides:0,passages:0}};
+var state={editing:null,mode:'bibbia',nameTouched:false,song:{vista:'table',undo:[],videoInfo:null,colors:null,fix:{it:[],en:[]},model:null,order:null,touched:false,uid:0,view:null,video:true,extra:{}},res:null,img:{bg:null,sep:null},flat:[],cur:0,done:null,busy:false,verified:false,ov:{},counts:{err:0,warn:0,slides:0,passages:0}};
 
 // ---------- memoria del browser (può non essere disponibile: la pagina funziona lo stesso) ----------
 function store(k,v){
@@ -67,3 +67,25 @@ function isMac(){return /Mac|iPhone|iPad/.test(navigator.platform||navigator.use
 // Le correzioni a mano alla divisione delle slide valgono per un passo con quel testo preciso:
 // se il testo cambia (o arriva un messaggio diverso) tornano a zero.
 function ovKey(p){return p.label+'|'+hash(JSON.stringify(p.verses));}
+
+// ---------- bozza: il lavoro in corso si salva da solo nel browser ----------
+var DRAFT_KEY='versi.bozza',draftTimer=null;
+function draftQueue(){clearTimeout(draftTimer);draftTimer=setTimeout(draftWrite,500);}
+function draftWrite(){
+  var G=state.song,d={v:1,t:Date.now(),mode:state.mode,msg:$('msg').value,it:$('c-it').value,en:$('c-en').value,
+    srcIt:$('src-it').hidden?'':$('src-it').textContent,srcEn:$('src-en').hidden?'':$('src-en').textContent,
+    order:G.order,touched:G.touched,extra:G.extra,uid:G.uid,fix:G.fix,nome:state.nameTouched?$('nome').value:null,
+    title:G.model&&G.model.title||''};
+  if(!d.msg.trim()&&!d.it.trim()&&!d.en.trim()){store(DRAFT_KEY,null);return;}
+  var t=d.t;d.t=0;var sig=hash(JSON.stringify(d));d.t=t;d.sig=sig;
+  try{var old=JSON.parse(store(DRAFT_KEY)||'null');if(old&&old.sig===sig){return;}}catch(e){}
+  store(DRAFT_KEY,JSON.stringify(d));
+}
+function draftLoad(){
+  try{
+    var d=JSON.parse(store(DRAFT_KEY)||'null');
+    if(!d||d.v!==1||Date.now()-d.t>30*864e5)return null;
+    if(!String(d.msg||'').trim()&&!String(d.it||'').trim()&&!String(d.en||'').trim())return null;
+    return d;
+  }catch(e){return null;}
+}

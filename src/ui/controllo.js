@@ -4,6 +4,7 @@ function analyze(){
   state.res=raw.trim()?readMessage(raw):null;
   $('msgwrap').classList.toggle('has-text',!!raw.trim());
   paintCount();render();
+  draftQueue();
 }
 
 function paintCount(){

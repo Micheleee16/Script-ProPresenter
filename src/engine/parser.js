@@ -1,5 +1,10 @@
 // ====================== lettura del messaggio ======================
-var WA=/\[\d{1,2}:\d{2},\s*\d{1,2}\/\d{1,2}\/\d{2,4}\][^:\n\[]{0,40}:/g;
+// L'inizio di un messaggio WhatsApp, nei tre modi in cui compare:
+//  [11:00, 07/11/2026] Nome:            (copiato da WhatsApp Web o dal computer)
+//  [07/11/2026, 11:00:23] Nome:         (file esportato da iPhone)
+//  07/11/2026, 11:00 - Nome:            (file esportato da Android)
+var WA_T='\\d{1,2}:\\d{2}(?::\\d{2})?(?:\\s?[AaPp]\\.?[Mm]\\.?)?',WA_D='\\d{1,2}[\\/.]\\d{1,2}[\\/.]\\d{2,4}';
+var WA=new RegExp('\\['+WA_T+',\\s*'+WA_D+'\\][^:\\n\\[]{0,40}:|\\['+WA_D+',?\\s*'+WA_T+'\\][^:\\n\\[]{0,40}:|^'+WA_D+',?\\s*'+WA_T+'\\s*[-–]\\s[^:\\n\\[]{1,40}:','gm');
 var HEADSRC='^[ \\t«“"]*((?:[1-3]\\s?)?[A-Za-zÀ-ÿ]{2,}\\.?)\\s*(\\d{1,3})\\s*[:,]\\s*(\\d{1,3})?(?:\\s*[-–]\\s*(\\d{1,3}))?';
 function norm(t){return t.split(/\s+/).filter(Boolean).join(' ');}
 function cleanText(t){return norm(t).replace(/^[«» ]+|[«» ]+$/g,'');}
@@ -52,7 +57,7 @@ function leftover(body,verses){
 
 function readMessage(raw){
   var warns=[],errs=[],ignored=[],out=[],pid=0,m,cw=0,cl=0;
-  raw=raw.replace(/\r/g,'');
+  raw=raw.replace(/\r/g,'').replace(/[\u200e\u200f\u202a-\u202e]/g,'');   // i file esportati da iPhone hanno segni invisibili
   var msgs=[],last=0;
   WA.lastIndex=0;
   while((m=WA.exec(raw))){msgs.push(raw.slice(last,m.index));last=m.index+m[0].length;}

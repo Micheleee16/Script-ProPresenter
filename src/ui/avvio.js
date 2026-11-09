@@ -40,6 +40,39 @@ function firstProblem(){
   if(el)goCard(el.parentNode.getAttribute('data-pid'));
 }
 
+function loadBibleFile(f){
+  f.arrayBuffer().then(function(ab){return fileToText(f.name,new Uint8Array(ab));}).then(function(r){
+    $('msg').value=r.text;analyze();
+    toast('Messaggio caricato da '+f.name+'.'+(r.unknown&&r.unknown.length?' Attenzione: nel PDF ci sono lettere che non so leggere.':''));
+  }).catch(function(e){toast('"'+f.name+'": '+(e&&e.message||'non riesco a leggerlo')+' Puoi incollare il testo.');});
+}
+
+// ---------- bozza ----------
+function restoreDraft(d){
+  var G=state.song;
+  $('msg').value=d.msg||'';$('c-it').value=d.it||'';$('c-en').value=d.en||'';
+  G.order=d.order||null;G.touched=!!d.touched;G.extra=d.extra||{};G.uid=d.uid||0;G.fix=d.fix||{it:[],en:[]};
+  [['it',d.srcIt],['en',d.srcEn]].forEach(function(a){if(a[1]){$('src-'+a[0]).hidden=false;$('src-'+a[0]).textContent=a[1];}});
+  if(d.nome){$('nome').value=d.nome;state.nameTouched=true;}
+  var when=new Date(d.t).toLocaleString('it-IT',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
+  var what=d.mode==='canzoni'?'la canzone'+(d.title?' «'+d.title+'»':''):'il messaggio dei versetti';
+  $('resume-t').textContent='Ho ripreso il lavoro di '+when+': '+what+'.';
+  $('resume').hidden=false;
+}
+function bindResume(){
+  $('resume-x').innerHTML=ICON.x;
+  $('resume-x').addEventListener('click',function(){$('resume').hidden=true;});
+  $('resume-no').addEventListener('click',function(){
+    var G=state.song;
+    store(DRAFT_KEY,null);
+    $('msg').value='';$('c-it').value='';$('c-en').value='';
+    $('src-it').hidden=true;$('src-en').hidden=true;
+    G.order=null;G.touched=false;G.extra={};G.fix={it:[],en:[]};G.undo=[];state.editing=null;state.nameTouched=false;
+    $('nome').value=state.mode==='canzoni'?'Canzone - ITA + ENG':defaultName();
+    $('resume').hidden=true;
+    if(state.mode==='canzoni')analyzeSong();else analyze();
+  });
+}
 function bindMessage(){
   var tm=null,wrap=$('msgwrap'),dep=0;
   $('msg').addEventListener('input',function(){clearTimeout(tm);tm=setTimeout(analyze,150);});
@@ -53,7 +86,8 @@ function bindMessage(){
       }).catch(fail);
     }else fail();
   });
-  // un file di testo trascinato sul riquadro viene letto
+  $('bf-msg').addEventListener('change',function(e){var f=e.target.files[0];e.target.value='';if(f)loadBibleFile(f);});
+  // un file trascinato sul riquadro viene letto
   function hasFiles(e){return e.dataTransfer&&Array.prototype.indexOf.call(e.dataTransfer.types||[],'Files')>=0;}
   wrap.addEventListener('dragenter',function(e){if(!hasFiles(e))return;e.preventDefault();dep++;wrap.classList.add('drag');});
   wrap.addEventListener('dragover',function(e){if(hasFiles(e))e.preventDefault();});
@@ -63,8 +97,7 @@ function bindMessage(){
     var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];
     if(!f)return;
     e.preventDefault();
-    if(!/^text\//.test(f.type)&&!/\.txt$/i.test(f.name)){toast('Trascina un file di testo (.txt), oppure incolla il messaggio.');return;}
-    f.text().then(function(t){$('msg').value=t;analyze();});
+    loadBibleFile(f);
   });
 }
 
@@ -106,8 +139,12 @@ function bindOutput(){
   window.addEventListener('drop',function(e){e.preventDefault();});
   ['bg','sep'].forEach(bindSlot);
   bindMessage();bindRules();bindOutput();bindViewer();bindSong();bindModes();
+  bindResume();
+  var draft=draftLoad();
+  if(draft)restoreDraft(draft);
   analyze();restoreImages();
-  if(store('versi.modo')==='canzoni')setMode('canzoni');
-  else if(window.matchMedia&&window.matchMedia('(hover:hover)').matches)$('msg').focus();
+  var startMode=draft?draft.mode:store('versi.modo');
+  if(startMode==='canzoni')setMode('canzoni');
+  else if(!draft&&window.matchMedia&&window.matchMedia('(hover:hover)').matches)$('msg').focus();
   window.__versi={readMessage:readMessage,group:group,buildPresentation:buildPresentation,analyze:analyze,makeZip:makeZip};
 })();

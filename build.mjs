@@ -11,7 +11,7 @@ const rd = (p) => readFileSync(join(ROOT, p), 'utf8');
 // L'ordine conta: ogni file usa le funzioni di quelli che lo precedono.
 export const ENGINE = [
   'protobuf', 'bytes', 'rtf', 'bibbia', 'parser',
-  'raggruppamento', 'presentazione', 'verifica', 'canzoni', 'canzone', 'pdf', 'zip',
+  'raggruppamento', 'presentazione', 'verifica', 'canzoni', 'canzone', 'pdf', 'office', 'zip',
 ].map((n) => `src/engine/${n}.js`);
 
 export const UI = [
@@ -35,7 +35,9 @@ export function engineSource() {
 export function buildHtml() {
   const script = "<script>\n(function(){\n'use strict';\n" + engineSource() + UI.map(rd).join('') + '})();\n</script>';
   // si usano funzioni, non stringhe, per evitare che "$&" nel codice sia interpretato da replace()
+  const version = JSON.parse(rd('package.json')).version;
   return rd('src/index.html')
+    .replace('@@VERSIONE@@', () => version)
     .replace('@@STILE@@\n', () => '')
     .replace('<style>\n', () => '<style>\n' + rd('src/ui/stile.css'))
     .replace('<script>\n@@SCRIPT@@\n', () => script + '\n');

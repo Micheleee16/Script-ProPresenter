@@ -264,6 +264,35 @@ button.slide:hover::after{box-shadow:inset 0 0 0 2px rgba(255,255,255,.5)}
 .chk{display:flex;gap:12px;align-items:flex-start;grid-column:1/-1;cursor:pointer;font-size:15.5px}
 .chk input{width:20px;height:20px;margin-top:2px;flex:none;accent-color:var(--navy)}
 
+/* ============ anteprima delle canzoni, bozza, impostazioni delle canzoni ============ */
+.view-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-top:16px}
+.seg{display:inline-flex;gap:3px;padding:3px;background:var(--sunk);border:1px solid var(--line);border-radius:12px}
+.seg button{border:0;background:none;padding:7px 16px;border-radius:9px;font-size:15px;font-weight:600;color:var(--muted);transition:background .2s,color .2s}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.sprev{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.sp{margin:0}
+.sp figcaption{margin-top:6px;font-size:13.5px;color:var(--muted);overflow-wrap:anywhere;line-height:1.35}
+.sp figcaption::before{content:"Note: ";font-weight:650}
+.sp.blank figcaption::before{content:""}
+.sl{container-type:inline-size;position:relative;aspect-ratio:16/9;border-radius:9px;background:radial-gradient(120% 120% at 50% 0%,var(--slide-a),var(--slide-b));color:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25),0 8px 18px -12px rgba(0,0,0,.7);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:700}
+.sl-it{position:absolute;left:0;right:0;top:0;height:10.8cqw;display:flex;align-items:center;justify-content:center;text-align:center;font-size:4.17cqw;line-height:1.2;padding:0 2cqw;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.sl-lb{position:absolute;left:0;right:0;top:5.4cqw;height:8.1cqw;display:flex;align-items:center;justify-content:center;font-size:2.6cqw;opacity:.9}
+.sp.long .sl{box-shadow:0 0 0 3px var(--warn-line)}
+.sl-tag{position:absolute;right:2cqw;bottom:2cqw;background:var(--warn-line);color:#1b1300;border-radius:5px;padding:0 .6em;font:650 clamp(9px,3cqw,13px)/1.6 var(--sans)}
+.same.hint-p{margin:0 0 10px}
+.resume{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;margin:-12px 0 22px;padding:10px 14px;border-radius:12px;background:var(--ok-bg);border:1px solid var(--ok-line);font-size:15px;animation:rise .5s var(--ease)}
+.resume-b{display:inline-flex;align-items:center;gap:4px}
+.set-row{grid-column:1/-1;display:grid;gap:6px}
+.set-row label,.set-t{font-size:15px;color:var(--ink)}
+.set-in{display:flex;flex-wrap:wrap;gap:8px}
+.set-in input[type=text]{flex:1;min-width:180px;min-height:40px;padding:6px 10px;border:1.5px solid var(--line-strong);border-radius:10px;background:var(--sunk);font-size:15.5px}
+.set-in input[type=text]:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 25%,transparent)}
+.set-row .sub{margin:0;font-size:14px}
+.cols{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;font-size:15px}
+.cols label{display:inline-flex;align-items:center;gap:8px}
+.cols input[type=color]{width:42px;height:34px;padding:2px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--sunk);cursor:pointer}
+.foot{margin-top:26px;text-align:center;font-size:13px;color:var(--muted)}
+
 /* ============ impostazioni ============ */
 .more{margin:-8px 0 30px;color:var(--muted)}
 .more summary{cursor:pointer;padding:8px 0;font-size:15px;list-style:none;display:inline-flex;align-items:center;gap:8px;border-radius:8px}
@@ -410,16 +439,22 @@ dialog.show::backdrop{opacity:1}
     <button type="button" role="tab" id="tab-canzoni" aria-selected="false" aria-controls="c-in">Canzoni</button>
   </div>
 
+  <div class="resume" id="resume" role="status" hidden>
+    <span id="resume-t"></span>
+    <span class="resume-b"><button class="btn small" id="resume-no" type="button">Ricomincia da zero</button><button class="ib" id="resume-x" type="button" aria-label="Chiudi l'avviso"></button></span>
+  </div>
+
   <main>
     <section class="sec m-bibbia" id="s-msg" aria-labelledby="h-msg">
       <h2 id="h-msg"><span class="n">1</span>Incolla il messaggio</h2>
-      <p class="sub">Va bene anche copiato da WhatsApp: orari e nomi vengono ignorati. Ogni versetto deve avere il suo numero.</p>
+      <p class="sub">Va bene anche copiato da WhatsApp: orari e nomi vengono ignorati. Ogni versetto deve avere il suo numero. Puoi anche caricare il file di una chat esportata da WhatsApp (.zip o .txt).</p>
       <div class="field" id="msgwrap">
         <textarea id="msg" spellcheck="false" placeholder="Incolla qui il messaggio del pastore…" aria-describedby="count"></textarea>
       </div>
       <div class="under">
         <span class="count" id="count" aria-live="polite">Nessun testo incollato</span>
         <div class="btns">
+          <label class="btn file"><input class="sr" type="file" id="bf-msg" accept=".txt,.text,.zip,.docx,.pdf,text/plain,application/pdf"><span>Carica file</span></label>
           <button class="btn" id="paste" type="button">Incolla dagli appunti</button>
           <button class="btn ghost" id="clear" type="button">Svuota</button>
         </div>
@@ -497,10 +532,10 @@ dialog.show::backdrop{opacity:1}
 
     <section class="sec m-canzoni" id="c-in" aria-labelledby="h-cin" hidden>
       <h2 id="h-cin"><span class="n">1</span>Incolla i testi</h2>
-      <p class="sub">Incolla il testo italiano e quello inglese, oppure carica i file (.txt o .pdf): puoi anche trascinarli sui riquadri. Ci vogliono i nomi delle sezioni (Verse 1, Chorus, Bridge…). Accordi, numeri di pagina e intestazioni vengono ignorati.</p>
+      <p class="sub">Incolla il testo italiano e quello inglese, oppure carica i file (.txt, .pdf o Word .docx): puoi anche trascinarli sui riquadri. Ci vogliono i nomi delle sezioni (Verse 1, Chorus, Bridge…). Accordi, numeri di pagina e intestazioni vengono ignorati.</p>
       <div class="two" id="c-wrap">
-        <div class="field" data-side="it"><div class="lab-row"><label class="lab" for="c-it">Italiano</label><label class="btn small file"><input class="sr" type="file" id="cf-it" accept=".txt,.text,.md,.pdf,text/plain,application/pdf" multiple><span>Carica file</span></label></div><textarea id="c-it" spellcheck="false" placeholder="Verse 1&#10;Come il sole che sorge al mattino&#10;La tua bontà mi ricorda che&#10;…"></textarea><p class="src" id="src-it" hidden></p><div class="fixup" id="fx-it" hidden></div></div>
-        <div class="field" data-side="en"><div class="lab-row"><label class="lab" for="c-en">Inglese</label><label class="btn small file"><input class="sr" type="file" id="cf-en" accept=".txt,.text,.md,.pdf,text/plain,application/pdf" multiple><span>Carica file</span></label></div><textarea id="c-en" spellcheck="false" placeholder="Verse 1&#10;Sure as the sun rises up every morning&#10;I am reminded the Lord is Good&#10;…"></textarea><p class="src" id="src-en" hidden></p><div class="fixup" id="fx-en" hidden></div></div>
+        <div class="field" data-side="it"><div class="lab-row"><label class="lab" for="c-it">Italiano</label><label class="btn small file"><input class="sr" type="file" id="cf-it" accept=".txt,.text,.md,.pdf,.docx,.zip,text/plain,application/pdf" multiple><span>Carica file</span></label></div><textarea id="c-it" spellcheck="false" placeholder="Verse 1&#10;Come il sole che sorge al mattino&#10;La tua bontà mi ricorda che&#10;…"></textarea><p class="src" id="src-it" hidden></p><div class="fixup" id="fx-it" hidden></div></div>
+        <div class="field" data-side="en"><div class="lab-row"><label class="lab" for="c-en">Inglese</label><label class="btn small file"><input class="sr" type="file" id="cf-en" accept=".txt,.text,.md,.pdf,.docx,.zip,text/plain,application/pdf" multiple><span>Carica file</span></label></div><textarea id="c-en" spellcheck="false" placeholder="Verse 1&#10;Sure as the sun rises up every morning&#10;I am reminded the Lord is Good&#10;…"></textarea><p class="src" id="src-en" hidden></p><div class="fixup" id="fx-en" hidden></div></div>
       </div>
       <div class="under">
         <span class="count" id="c-count" aria-live="polite">Nessun testo incollato</span>
@@ -527,6 +562,13 @@ Buono sei, buono sei</pre>
           <div class="sum-tx"><b id="c-sum-t"></b><span id="c-sum-p"></span></div>
           <button class="btn small" id="c-sum-go" type="button" hidden>Vai al primo</button>
         </div>
+        <div class="view-bar">
+          <div class="seg" id="c-views" role="group" aria-label="Come mostrare le slide">
+            <button type="button" data-v="table" aria-pressed="true">Tabella</button>
+            <button type="button" data-v="preview" aria-pressed="false">Anteprima</button>
+          </div>
+          <button class="btn small ghost" id="c-undo" type="button" hidden>Annulla l'ultima modifica</button>
+        </div>
         <div class="order-bar">
           <label class="add"><span>Aggiungi una sezione</span><select id="c-add"></select></label>
           <button class="btn small" id="c-add-btn" type="button">Aggiungi</button>
@@ -546,7 +588,21 @@ Buono sei, buono sei</pre>
     <details class="more m-canzoni" id="c-more" hidden>
       <summary>Impostazioni</summary>
       <div class="more-b">
-        <label class="chk"><input type="checkbox" id="c-video" checked><span>Inizia con il video di sfondo (Sfondo 1.mov, già nella libreria di ProPresenter)</span></label>
+        <label class="chk"><input type="checkbox" id="c-video" checked><span>Inizia con il video di sfondo</span></label>
+        <div class="set-row">
+          <label for="c-vname">Nome del file video (già nella libreria di ProPresenter)</label>
+          <div class="set-in"><input id="c-vname" type="text" value="Sfondo 1.mov" spellcheck="false" autocomplete="off"><label class="btn small file"><input class="sr" type="file" id="c-vfile" accept="video/*,.mov,.mp4,.m4v"><span>Scegli file</span></label></div>
+          <p class="sub" id="c-vinfo"></p>
+        </div>
+        <div class="set-row">
+          <span class="set-t">Colori dei gruppi senza un colore nel modello</span>
+          <div class="cols">
+            <label>Intro <input type="color" id="c-col-intro" value="#999999"></label>
+            <label>Instrumental <input type="color" id="c-col-inst" value="#999999"></label>
+            <label>Outro <input type="color" id="c-col-outro" value="#cc2929"></label>
+            <button class="link" id="c-col-reset" type="button">Ripristina i colori</button>
+          </div>
+        </div>
       </div>
     </details>
   </main>
@@ -565,6 +621,7 @@ Buono sei, buono sei</pre>
     </label>
     <p class="status" id="dlstatus" role="status" aria-live="polite"></p>
   </section>
+  <footer class="foot">Versi · versione 2.0.0</footer>
 </div>
 
 <dialog id="viewer" aria-label="Slide ingrandita">
@@ -693,7 +750,12 @@ function canonBook(s){
 }
 
 // ====================== lettura del messaggio ======================
-var WA=/\[\d{1,2}:\d{2},\s*\d{1,2}\/\d{1,2}\/\d{2,4}\][^:\n\[]{0,40}:/g;
+// L'inizio di un messaggio WhatsApp, nei tre modi in cui compare:
+//  [11:00, 07/11/2026] Nome:            (copiato da WhatsApp Web o dal computer)
+//  [07/11/2026, 11:00:23] Nome:         (file esportato da iPhone)
+//  07/11/2026, 11:00 - Nome:            (file esportato da Android)
+var WA_T='\\d{1,2}:\\d{2}(?::\\d{2})?(?:\\s?[AaPp]\\.?[Mm]\\.?)?',WA_D='\\d{1,2}[\\/.]\\d{1,2}[\\/.]\\d{2,4}';
+var WA=new RegExp('\\['+WA_T+',\\s*'+WA_D+'\\][^:\\n\\[]{0,40}:|\\['+WA_D+',?\\s*'+WA_T+'\\][^:\\n\\[]{0,40}:|^'+WA_D+',?\\s*'+WA_T+'\\s*[-–]\\s[^:\\n\\[]{1,40}:','gm');
 var HEADSRC='^[ \\t«“"]*((?:[1-3]\\s?)?[A-Za-zÀ-ÿ]{2,}\\.?)\\s*(\\d{1,3})\\s*[:,]\\s*(\\d{1,3})?(?:\\s*[-–]\\s*(\\d{1,3}))?';
 function norm(t){return t.split(/\s+/).filter(Boolean).join(' ');}
 function cleanText(t){return norm(t).replace(/^[«» ]+|[«» ]+$/g,'');}
@@ -746,7 +808,7 @@ function leftover(body,verses){
 
 function readMessage(raw){
   var warns=[],errs=[],ignored=[],out=[],pid=0,m,cw=0,cl=0;
-  raw=raw.replace(/\r/g,'');
+  raw=raw.replace(/\r/g,'').replace(/[\u200e\u200f\u202a-\u202e]/g,'');   // i file esportati da iPhone hanno segni invisibili
   var msgs=[],last=0;
   WA.lastIndex=0;
   while((m=WA.exec(raw))){msgs.push(raw.slice(last,m.index));last=m.index+m[0].length;}
@@ -1163,15 +1225,15 @@ function tplSong(){
   }
   return {top:top,groups:groups,cueOf:cueOf,nameOf:nameOf,groupNamed:groupNamed};
 }
-var SONG_COLOR_GREY=[0.6,0.6,0.6,1];
+var SONG_COLOR_GREY=[0.6,0.6,0.6,1],SONG_COLOR_RED=[0.8,0.16,0.16,1];
 function f32(n){var v=new DataView(new ArrayBuffer(4));v.setFloat32(0,n,true);return new Uint8Array(v.buffer);}
 function colorMsg(c){return ser([{f:1,t:5,v:f32(c[0])},{f:2,t:5,v:f32(c[1])},{f:3,t:5,v:f32(c[2])},{f:4,t:5,v:f32(c[3])}]);}
 // Intestazione di un gruppo, copiata da un gruppo del modello (colore e identificativo compresi)
-function songHeader(T,block){
+function songHeader(T,block,colors){
   var type=block.type,name=block.name,protoName,keepLink=false,color=null;
   if(type==='verse'){protoName=block.name==='Verse 1'?'Verse 1':'Verse 2';keepLink=block.name==='Verse 1';}
   else if(type==='prechorus'||type==='chorus'||type==='bridge'||type==='tag'){protoName=SEC_TYPES[type];keepLink=name===protoName;}
-  else{protoName='Tag';if(type!=='outro')color=SONG_COLOR_GREY;}
+  else{protoName='Tag';color=(colors&&colors[type])||(type==='outro'?null:SONG_COLOR_GREY);}
   var g=T.groupNamed(protoName,keepLink);
   if(g<0)g=T.groupNamed('Verse 1',false);
   var fields=parse(parse(T.groups[g])[0].v),out=[];
@@ -1186,6 +1248,29 @@ function songHeader(T,block){
 }
 var SONG_IT_PATH=[[10,0],[23,0],[2,0],[1,0],[1,1],[1,0],[13,0]];
 var SONG_NOTE_PATH=[[10,0],[23,0],[2,0],[2,0],[1,0]];
+// Il video di sfondo: di norma quello del modello (Sfondo 1.mov). Con un altro video si cambiano nome e percorsi;
+// durata e dimensioni si aggiornano solo se si conoscono (info = {name, duration, w, h}).
+function songVideoCue(c,info){
+  if(!info||!info.name||info.name==='Sfondo 1.mov')return edit(c,[[2,0]],function(){return te.encode('Sfondo 1.mov');});
+  var name=info.name,url=te.encode('file:///Users/michele/Documents/ProPresenter/Media/Assets/'+encodeURIComponent(name)),rel=te.encode('Media/Assets/'+name),A=[[10,1],[20,0],[5,0]];
+  function set(p,v){c=edit(c,p,function(){return v;});}
+  set([[2,0]],te.encode(name));
+  set([[10,0],[3,0],[2,0]],te.encode(name));
+  set(A.concat([[2,0],[1,0]]),url);
+  set(A.concat([[2,0],[4,0],[2,0]]),rel);
+  set(A.concat([[6,0],[5,0],[1,0],[1,0]]),url);
+  set(A.concat([[6,0],[5,0],[1,0],[4,0],[2,0]]),rel);
+  if(info.duration>0){
+    set([[10,1],[8,0]],f64(info.duration));
+    set(A.concat([[6,0],[3,0],[3,0]]),f64(info.duration));
+    set(A.concat([[6,0],[3,0],[11,0]]),f64(info.duration));
+  }
+  if(info.w>0&&info.h>0){
+    set(A.concat([[6,0],[1,0],[5,0],[1,0]]),f64(info.w));
+    set(A.concat([[6,0],[1,0],[5,0],[2,0]]),f64(info.h));
+  }
+  return c;
+}
 function songCue(proto,sl){
   var b=remap(proto);
   if(!sl)return b;
@@ -1210,13 +1295,13 @@ function buildSongFile(blocks,nome,opts){
     groupsOut.push(ser(items));
   }
   if(opts.video!==false){
-    var vc=edit(remap(video),[[2,0]],function(){return te.encode('Sfondo 1.mov');});
+    var vc=songVideoCue(remap(video),opts.videoInfo);
     var h0=parse(parse(T.groups[0])[0].v).map(function(x){return x.f===1?{f:1,t:2,v:ser([{f:1,t:2,v:te.encode(uuid4())}])}:x;});
     addGroup(ser(h0),[vc]);
   }
   blocks.forEach(function(bl){
     var cs=bl.blank?[songCue(blank,null)]:bl.slides.map(function(sl){return songCue(lyric,sl);});
-    addGroup(songHeader(T,bl),cs);
+    addGroup(songHeader(T,bl,opts.colors),cs);
   });
   var out=[],ins=false;
   T.top.forEach(function(x){
@@ -1608,6 +1693,79 @@ function pdfToText(buf){
     });
   });
 }
+
+// ====================== zip, Word (.docx) e file da WhatsApp ======================
+// Un lettore minimo di zip, quanto basta per un documento Word (.docx) o per l'esportazione di una chat
+// di WhatsApp (un .zip con dentro _chat.txt).
+function zipList(b){
+  var i=b.length-22;
+  while(i>=0&&!(b[i]===0x50&&b[i+1]===0x4b&&b[i+2]===5&&b[i+3]===6))i--;
+  if(i<0)throw new Error('Questo non sembra un file zip.');
+  var dv=new DataView(b.buffer,b.byteOffset,b.byteLength),n=dv.getUint16(i+10,true),p=dv.getUint32(i+16,true),out=[];
+  if(n===0xffff||p===0xffffffff)throw new Error('Questo zip è troppo grande per la pagina.');
+  for(var k=0;k<n;k++){
+    if(p+46>b.length||dv.getUint32(p,true)!==0x02014b50)break;
+    var flag=dv.getUint16(p+8,true),nl=dv.getUint16(p+28,true),el=dv.getUint16(p+30,true),cl=dv.getUint16(p+32,true),nm=b.subarray(p+46,p+46+nl),name;
+    try{name=new TextDecoder('utf-8',{fatal:true}).decode(nm);}catch(e){name=latin1Str(nm);}
+    out.push({name:name,flag:flag,method:dv.getUint16(p+10,true),csize:dv.getUint32(p+20,true),usize:dv.getUint32(p+24,true),lho:dv.getUint32(p+42,true)});
+    p+=46+nl+el+cl;
+  }
+  return out;
+}
+function zipRead(b,e){
+  var dv=new DataView(b.buffer,b.byteOffset,b.byteLength),l=e.lho;
+  if(l+30>b.length||dv.getUint32(l,true)!==0x04034b50)return Promise.reject(new Error('Lo zip è danneggiato.'));
+  var start=l+30+dv.getUint16(l+26,true)+dv.getUint16(l+28,true),data=b.subarray(start,start+e.csize);
+  if(e.method===0)return Promise.resolve(data);
+  if(e.method!==8)return Promise.reject(new Error('Lo zip usa una compressione che non so leggere.'));
+  if(typeof DecompressionStream==='undefined')return Promise.reject(new Error('Questo browser non sa aprire il file.'));
+  return new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer().then(function(x){return new Uint8Array(x);});
+}
+function xmlText(s){
+  return s.replace(/&#x([0-9a-fA-F]+);/g,function(m,h){return String.fromCodePoint(parseInt(h,16));})
+    .replace(/&#(\d+);/g,function(m,d){return String.fromCodePoint(parseInt(d,10));})
+    .replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&amp;/g,'&');
+}
+// Il testo di word/document.xml: un paragrafo per riga, a capo e tabulazioni rispettati
+function docxXmlToText(xml){
+  var out=[],cur='';
+  var re=/<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>|<w:tab\s*\/>|<w:br\s*\/>|<w:cr\s*\/>|<\/w:p>/g,m;
+  while((m=re.exec(xml))){
+    if(m[0]==='</w:p>'){out.push(cur);cur='';}
+    else if(m[1]!==undefined)cur+=xmlText(m[1]);
+    else if(/^<w:tab/.test(m[0]))cur+=' ';
+    else cur+='\n';
+  }
+  if(cur)out.push(cur);
+  return out.join('\n').replace(/\n{3,}/g,'\n\n').trim();
+}
+function docxToText(bytes){
+  return Promise.resolve().then(function(){
+    var es=zipList(bytes),e=es.filter(function(x){return x.name==='word/document.xml';})[0];
+    if(!e)throw new Error('Non è un documento Word.');
+    return zipRead(bytes,e).then(function(d){return docxXmlToText(new TextDecoder('utf-8').decode(d));});
+  });
+}
+// Dentro uno zip: il testo della chat di WhatsApp (_chat.txt) o, in mancanza, il primo file di testo
+function zipTextFile(bytes){
+  return Promise.resolve().then(function(){
+    var es=zipList(bytes).filter(function(x){return !/(^|\/)__MACOSX\//.test(x.name)&&!/\/$/.test(x.name);});
+    var e=es.filter(function(x){return /(^|\/)_chat\.txt$/i.test(x.name);})[0]||es.filter(function(x){return /\.txt$/i.test(x.name);}).sort(function(a,b){return b.usize-a.usize;})[0];
+    if(!e)throw new Error('Nello zip non trovo un file di testo (per WhatsApp: esporta la chat "senza media").');
+    return zipRead(bytes,e).then(function(d){return decodeTextFile(d);});
+  });
+}
+// Qualunque file: PDF, Word, zip o testo. Restituisce {text, unknown}
+function fileToText(name,bytes){
+  var head=latin1Str(bytes.subarray(0,5)),n=(name||'').toLowerCase();
+  if(head==='%PDF-'||/\.pdf$/.test(n))return pdfToText(bytes);
+  if(head.slice(0,2)==='PK'||/\.(zip|docx)$/.test(n)){
+    if(/\.docx$/.test(n)||(function(){try{return zipList(bytes).some(function(x){return x.name==='word/document.xml';});}catch(e){return false;}})())
+      return docxToText(bytes).then(function(t){return {text:t,unknown:[]};});
+    return zipTextFile(bytes).then(function(t){return {text:t,unknown:[]};});
+  }
+  return Promise.resolve({text:decodeTextFile(bytes),unknown:[]});
+}
 // ====================== zip senza compressione (.probundle) ======================
 var CRCT=(function(){var t=[],c,n,k;for(n=0;n<256;n++){c=n;for(k=0;k<8;k++)c=c&1?(0xEDB88320^(c>>>1)):(c>>>1);t[n]=c>>>0;}return t;})();
 function crc32(b){var c=0xFFFFFFFF;for(var i=0;i<b.length;i++)c=CRCT[(c^b[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
@@ -1666,7 +1824,7 @@ var ICON={
 var EMPTYTXT={bg:'Senza sfondo, le slide restano scure.',sep:'Senza immagine, i passi si susseguono senza stacco.'};
 var MISSTXT={bg:'Manca: le slide saranno senza sfondo.',sep:'Manca: tra un passo e l\'altro non ci sarà nessuna immagine.'};
 var DEFAULTS={corto:120,max:200,lungo:240};
-var state={editing:null,mode:'bibbia',nameTouched:false,song:{fix:{it:[],en:[]},model:null,order:null,touched:false,uid:0,view:null,video:true,extra:{}},res:null,img:{bg:null,sep:null},flat:[],cur:0,done:null,busy:false,verified:false,ov:{},counts:{err:0,warn:0,slides:0,passages:0}};
+var state={editing:null,mode:'bibbia',nameTouched:false,song:{vista:'table',undo:[],videoInfo:null,colors:null,fix:{it:[],en:[]},model:null,order:null,touched:false,uid:0,view:null,video:true,extra:{}},res:null,img:{bg:null,sep:null},flat:[],cur:0,done:null,busy:false,verified:false,ov:{},counts:{err:0,warn:0,slides:0,passages:0}};
 
 // ---------- memoria del browser (può non essere disponibile: la pagina funziona lo stesso) ----------
 function store(k,v){
@@ -1700,6 +1858,28 @@ function isMac(){return /Mac|iPhone|iPad/.test(navigator.platform||navigator.use
 // Le correzioni a mano alla divisione delle slide valgono per un passo con quel testo preciso:
 // se il testo cambia (o arriva un messaggio diverso) tornano a zero.
 function ovKey(p){return p.label+'|'+hash(JSON.stringify(p.verses));}
+
+// ---------- bozza: il lavoro in corso si salva da solo nel browser ----------
+var DRAFT_KEY='versi.bozza',draftTimer=null;
+function draftQueue(){clearTimeout(draftTimer);draftTimer=setTimeout(draftWrite,500);}
+function draftWrite(){
+  var G=state.song,d={v:1,t:Date.now(),mode:state.mode,msg:$('msg').value,it:$('c-it').value,en:$('c-en').value,
+    srcIt:$('src-it').hidden?'':$('src-it').textContent,srcEn:$('src-en').hidden?'':$('src-en').textContent,
+    order:G.order,touched:G.touched,extra:G.extra,uid:G.uid,fix:G.fix,nome:state.nameTouched?$('nome').value:null,
+    title:G.model&&G.model.title||''};
+  if(!d.msg.trim()&&!d.it.trim()&&!d.en.trim()){store(DRAFT_KEY,null);return;}
+  var t=d.t;d.t=0;var sig=hash(JSON.stringify(d));d.t=t;d.sig=sig;
+  try{var old=JSON.parse(store(DRAFT_KEY)||'null');if(old&&old.sig===sig){return;}}catch(e){}
+  store(DRAFT_KEY,JSON.stringify(d));
+}
+function draftLoad(){
+  try{
+    var d=JSON.parse(store(DRAFT_KEY)||'null');
+    if(!d||d.v!==1||Date.now()-d.t>30*864e5)return null;
+    if(!String(d.msg||'').trim()&&!String(d.it||'').trim()&&!String(d.en||'').trim())return null;
+    return d;
+  }catch(e){return null;}
+}
 function slideLen(sl){return finalVerses(sl).map(function(v){return v[0]+' '+v[1];}).join(' ').length;}
 
 // k = posizione della slide nel suo passo (serve solo per scaglionare l'animazione)
@@ -1732,6 +1912,7 @@ function analyze(){
   state.res=raw.trim()?readMessage(raw):null;
   $('msgwrap').classList.toggle('has-text',!!raw.trim());
   paintCount();render();
+  draftQueue();
 }
 
 function paintCount(){
@@ -1879,6 +2060,29 @@ function renderDock(){
 var SONG_COL={verse:'#5aa9ff',prechorus:'#cc298c',chorus:'#b04dff',bridge:'#3fc1e6',outro:'#d33a3a',tag:'#d33a3a',intro:'#9aa3ad',inst:'#9aa3ad'};
 var BLANK_TYPES={intro:1,inst:1,tag:1};
 
+// Quante righe occuperà una riga italiana sulla slide: si misura con il carattere vero (Helvetica Neue Bold 80)
+// nella casella larga 1920 punti. Se il carattere non c'è, ci si avvicina con Arial/Helvetica.
+var fitCache={},fitCtx=null;
+function fitLines(text){
+  var up=String(text).toUpperCase();
+  if(fitCache[up]!==undefined)return fitCache[up];
+  var n;
+  try{
+    fitCtx=fitCtx||document.createElement('canvas').getContext('2d');
+    fitCtx.font='700 80px "Helvetica Neue",Helvetica,Arial,sans-serif';
+    var words=up.split(/\s+/),cur='';n=1;
+    words.forEach(function(w){var t=cur?cur+' '+w:w;if(fitCtx.measureText(t).width>1840&&cur){n++;cur=w;}else cur=t;});
+  }catch(e){n=slideFit([text]);}
+  return (fitCache[up]=n);
+}
+function songPreviewHtml(s,r){
+  var out='<div class="sprev">';
+  r.slides.forEach(function(sl){
+    var rows=fitLines(sl.it[0]),long=rows>2;
+    out+='<figure class="sp'+(long?' long':'')+'"><div class="sl"><span class="sl-it">'+h(sl.it[0].toUpperCase())+'</span><span class="sl-lb">SONGS</span>'+(long?'<span class="sl-tag">'+rows+' righe: non entra</span>':'')+'</div><figcaption>'+h(sl.en.join(' / '))+'</figcaption></figure>';
+  });
+  return out+'</div>';
+}
 function dockSay(cls,icon,txt){
   var st=$('dlstatus'),key=cls+'|'+txt;
   if(st._k===key)return;st._k=key;
@@ -1886,14 +2090,11 @@ function dockSay(cls,icon,txt){
 }
 // ---------- file ----------
 function readSongFile(f){
-  var isPdf=/\.pdf$/i.test(f.name)||f.type==='application/pdf';
-  return f.arrayBuffer().then(function(ab){
-    if(isPdf)return pdfToText(new Uint8Array(ab));
-    return {text:decodeTextFile(new Uint8Array(ab)),unknown:[]};
-  }).then(function(r){return {name:f.name,text:r.text,unknown:r.unknown};});
+  return f.arrayBuffer().then(function(ab){return fileToText(f.name,new Uint8Array(ab));}).then(function(r){return {name:f.name,text:r.text,unknown:r.unknown};});
 }
 function songSetSource(side,r){
   var box=$(side==='it'?'c-it':'c-en'),src=$('src-'+side);
+  if(box.value.trim())pushUndo();
   box.value=r.text;state.editing=null;
   src.hidden=false;src.textContent='Caricato da: '+r.name;
   state.song.fix[side]=r.unknown||[];
@@ -1944,8 +2145,18 @@ function songFixApply(side){
     var v=((qs('.fx-in[data-i="'+i+'"]',box)||{}).value||'').trim();
     if(!v){toast('Scrivi le lettere che mancano in «'+list[i].ctx[0]+'».');return;}
   }
+  pushUndo();
   list.forEach(function(u,i){var v=qs('.fx-in[data-i="'+i+'"]',box).value.trim();t=t.split(u.mark).join(v);});
   boxText.value=t;G.fix[side]=[];state.done=null;analyzeSong();
+}
+// ---------- annulla ----------
+function snapshot(){var G=state.song;return {it:$('c-it').value,en:$('c-en').value,order:JSON.stringify(G.order),touched:G.touched,extra:JSON.stringify(G.extra),fix:JSON.stringify(G.fix)};}
+function pushUndo(){var G=state.song;G.undo.push(snapshot());if(G.undo.length>40)G.undo.shift();paintUndo();}
+function paintUndo(){$('c-undo').hidden=!state.song.undo.length;}
+function songUndo(){
+  var G=state.song,s=G.undo.pop();if(!s)return;
+  $('c-it').value=s.it;$('c-en').value=s.en;G.order=JSON.parse(s.order);G.touched=s.touched;G.extra=JSON.parse(s.extra);G.fix=JSON.parse(s.fix);
+  state.editing=null;state.done=null;paintUndo();analyzeSong();toast('Modifica annullata.');
 }
 function ensureSec(m,key){
   if(m.secs[key])return m.secs[key];
@@ -1981,7 +2192,7 @@ function songView(G){
     else{
       if(r.mismatch.length&&first){notes.push(songMismatchNote(s,r));nWarn++;nMis++;misSig.push(s.key+r.counts.join('/'));}
       r.slides.forEach(function(sl,j){
-      var rows=slideFit(sl.it);
+      var rows=fitLines(sl.it[0]);
       if(rows>2&&first){
         notes.push({k:'w',msg:'La riga della slide '+(j+1)+' è molto lunga: andrà su '+rows+' righe e potrebbe non entrare nello schermo.'});
         nWarn++;
@@ -2039,7 +2250,7 @@ function songCardHtml(c){
   var s=c.s,btn=function(act,label,icon,dis){return '<button type="button" class="ib" data-act="'+act+'" aria-label="'+label+': '+h(s.name)+'" title="'+label+'"'+(dis?' disabled':'')+'>'+icon+'</button>';};
   var acts='<span class="acts">'+btn('up','Sposta su',ICON.up,c.i===0)+btn('down','Sposta giù','<span class="flip">'+ICON.up+'</span>',c.i===c.n-1)+btn('dup','Duplica',ICON.copy,false)+btn('del','Elimina',ICON.trash,false)+'</span>';
   var meta=c.r.blank?'slide vuota con SONGS':(c.r.error?'da sistemare':pl(c.r.slides.length,'slide','slide'));
-  var body=c.r.blank?'':(c.first?songPairsHtml(s,c.r):'<p class="same">Stesse slide della prima «'+h(s.name)+'»: le righe si sistemano lì e valgono per tutte le copie.</p>');
+  var body=c.r.blank?'':(c.first?(state.song.vista==='preview'?songPreviewHtml(s,c.r):songPairsHtml(s,c.r)):'<p class="same">Stesse slide della prima «'+h(s.name)+'»: le righe si sistemano lì e valgono per tutte le copie.</p>');
   var notes=c.notes.length?'<ul class="notes">'+c.notes.map(noteHtml).join('')+'</ul>':'';
   var cls=c.notes.some(function(n){return n.k==='e';})?' err':(c.notes.length?' has-warn':'')+(c.first?'':' copy');
   return '<article class="pc song'+cls+'" style="--sc:'+(SONG_COL[s.type]||'#9aa3ad')+'"><header class="pc-h"><h3>'+h(s.name)+'</h3><span class="meta">'+meta+'</span>'+acts+'</header>'+notes+body+'</article>';
@@ -2052,7 +2263,7 @@ function renderSong(){
   if(!m){
     reconcile($('c-list'),[],'c-');
     $('c-count').textContent='Nessun testo incollato';$('c-count').className='count';
-    G.view=null;state.counts={err:0,warn:0,slides:0,passages:0};renderDock();return;
+    G.view=null;state.counts={err:0,warn:0,slides:0,passages:0};renderDock();paintUndo();draftQueue();return;
   }
   var v=G.view=songView(G);
   itN=Object.keys(m.itInfo.lib).length;enN=Object.keys(m.enInfo.lib).length;
@@ -2061,7 +2272,7 @@ function renderSong(){
 
   // elenco delle sezioni
   var items=v.items.map(function(c,idx){
-    var sig=hash(JSON.stringify([c.s.name,c.s.it,c.s.en,c.r.error,c.notes,c.i,c.n,c.first,state.editing&&state.editing.key===c.s.key?state.editing:0]));
+    var sig=hash(JSON.stringify([c.s.name,c.s.it,c.s.en,c.r.error,c.notes,c.i,c.n,c.first,state.song.vista,state.editing&&state.editing.key===c.s.key?state.editing:0]));
     return {key:c.o.id,sig:sig,pid:idx,html:songCardHtml(c)};
   });
   reconcile($('c-list'),items,'c-');
@@ -2097,6 +2308,7 @@ function renderSong(){
   $('c-info-l').innerHTML=v.info.map(function(x){return '<li>'+h(x)+'</li>';}).join('');
   state.counts={err:nErr,warn:nWarn,slides:v.slides,passages:v.blocks.length};
   renderDock();
+  paintUndo();draftQueue();
 }
 
 // ---------- barra Scarica ----------
@@ -2125,8 +2337,8 @@ function downloadSong(){
   state.busy=true;renderDock();
   setTimeout(function(){
     try{
-      var nm=nome(),video=$('c-video').checked,bytes=buildSongFile(v.blocks,nm,{video:video});
-      var problems=verifySongFile(bytes,v.blocks,{video:video});
+      var nm=nome(),o=songOpts(),bytes=buildSongFile(v.blocks,nm,o);
+      var problems=verifySongFile(bytes,v.blocks,{video:o.video});
       if(problems.length)throw new Error('il controllo finale ha trovato una differenza. '+problems[0]);
       var fname=nm.replace(/[\/:\\]/g,'-')+'.pro';
       saveBlob(bytes,fname);state.done=fname;state.verified=true;toast('Scaricato: '+fname);
@@ -2145,6 +2357,7 @@ function songEditApply(newLines){
   var G=state.song,m=G.model,ed=state.editing;
   if(!m||!ed)return;
   var info=ed.side==='it'?m.itInfo:m.enInfo,box=$(ed.side==='it'?'c-it':'c-en');
+  pushUndo();
   box.value=editSongText(box.value.replace(/\r/g,''),info.lib,ed.key,ed.i,newLines);
   state.editing=null;state.done=null;
   analyzeSong();
@@ -2156,6 +2369,7 @@ function songEdit(act,btn){
   var m=state.song.model,info=ed.side==='it'?m.itInfo:m.enInfo,old=info.lib[ed.key].lines[ed.i];
   if(act==='ed-merge'){
     var side=ed.side,boxT=$(side==='it'?'c-it':'c-en');
+    pushUndo();
     boxT.value=mergeSongLines(boxT.value.replace(/\r/g,''),info.lib,ed.key,ed.i);
     state.editing=null;state.done=null;analyzeSong();return;
   }
@@ -2175,6 +2389,7 @@ function songAct(act,id,btn){
   G.order.forEach(function(o,i){if(o.id===id)idx=i;});
   if(idx<0||!m)return;
   var o=G.order[idx];
+  pushUndo();
   if(act==='up'&&idx>0){G.order.splice(idx-1,2,G.order[idx],G.order[idx-1]);G.touched=true;}
   else if(act==='down'&&idx<G.order.length-1){G.order.splice(idx,2,G.order[idx+1],G.order[idx]);G.touched=true;}
   else if(act==='dup'){G.order.splice(idx+1,0,{id:'b'+(++G.uid),key:o.key});G.touched=true;}
@@ -2193,10 +2408,77 @@ function songOrderFromHeader(){
     if(!m.secs[k]){if(BLANK_TYPES[k.replace(/\d+$/,'')]){G.extra[k]=1;ensureSec(m,k);}else{if(missing.indexOf(k)<0)missing.push(k);return;}}
     order.push({id:'b'+(++G.uid),key:k});
   });
-  G.order=order;G.touched=true;state.done=null;renderSong();
+  pushUndo();G.order=order;G.touched=true;state.done=null;renderSong();
   if(missing.length)toast('L\'intestazione cita sezioni che non hai incollato: '+missing.map(function(k){return secName(k.replace(/\d+$/,''),parseInt((k.match(/\d+$/)||[0])[0],10)||0);}).join(', ')+'.');
 }
+// ---------- impostazioni: video di sfondo e colori ----------
+var VIDEO_STD='Sfondo 1.mov',COL_DEF={intro:'#999999',inst:'#999999',outro:'#cc2929'};
+function hexToRgba(x){var n=parseInt(x.slice(1),16);return [((n>>16)&255)/255,((n>>8)&255)/255,(n&255)/255,1];}
+function songOpts(){
+  var G=state.song,i=G.videoInfo,colors={};
+  ['intro','inst','outro'].forEach(function(k){var v=($('c-col-'+k).value||'').toLowerCase();if(v&&v!==COL_DEF[k])colors[k]=hexToRgba(v);});
+  return {video:$('c-video').checked,videoInfo:i&&i.name&&i.name!==VIDEO_STD?i:null,colors:colors};
+}
+function paintVideoInfo(){
+  var i=state.song.videoInfo,name=$('c-vname').value.trim()||VIDEO_STD,el=$('c-vinfo');
+  if(name===VIDEO_STD)el.textContent='È il video del tuo modello: durata e dimensioni sono già giuste.';
+  else if(i&&i.duration>0)el.textContent='Durata '+i.duration.toFixed(1).replace('.',',')+' s, dimensioni '+i.w+'×'+i.h+' (lette dal file). Controlla in ProPresenter che si veda e parta.';
+  else el.textContent='Uso il nome scritto qui; durata e dimensioni restano quelle del modello e ProPresenter le rilegge dal file. Controlla che si veda e parta.';
+}
+function setVideoInfo(info){
+  state.song.videoInfo=info&&info.name&&info.name!==VIDEO_STD?info:null;
+  store('versi.videoFile',state.song.videoInfo?JSON.stringify(state.song.videoInfo):null);
+  state.done=null;paintVideoInfo();renderDock();
+}
+function readVideoMeta(file){
+  return new Promise(function(ok){
+    var v=document.createElement('video'),url=URL.createObjectURL(file),done=false;
+    function fin(r){if(done)return;done=true;URL.revokeObjectURL(url);ok(r);}
+    v.preload='metadata';v.muted=true;
+    v.onloadedmetadata=function(){fin(isFinite(v.duration)&&v.videoWidth?{duration:v.duration,w:v.videoWidth,h:v.videoHeight}:null);};
+    v.onerror=function(){fin(null);};
+    setTimeout(function(){fin(null);},4000);
+    v.src=url;
+  });
+}
+function bindSongSettings(){
+  var G=state.song;
+  try{var vi=JSON.parse(store('versi.videoFile')||'null');if(vi&&vi.name){G.videoInfo=vi;$('c-vname').value=vi.name;}}catch(e){}
+  paintVideoInfo();
+  $('c-vname').addEventListener('input',function(){var n=$('c-vname').value.trim();setVideoInfo(n&&n!==VIDEO_STD?{name:n}:null);});
+  $('c-vfile').addEventListener('change',function(e){
+    var f=e.target.files[0];e.target.value='';if(!f)return;
+    var name=f.name.normalize('NFC');
+    readVideoMeta(f).then(function(m){
+      $('c-vname').value=name;
+      setVideoInfo({name:name,duration:m?m.duration:0,w:m?m.w:0,h:m?m.h:0});
+      if(!m)toast('Non riesco a leggere durata e dimensioni di quel video: uso solo il nome.');
+    });
+  });
+  try{var cs=JSON.parse(store('versi.colori')||'null');if(cs)Object.keys(COL_DEF).forEach(function(k){if(/^#[0-9a-f]{6}$/i.test(cs[k]||''))$('c-col-'+k).value=cs[k];});}catch(e){}
+  Object.keys(COL_DEF).forEach(function(k){$('c-col-'+k).addEventListener('input',function(){
+    var o={};Object.keys(COL_DEF).forEach(function(j){o[j]=$('c-col-'+j).value;});store('versi.colori',JSON.stringify(o));state.done=null;renderDock();
+  });});
+  $('c-col-reset').addEventListener('click',function(){Object.keys(COL_DEF).forEach(function(k){$('c-col-'+k).value=COL_DEF[k];});store('versi.colori',null);state.done=null;renderDock();});
+}
+function paintViews(){
+  qsa('#c-views button').forEach(function(b){b.setAttribute('aria-pressed',b.getAttribute('data-v')===state.song.vista?'true':'false');});
+}
+function bindSongViews(){
+  var v=store('versi.vistaCanzoni');if(v==='preview')state.song.vista='preview';
+  paintViews();
+  qsa('#c-views button').forEach(function(b){b.addEventListener('click',function(){
+    state.editing=null;state.song.vista=b.getAttribute('data-v');store('versi.vistaCanzoni',state.song.vista);paintViews();renderSong();
+  });});
+  $('c-undo').addEventListener('click',songUndo);
+  document.addEventListener('keydown',function(e){
+    if(state.mode!=='canzoni'||!(e.ctrlKey||e.metaKey)||e.shiftKey||e.key.toLowerCase()!=='z')return;
+    var t=e.target;if(t&&(t.tagName==='TEXTAREA'||t.tagName==='INPUT'))return;
+    if(state.song.undo.length){e.preventDefault();songUndo();}
+  });
+}
 function bindSong(){
+  bindSongSettings();bindSongViews();
   var tm=null;
   ['c-it','c-en'].forEach(function(id){$(id).addEventListener('input',function(){state.editing=null;var sd=id==='c-it'?'it':'en';if(!$(id).value.trim()){$('src-'+sd).hidden=true;}clearTimeout(tm);tm=setTimeout(analyzeSong,200);});});
   ['it','en'].forEach(function(sd){
@@ -2214,7 +2496,7 @@ function bindSong(){
     $('fx-'+sd).addEventListener('input',function(){songFixPreview($('fx-'+sd),state.song.fix[sd]||[]);});
   });
   $('c-clear').addEventListener('click',function(){
-    var G=state.song;state.editing=null;G.fix={it:[],en:[]};$('src-it').hidden=true;$('src-en').hidden=true;$('c-it').value='';$('c-en').value='';G.touched=false;G.order=null;G.extra={};
+    var G=state.song;if($('c-it').value.trim()||$('c-en').value.trim())pushUndo();state.editing=null;G.fix={it:[],en:[]};$('src-it').hidden=true;$('src-en').hidden=true;$('c-it').value='';$('c-en').value='';G.touched=false;G.order=null;G.extra={};
     analyzeSong();$('c-it').focus();
   });
   $('c-list').addEventListener('click',function(e){
@@ -2237,11 +2519,12 @@ function bindSong(){
   });
   $('c-add-btn').addEventListener('click',function(){
     var G=state.song,m=G.model,k=$('c-add').value;if(!m||!k)return;
+    pushUndo();
     if(!m.secs[k]){G.extra[k]=1;ensureSec(m,k);}
     G.order.push({id:'b'+(++G.uid),key:k});G.touched=true;state.done=null;renderSong();
     var last=$('c-list').lastElementChild;if(last)last.scrollIntoView({behavior:reduced()?'auto':'smooth',block:'center'});
   });
-  $('c-ord-en').addEventListener('click',function(){var G=state.song;G.touched=false;G.order=null;state.done=null;analyzeSong();});
+  $('c-ord-en').addEventListener('click',function(){var G=state.song;pushUndo();G.touched=false;G.order=null;state.done=null;analyzeSong();});
   $('c-ord-hd').addEventListener('click',songOrderFromHeader);
   $('c-sum-go').addEventListener('click',songFirstProblem);
   $('c-video').addEventListener('change',function(){store('versi.video',$('c-video').checked?'1':'0');state.done=null;renderDock();});
@@ -2497,6 +2780,39 @@ function firstProblem(){
   if(el)goCard(el.parentNode.getAttribute('data-pid'));
 }
 
+function loadBibleFile(f){
+  f.arrayBuffer().then(function(ab){return fileToText(f.name,new Uint8Array(ab));}).then(function(r){
+    $('msg').value=r.text;analyze();
+    toast('Messaggio caricato da '+f.name+'.'+(r.unknown&&r.unknown.length?' Attenzione: nel PDF ci sono lettere che non so leggere.':''));
+  }).catch(function(e){toast('"'+f.name+'": '+(e&&e.message||'non riesco a leggerlo')+' Puoi incollare il testo.');});
+}
+
+// ---------- bozza ----------
+function restoreDraft(d){
+  var G=state.song;
+  $('msg').value=d.msg||'';$('c-it').value=d.it||'';$('c-en').value=d.en||'';
+  G.order=d.order||null;G.touched=!!d.touched;G.extra=d.extra||{};G.uid=d.uid||0;G.fix=d.fix||{it:[],en:[]};
+  [['it',d.srcIt],['en',d.srcEn]].forEach(function(a){if(a[1]){$('src-'+a[0]).hidden=false;$('src-'+a[0]).textContent=a[1];}});
+  if(d.nome){$('nome').value=d.nome;state.nameTouched=true;}
+  var when=new Date(d.t).toLocaleString('it-IT',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
+  var what=d.mode==='canzoni'?'la canzone'+(d.title?' «'+d.title+'»':''):'il messaggio dei versetti';
+  $('resume-t').textContent='Ho ripreso il lavoro di '+when+': '+what+'.';
+  $('resume').hidden=false;
+}
+function bindResume(){
+  $('resume-x').innerHTML=ICON.x;
+  $('resume-x').addEventListener('click',function(){$('resume').hidden=true;});
+  $('resume-no').addEventListener('click',function(){
+    var G=state.song;
+    store(DRAFT_KEY,null);
+    $('msg').value='';$('c-it').value='';$('c-en').value='';
+    $('src-it').hidden=true;$('src-en').hidden=true;
+    G.order=null;G.touched=false;G.extra={};G.fix={it:[],en:[]};G.undo=[];state.editing=null;state.nameTouched=false;
+    $('nome').value=state.mode==='canzoni'?'Canzone - ITA + ENG':defaultName();
+    $('resume').hidden=true;
+    if(state.mode==='canzoni')analyzeSong();else analyze();
+  });
+}
 function bindMessage(){
   var tm=null,wrap=$('msgwrap'),dep=0;
   $('msg').addEventListener('input',function(){clearTimeout(tm);tm=setTimeout(analyze,150);});
@@ -2510,7 +2826,8 @@ function bindMessage(){
       }).catch(fail);
     }else fail();
   });
-  // un file di testo trascinato sul riquadro viene letto
+  $('bf-msg').addEventListener('change',function(e){var f=e.target.files[0];e.target.value='';if(f)loadBibleFile(f);});
+  // un file trascinato sul riquadro viene letto
   function hasFiles(e){return e.dataTransfer&&Array.prototype.indexOf.call(e.dataTransfer.types||[],'Files')>=0;}
   wrap.addEventListener('dragenter',function(e){if(!hasFiles(e))return;e.preventDefault();dep++;wrap.classList.add('drag');});
   wrap.addEventListener('dragover',function(e){if(hasFiles(e))e.preventDefault();});
@@ -2520,8 +2837,7 @@ function bindMessage(){
     var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];
     if(!f)return;
     e.preventDefault();
-    if(!/^text\//.test(f.type)&&!/\.txt$/i.test(f.name)){toast('Trascina un file di testo (.txt), oppure incolla il messaggio.');return;}
-    f.text().then(function(t){$('msg').value=t;analyze();});
+    loadBibleFile(f);
   });
 }
 
@@ -2563,9 +2879,13 @@ function bindOutput(){
   window.addEventListener('drop',function(e){e.preventDefault();});
   ['bg','sep'].forEach(bindSlot);
   bindMessage();bindRules();bindOutput();bindViewer();bindSong();bindModes();
+  bindResume();
+  var draft=draftLoad();
+  if(draft)restoreDraft(draft);
   analyze();restoreImages();
-  if(store('versi.modo')==='canzoni')setMode('canzoni');
-  else if(window.matchMedia&&window.matchMedia('(hover:hover)').matches)$('msg').focus();
+  var startMode=draft?draft.mode:store('versi.modo');
+  if(startMode==='canzoni')setMode('canzoni');
+  else if(!draft&&window.matchMedia&&window.matchMedia('(hover:hover)').matches)$('msg').focus();
   window.__versi={readMessage:readMessage,group:group,buildPresentation:buildPresentation,analyze:analyze,makeZip:makeZip};
 })();
 })();
