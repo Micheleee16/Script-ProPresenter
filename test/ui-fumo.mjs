@@ -101,27 +101,37 @@ await pg.click('#c-list .pc >> nth=0 >> button[data-act="down"]');
 if ((await nomi())[0] !== 'Verse 1') fail('Sposta giù non ha spostato Intro');
 await pg.click('#c-ord-en');                                   // torna all'ordine del testo
 if ((await nomi())[0] !== 'Intro') fail('l\'ordine del testo non è tornato');
-// righe che non tornano: separa una riga del Chorus -> errore, poi si rimette a posto
+// righe italiane e inglesi che non corrispondono: avviso con il punto preciso, conferma per scaricare
 const chorus = '#c-list .pc:has(h3:text-is("Chorus")) >> nth=0';
-await pg.click(chorus + ' >> button[data-act="split"][data-side="it"] >> nth=0');
-await pg.waitForFunction(() => document.getElementById('c-sum').dataset.state === 'err');
-if (!(await pg.locator('#dlbtn').isDisabled())) fail('con righe che non tornano non si deve poter scaricare');
-await pg.click(chorus + ' >> button[data-act="merge"][data-side="it"] >> nth=0');
-await pg.waitForFunction(() => document.getElementById('c-sum').dataset.state !== 'err');
-// correggere dalla tabella: spezzare una riga inglese e correggere una parola italiana
 const enBox = () => pg.inputValue('#c-en'), itBox = () => pg.inputValue('#c-it');
+const ackIf = async () => { if ((await pg.locator('#ackwrap').isVisible()) && !(await pg.isChecked('#ack'))) await pg.click('#ackwrap'); };
+if ((await pg.locator('#c-list .note').count()) < 2) fail('Chorus e Bridge dovrebbero avere l\'avviso delle righe che non corrispondono');
+const avviso = await pg.locator('#c-list .pc:has(h3:text-is("Chorus")) >> nth=0 >> .note').first().innerText();
+if (!/6 righe italiane e 5 inglesi/.test(avviso) || !/Righe italiane 1-2/.test(avviso) || !/riga inglese 1/.test(avviso)) fail('l\'avviso non dice dove: ' + avviso);
+if (!(await pg.locator('#c-list .cell.mis').count())) fail('le righe che non corrispondono non sono evidenziate');
+if (!(await pg.locator('#ackwrap').isVisible()) || !(await pg.locator('#dlbtn').isDisabled())) fail('con righe che non corrispondono serve la conferma per scaricare');
+await pg.click('#ackwrap');
+if (await pg.locator('#dlbtn').isDisabled()) fail('dopo la conferma si dovrebbe poter scaricare');
+// non c'è più il pulsante "Traduzione diversa": per sistemare si tocca la riga
+if (await pg.locator('#c-list button.cj').count()) fail('i vecchi pulsanti di unione non dovrebbero esserci');
+// "Unisci con la successiva" dall'editor: due righe italiane diventano una e il Chorus torna in pari
+await pg.click(chorus + ' >> .cell.it >> button.ln >> nth=0');
+await pg.click('#c-list [data-act="ed-merge"]');
+await pg.waitForFunction(() => !document.querySelector('#c-list .ed-in'));
+if (!(await itBox()).includes('Buono sei, buono sei Sempre lo sarai')) fail('"Unisci con la successiva" non ha unito le righe');
+if (await pg.locator('#c-list .pc:has(h3:text-is("Chorus")) >> nth=0 >> .note').count()) fail('dopo aver unito il Chorus dovrebbe tornare in pari');
+// correggere dalla tabella: spezzare una riga inglese e correggere una parola
 await pg.click(chorus + ' >> .cell.en >> button.ln >> nth=0');
 await pg.waitForSelector('#c-list .ed-in');
 await pg.evaluate(() => { const i = document.querySelector('#c-list .ed-in'); i.focus(); i.setSelectionRange('You are good, You are good'.length, 'You are good, You are good'.length); });
 await pg.click('#c-list [data-act="ed-split"]');
 await pg.waitForFunction(() => !document.querySelector('#c-list .ed-in'));
 if (!(await enBox()).includes('You are good, You are good\nand have always been')) fail('"Spezza qui" non ha scritto le due righe nel testo inglese');
-if (await pg.locator('#c-sum[data-state="err"]').count()) fail('dopo aver spezzato la riga il Chorus dovrebbe tornare in pari');
 await pg.click(chorus + ' >> .cell.it >> button.ln >> nth=1');
-await pg.fill('#c-list .ed-in', 'Per sempre lo sarai');
+await pg.fill('#c-list .ed-in', 'Hai promesso che niente mi mancherà mai');
 await pg.press('#c-list .ed-in', 'Enter');
 await pg.waitForFunction(() => !document.querySelector('#c-list .ed-in'));
-if (!(await itBox()).includes('Per sempre lo sarai')) fail('la correzione non è finita nel testo italiano');
+if (!(await itBox()).includes('Hai promesso che niente mi mancherà mai')) fail('la correzione non è finita nel testo italiano');
 await pg.click(chorus + ' >> .cell.it >> button.ln >> nth=0'); await pg.press('#c-list .ed-in', 'Escape');
 if (await pg.locator('#c-list .ed-in').count()) fail('Esc dovrebbe chiudere la modifica');
 
@@ -131,6 +141,7 @@ if ((await nCard()) !== 20) fail('l\'ordine dell\'intestazione dovrebbe avere 20
 await pg.selectOption('#c-add', 'tag'); await pg.click('#c-add-btn');
 if ((await nCard()) !== 21) fail('Aggiungi non ha aggiunto la sezione');
 // scarica con rilettura
+await ackIf();
 const [dls] = await Promise.all([pg.waitForEvent('download'), pg.click('#dlbtn')]);
 await pg.waitForFunction(() => document.getElementById('dlbtn').dataset.state === 'done');
 if (!/\.pro$/.test(dls.suggestedFilename())) fail('nome file canzone inatteso: ' + dls.suggestedFilename());
@@ -151,6 +162,7 @@ await pg.waitForFunction(() => document.getElementById('fx-it').hidden);
 if ((await itBox()).includes('{?')) fail('i segnaposto non sono stati sostituiti');
 if (!(await itBox()).includes('Come il sole che sorge al mattino')) fail('la lettura del PDF italiano è sbagliata');
 if ((await nCard()) !== 19) fail('dai PDF dovrebbero uscire 19 sezioni, sono ' + (await nCard()));
+await ackIf();
 const [dlp] = await Promise.all([pg.waitForEvent('download'), pg.click('#dlbtn')]);
 await pg.waitForFunction(() => document.getElementById('dlbtn').dataset.state === 'done');
 // due file insieme: si capisce quale è quale

@@ -11,6 +11,7 @@ const EXAMPLE = readFileSync(new URL('../template/Canzone_ITA-ENG.pro', import.m
 const en = E.parseSongText(F('taste-en.txt'), 'Inglese');
 const it = E.parseSongText(F('taste-it.txt'), 'Italiano');
 const song = E.makeSong(it, en);
+const reparse = (raw, l) => E.parseSongText(raw, l);
 
 // ---------------- lettura ----------------
 test('righe di accordi riconosciute, testi cantati no', () => {
@@ -129,14 +130,41 @@ test('la proposta non perde né riordina righe, e ha lo stesso numero di slide',
   }
 });
 
-test('se i numeri non tornano la sezione non è utilizzabile e lo dice', () => {
-  const s = JSON.parse(JSON.stringify(song.secs.chorus));
-  s.itJ = s.itJ.map(() => false);                               // 6 slide italiane contro 5 inglesi
-  const r = E.sectionSlides(s);
-  assert.match(r.error, /6 gruppi di righe italiane e 5 di righe inglesi/);
-  assert.deepEqual(r.slides, []);
+test('righe non in pari: si segna dove, e le slide restano una per riga', () => {
+  const c = E.sectionSlides(song.secs.chorus);
+  assert.equal(c.error, null);
+  assert.deepEqual(c.counts, [6, 5]);
+  assert.equal(c.mismatch.length, 1);
+  assert.deepEqual([c.mismatch[0].itFrom, c.mismatch[0].itTo, c.mismatch[0].enFrom, c.mismatch[0].enTo], [1, 2, 1, 1]);
+  const b = E.sectionSlides(song.secs.bridge);
+  assert.deepEqual(b.counts, [7, 3]);
+  assert.deepEqual(b.mismatch.map((g) => [g.itFrom, g.itTo, g.enFrom, g.enTo]), [[1, 2, 1, 1], [3, 4, 2, 2], [5, 7, 3, 3]]);
+  assert.deepEqual(E.sectionSlides(song.secs.verse1).mismatch, []);        // in pari: nessun segnale
+  assert.deepEqual(E.sectionSlides(song.secs.outro).mismatch, []);
   const m = JSON.parse(JSON.stringify(song.secs.chorus)); m.hasEn = false; m.en = [];
   assert.match(E.sectionSlides(m).error, /Manca il testo inglese/);
+});
+
+test('più righe inglesi che italiane: segnato e le note le raccolgono', () => {
+  const sec = { key: 'verse1', type: 'verse', name: 'Verse 1', it: ['Una riga', 'Altra riga'], en: ['One line', 'part two', 'Another line'], hasIt: true, hasEn: true };
+  const r = E.sectionSlides(sec);
+  assert.equal(r.slides.length, 2);
+  assert.equal(r.mismatch.length, 1);
+  assert.ok(r.mismatch[0].en.length > r.mismatch[0].it.length);
+  assert.deepEqual(r.slides.flatMap((x) => x.en), ['One line', 'part two', 'Another line']);   // nessuna riga inglese persa
+});
+
+test('unire due righe dal testo fa tornare i conti', () => {
+  const raw = F('taste-it.txt').replace(/\r/g, '');
+  const p = reparse(raw, 'Italiano');
+  const nuovo = E.mergeSongLines(raw, p.lib, 'chorus', 0);
+  const q = reparse(nuovo, 'Italiano');
+  assert.equal(q.lib.chorus.lines.length, 5);
+  assert.equal(q.lib.chorus.lines[0], 'Buono sei, buono sei Sempre lo sarai');
+  assert.equal(nuovo.split('\n').length, raw.split('\n').length - 1);
+  assert.deepEqual(E.sectionSlides(E.makeSong(q, en).secs.chorus).mismatch, []);
+  assert.deepEqual(q.lib.outro.lines, p.lib.outro.lines);
+  assert.equal(E.mergeSongLines(raw, p.lib, 'outro', 1), raw);                  // l'ultima riga non ha una successiva
 });
 
 test('slideFit stima le righe sulla slide', () => {
@@ -253,8 +281,6 @@ test('esempio: colori e identificativi dei gruppi sono quelli del modello', () =
 });
 
 // ---------------- correzioni dalla tabella ----------------
-const clean = (p) => p.lib;
-const reparse = (raw, l) => E.parseSongText(raw, l);
 
 test('spezzare una riga inglese cambia tutte le copie uguali e le righe tornano in pari', () => {
   const raw = F('taste-en.txt').replace(/\r/g, '');

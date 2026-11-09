@@ -10,7 +10,7 @@ function slideMarkup(sl,label,rl,tag,k){
   return '<div class="'+cls+'">'+inner+'</div>';
 }
 
-function noteHtml(n){return '<li class="note'+(n.k==='e'?' e':'')+'">'+(n.k==='e'?ICON.err:ICON.warn)+'<span>'+h(n.msg)+'</span></li>';}
+function noteHtml(n){return '<li class="note'+(n.k==='e'?' e':'')+'">'+(n.k==='e'?ICON.err:ICON.warn)+'<span>'+(n.html||h(n.msg))+'</span></li>';}
 
 // una "scheda" è un passo con le sue slide, oppure un passo escluso per errore
 function cardHtml(c){

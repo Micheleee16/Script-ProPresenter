@@ -140,17 +140,20 @@ function makeSong(it,en){
   return {title:en.title||it.title,secs:secs,order:order,arrangement:en.arrangement||it.arrangement,chords:en.chords.concat(it.chords),strays:en.strays.concat(it.strays),warns:warns};
 }
 // Le slide di una sezione, oppure il motivo per cui non si può farle.
-// Ogni slide ha UNA riga italiana. Se una riga inglese traduce più righe italiane, le slide
-// di quelle righe hanno la stessa riga inglese nelle note.
+// Ogni slide ha UNA riga italiana. Se le righe sono in pari numero, ognuna ha la sua riga inglese.
+// Se non lo sono, l'abbinamento è una proposta (in proporzione alla lunghezza) e si segna dove le righe
+// non corrispondono: in quel caso una riga inglese che ne traduce più d'una italiane è ripetuta nelle note di ognuna.
 function sectionSlides(s){
-  if(!s.it.length&&!s.en.length)return {blank:true,slides:[],error:null};
-  if(!s.hasIt||!s.it.length)return {slides:[],error:'Manca il testo italiano di "'+s.name+'".'};
-  if(!s.hasEn||!s.en.length)return {slides:[],error:'Manca il testo inglese di "'+s.name+'".'};
-  var a=chunksOf(s.it,s.itJ),b=chunksOf(s.en,s.enJ);
-  if(a.length!==b.length)return {slides:[],error:'"'+s.name+'": ci sono '+a.length+' gruppi di righe italiane e '+b.length+' di righe inglesi. Devono essere uguali: unisci o separa le righe.',counts:[a.length,b.length]};
-  var out=[];
-  a.forEach(function(c,i){c.forEach(function(l){out.push({it:[l],en:b[i]});});});
-  return {slides:out,error:null};
+  if(!s.it.length&&!s.en.length)return {blank:true,slides:[],groups:[],mismatch:[],counts:[0,0],error:null};
+  if(!s.hasIt||!s.it.length)return {slides:[],groups:[],mismatch:[],counts:[s.it.length,s.en.length],error:'Manca il testo italiano di "'+s.name+'".'};
+  if(!s.hasEn||!s.en.length)return {slides:[],groups:[],mismatch:[],counts:[s.it.length,s.en.length],error:'Manca il testo inglese di "'+s.name+'".'};
+  var j=defaultJoins(s.it,s.en),a=chunksOf(s.it,j.itJ),b=chunksOf(s.en,j.enJ),groups=[],slides=[],ia=0,ib=0;
+  a.forEach(function(c,i){
+    groups.push({it:c,en:b[i],itFrom:ia+1,itTo:ia+c.length,enFrom:ib+1,enTo:ib+b[i].length});
+    c.forEach(function(l){slides.push({it:[l],en:b[i]});});
+    ia+=c.length;ib+=b[i].length;
+  });
+  return {slides:slides,groups:groups,mismatch:groups.filter(function(g){return g.it.length!==g.en.length;}),counts:[s.it.length,s.en.length],error:null};
 }
 // I blocchi della canzone, pronti per costruire il file (o con l'elenco degli errori).
 function songBlocks(song){
@@ -179,5 +182,18 @@ function editSongText(raw,lib,key,j,newLines){
   s.srcs.forEach(function(src){if(src[j]!==undefined&&clean(lines[src[j]])===clean(old))at.push(src[j]);});
   at.sort(function(a,b){return b-a;});
   at.forEach(function(i){Array.prototype.splice.apply(lines,[i,1].concat(newLines));});
+  return lines.join('\n');
+}
+
+// Unisce la riga j di una sezione con la successiva (in tutte le copie uguali): serve quando una riga
+// è stata spezzata di troppo, per far tornare i conti con l'altra lingua.
+function mergeSongLines(raw,lib,key,j){
+  var s=lib[key];if(!s||!s.srcs||j+1>=s.lines.length)return raw;
+  var lines=raw.split('\n'),clean=function(x){return (x||'').replace(/\u00a0/g,' ').trim();},at=[];
+  s.srcs.forEach(function(src){
+    if(src[j]!==undefined&&src[j+1]!==undefined&&clean(lines[src[j]])===clean(s.lines[j])&&clean(lines[src[j+1]])===clean(s.lines[j+1]))at.push([src[j],src[j+1]]);
+  });
+  at.sort(function(x,y){return y[0]-x[0];});
+  at.forEach(function(p){lines[p[0]]=clean(lines[p[0]])+' '+clean(lines[p[1]]);lines.splice(p[1],1);});
   return lines.join('\n');
 }
