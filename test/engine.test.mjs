@@ -113,3 +113,22 @@ test('zip STORED valido: CRC e dimensioni corrispondono', () => {
     off += 46 + nl;
   }
 });
+
+test('avviso: un numero senza punteggiatura davanti potrebbe non essere un versetto', () => {
+  const r = read('Atti 2:1-2\n1 Disse tre cose per 2 volte e basta');
+  const w = r.warns.map((x) => x.msg).join(' | ');
+  assert.match(w, /Il versetto 2 inizia dopo una parola senza punteggiatura/);
+});
+
+test('nessun avviso se i versetti sono a capo o dopo la punteggiatura', () => {
+  const a = read(`Atti 2:1-2\n1 ${T('a')}\n2 ${T('b')}`);
+  const b = read(`Atti 2:1-2\n1 ${T('a')}. 2 ${T('b')}`);
+  assert.equal(a.warns.length, 0);
+  assert.equal(b.warns.length, 0);
+});
+
+test('avviso: riferimento scritto dopo il testo', () => {
+  const r = read(`1 Questo è un versetto abbastanza lungo.\n2 Anche questo lo è, direi.\nRomani 6:1-2`);
+  assert.equal(r.passages.length, 1);
+  assert.match(r.warns.map((x) => x.msg).join(' '), /riferimento è scritto dopo il testo/);
+});

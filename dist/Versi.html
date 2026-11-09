@@ -343,7 +343,10 @@ function findStarts(body,s,e,warn){
     if(cands.length>1){
       var firstP=null;for(var i=0;i<cands.length;i++)if(cands[i].punct){firstP=cands[i];break;}
       if(firstP)pick=firstP;
-      if(pick!==cands[0]||!pick.punct)warn('Il numero '+n+' compare '+cands.length+' volte nel testo. Ho scelto quello dopo la punteggiatura: controlla che il versetto '+n+' inizi nel punto giusto.');
+      if(pick.punct)warn('Il numero '+n+' compare '+cands.length+' volte nel testo. Ho scelto quello dopo la punteggiatura: controlla che il versetto '+n+' inizi nel punto giusto.');
+      else warn('Il numero '+n+' compare '+cands.length+' volte nel testo e nessuno segue una punteggiatura o un a capo. Ho scelto il primo: controlla che il versetto '+n+' inizi nel punto giusto.');
+    }else if(!pick.punct){
+      warn('Il versetto '+n+' inizia dopo una parola senza punteggiatura né a capo: controlla che il numero '+n+' sia davvero l\'inizio del versetto '+n+' (e non, per esempio, "'+n+' volte").');
     }
     starts.push([n,pick.idx]);pos=pick.end;n++;
   }
@@ -372,6 +375,7 @@ function readMessage(raw){
       body=body.replace(new RegExp('^\\s*'+s+'\\s+'),'');
       var nome=hd.b+' '+chap+':'+s+(e&&e!==s?'-'+e:'');
       var W=function(msg){warns.push({pid:id,ref:nome,msg:msg});};
+      if(preForLast!==null&&i===heads.length-1)W('Il riferimento è scritto dopo il testo: ho usato come versetti il testo che lo precede. Controlla che sia giusto.');
       var E=function(msg){errs.push({pid:id,ref:nome,msg:msg});};
       var starts=findStarts(body,s,e,W),verses=[];
       for(var j=0;j<starts.length;j++){
@@ -398,6 +402,8 @@ function readMessage(raw){
 }
 
 // ====================== regola per dividere in slide ======================
+// Quello che finisce davvero sulla slide: l'ultimo versetto perde spazi e virgole finali.
+function finalVerses(sl){sl=sl.slice();var L=sl[sl.length-1];sl[sl.length-1]=[L[0],L[1].replace(/\s+$/,'').replace(/,+$/,'').replace(/\s+$/,'')];return sl;}
 function vlen(v){return (v[0]+' '+v[1]).length;}
 function group(verses,corto,max){
   var out=[],i=0;
@@ -414,7 +420,7 @@ function group(verses,corto,max){
 
 // ====================== costruzione della presentazione ======================
 function verseRtf(hdr,vs){
-  vs=vs.slice();var L=vs[vs.length-1];vs[vs.length-1]=[L[0],L[1].replace(/\s+$/,'').replace(/,+$/,'').replace(/\s+$/,'')];
+  vs=finalVerses(vs);
   var s=hdr+'\\f0\\fs80 \\cf2 '+vs[0][0]+'\n\\fs120  '+esc(vs[0][1]),plain=vs[0][0]+' '+vs[0][1];
   for(var i=1;i<vs.length;i++){s+=' \n\\fs80 \\up0 '+vs[i][0]+'\n\\fs120 \\up0 \\\'a0'+esc(vs[i][1]);plain+=' '+vs[i][0]+' '+vs[i][1];}
   return [s+'}',plain];
@@ -525,7 +531,6 @@ function defaultName(){var d=new Date();function p(n){return ('0'+n).slice(-2);}
 function nome(){return ($('nome').value||'').trim()||defaultName();}
 function mark(id,st,n){var el=$(id);el.className='mark'+(st?' '+st:'');el.innerHTML=st==='done'?ICON.ok:(st==='attn'||st==='bad'?'!':n);}
 
-function finalVerses(sl){sl=sl.slice();var L=sl[sl.length-1];sl[sl.length-1]=[L[0],L[1].replace(/\s+$/,'').replace(/,+$/,'').replace(/\s+$/,'')];return sl;}
 function slideLen(sl){return finalVerses(sl).map(function(v){return v[0]+' '+v[1];}).join(' ').length;}
 function slideMarkup(sl,label,rl,tag,idx){
   var fv=finalVerses(sl),tot=slideLen(sl),long=tot>rl.lungo,bg=state.img.bg;

@@ -1,4 +1,3 @@
-function finalVerses(sl){sl=sl.slice();var L=sl[sl.length-1];sl[sl.length-1]=[L[0],L[1].replace(/\s+$/,'').replace(/,+$/,'').replace(/\s+$/,'')];return sl;}
 function slideLen(sl){return finalVerses(sl).map(function(v){return v[0]+' '+v[1];}).join(' ').length;}
 function slideMarkup(sl,label,rl,tag,idx){
   var fv=finalVerses(sl),tot=slideLen(sl),long=tot>rl.lungo,bg=state.img.bg;

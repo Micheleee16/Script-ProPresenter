@@ -1,6 +1,6 @@
 // ====================== costruzione della presentazione ======================
 function verseRtf(hdr,vs){
-  vs=vs.slice();var L=vs[vs.length-1];vs[vs.length-1]=[L[0],L[1].replace(/\s+$/,'').replace(/,+$/,'').replace(/\s+$/,'')];
+  vs=finalVerses(vs);
   var s=hdr+'\\f0\\fs80 \\cf2 '+vs[0][0]+'\n\\fs120  '+esc(vs[0][1]),plain=vs[0][0]+' '+vs[0][1];
   for(var i=1;i<vs.length;i++){s+=' \n\\fs80 \\up0 '+vs[i][0]+'\n\\fs120 \\up0 \\\'a0'+esc(vs[i][1]);plain+=' '+vs[i][0]+' '+vs[i][1];}
   return [s+'}',plain];

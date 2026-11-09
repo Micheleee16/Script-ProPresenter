@@ -22,7 +22,10 @@ function findStarts(body,s,e,warn){
     if(cands.length>1){
       var firstP=null;for(var i=0;i<cands.length;i++)if(cands[i].punct){firstP=cands[i];break;}
       if(firstP)pick=firstP;
-      if(pick!==cands[0]||!pick.punct)warn('Il numero '+n+' compare '+cands.length+' volte nel testo. Ho scelto quello dopo la punteggiatura: controlla che il versetto '+n+' inizi nel punto giusto.');
+      if(pick.punct)warn('Il numero '+n+' compare '+cands.length+' volte nel testo. Ho scelto quello dopo la punteggiatura: controlla che il versetto '+n+' inizi nel punto giusto.');
+      else warn('Il numero '+n+' compare '+cands.length+' volte nel testo e nessuno segue una punteggiatura o un a capo. Ho scelto il primo: controlla che il versetto '+n+' inizi nel punto giusto.');
+    }else if(!pick.punct){
+      warn('Il versetto '+n+' inizia dopo una parola senza punteggiatura né a capo: controlla che il numero '+n+' sia davvero l\'inizio del versetto '+n+' (e non, per esempio, "'+n+' volte").');
     }
     starts.push([n,pick.idx]);pos=pick.end;n++;
   }
@@ -51,6 +54,7 @@ function readMessage(raw){
       body=body.replace(new RegExp('^\\s*'+s+'\\s+'),'');
       var nome=hd.b+' '+chap+':'+s+(e&&e!==s?'-'+e:'');
       var W=function(msg){warns.push({pid:id,ref:nome,msg:msg});};
+      if(preForLast!==null&&i===heads.length-1)W('Il riferimento è scritto dopo il testo: ho usato come versetti il testo che lo precede. Controlla che sia giusto.');
       var E=function(msg){errs.push({pid:id,ref:nome,msg:msg});};
       var starts=findStarts(body,s,e,W),verses=[];
       for(var j=0;j<starts.length;j++){
