@@ -6,6 +6,7 @@ ProPresenter 7:
 - **Versetti:** trasforma il messaggio del pastore in slide, con l'aspetto del template "Messaggio Modena".
 - **Canzoni:** da un testo italiano e uno inglese fa le slide come nel modello "Breakthrough's Coming - ITA + ENG"
   (italiano in maiuscolo sulla slide, inglese nelle note, un gruppo per ogni sezione).
+  I testi si incollano oppure si caricano da file `.txt` o `.pdf` (anche trascinandoli).
 
 **Per usarla:** apri `dist/Versi.html` nel browser.
 

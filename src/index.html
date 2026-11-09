@@ -117,10 +117,10 @@
 
     <section class="sec m-canzoni" id="c-in" aria-labelledby="h-cin" hidden>
       <h2 id="h-cin"><span class="n">1</span>Incolla i testi</h2>
-      <p class="sub">Incolla il testo italiano e quello inglese, con i nomi delle sezioni (Verse 1, Chorus, Bridge…). Accordi, numeri di pagina e intestazioni vengono ignorati. Se vuoi spezzare una riga in due, fallo qui nel testo.</p>
+      <p class="sub">Incolla il testo italiano e quello inglese, oppure carica i file (.txt o .pdf): puoi anche trascinarli sui riquadri. Ci vogliono i nomi delle sezioni (Verse 1, Chorus, Bridge…). Accordi, numeri di pagina e intestazioni vengono ignorati.</p>
       <div class="two" id="c-wrap">
-        <div class="field"><label class="lab" for="c-it">Italiano</label><textarea id="c-it" spellcheck="false" placeholder="Verse 1&#10;Come il sole che sorge al mattino&#10;La tua bontà mi ricorda che&#10;…"></textarea></div>
-        <div class="field"><label class="lab" for="c-en">Inglese</label><textarea id="c-en" spellcheck="false" placeholder="Verse 1&#10;Sure as the sun rises up every morning&#10;I am reminded the Lord is Good&#10;…"></textarea></div>
+        <div class="field" data-side="it"><div class="lab-row"><label class="lab" for="c-it">Italiano</label><label class="btn small file"><input class="sr" type="file" id="cf-it" accept=".txt,.text,.md,.pdf,text/plain,application/pdf" multiple><span>Carica file</span></label></div><textarea id="c-it" spellcheck="false" placeholder="Verse 1&#10;Come il sole che sorge al mattino&#10;La tua bontà mi ricorda che&#10;…"></textarea><p class="src" id="src-it" hidden></p><div class="fixup" id="fx-it" hidden></div></div>
+        <div class="field" data-side="en"><div class="lab-row"><label class="lab" for="c-en">Inglese</label><label class="btn small file"><input class="sr" type="file" id="cf-en" accept=".txt,.text,.md,.pdf,text/plain,application/pdf" multiple><span>Carica file</span></label></div><textarea id="c-en" spellcheck="false" placeholder="Verse 1&#10;Sure as the sun rises up every morning&#10;I am reminded the Lord is Good&#10;…"></textarea><p class="src" id="src-en" hidden></p><div class="fixup" id="fx-en" hidden></div></div>
       </div>
       <div class="under">
         <span class="count" id="c-count" aria-live="polite">Nessun testo incollato</span>

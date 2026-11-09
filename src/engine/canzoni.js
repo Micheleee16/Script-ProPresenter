@@ -38,13 +38,19 @@ function arrToken(t){
   else type='inst';
   return {key:type+(n||''),count:m[2]?parseInt(m[2],10):1};
 }
-function arrangementOf(l){
-  var parts=l.split(/\s[-–—]\s/),src=parts.length>1?parts[parts.length-1]:l,prefix=parts.length>1?parts.slice(0,-1).join(' - '):'';
+function arrList(src){
   var toks=src.split(/\s*,\s*/);
   if(toks.length<3)return null;
   var list=[];
-  for(var i=0;i<toks.length;i++){var a=arrToken(toks[i]);if(!a)return null;for(var r=0;r<a.count;r++)list.push(a.key);}
-  return {src:src.trim(),prefix:prefix,keys:list};
+  for(var i=0;i<toks.length;i++){var t=arrToken(toks[i]);if(!t)return null;for(var r=0;r<t.count;r++)list.push(t.key);}
+  return list;
+}
+// Una riga con l'ordine ("Intro, V1, PC, C×2…"), anche preceduta dal titolo ("Taste and See - Intro, V1, …")
+function arrangementOf(l){
+  var re=/\s*[-–—]\s+/g,m,cands=[{prefix:'',src:l}];
+  while((m=re.exec(l)))cands.push({prefix:l.slice(0,m.index),src:l.slice(m.index+m[0].length)});
+  for(var i=0;i<cands.length;i++){var k=arrList(cands[i].src);if(k)return {src:cands[i].src.trim(),prefix:cands[i].prefix.trim(),keys:k};}
+  return null;
 }
 function cleanTitle(l){return l.split(/\s+[–—-]\s+|\s*\[/)[0].trim();}
 function sameLines(a,b){
@@ -56,8 +62,15 @@ function sameLines(a,b){
 // righe di accordi tolte, righe che non appartengono a nessuna sezione.
 function parseSongText(raw,lang){
   var title='',arr=null,occ=[],cur=null,chords=[],strays=[],warns=[];
-  raw.replace(/\r/g,'').split('\n').forEach(function(l0,idx){
-    var l=l0.replace(/ /g,' ').trim();
+  // una riga con l'ordine può andare a capo (succede nei PDF): "… B×2," e poi "Outro×2"
+  var rows=raw.replace(/\r/g,'').split('\n').map(function(t,i){return {t:t.replace(/\u00a0/g,' ').trim(),idx:i};});
+  for(var r=0;r<rows.length-1;r++){
+    if(!/,$/.test(rows[r].t))continue;
+    var nx=r+1;while(nx<rows.length&&!rows[nx].t)nx++;
+    if(nx<rows.length&&arrangementOf(rows[r].t+' '+rows[nx].t)){rows[r].t+=' '+rows[nx].t;rows[nx].t='';}
+  }
+  rows.forEach(function(row){
+    var l=row.t,idx=row.idx;
     if(!l)return;
     if(/^\d{1,3}$/.test(l))return;                         // numero di pagina
     var a=arrangementOf(l);

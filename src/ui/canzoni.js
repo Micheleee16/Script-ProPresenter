@@ -7,6 +7,69 @@ function dockSay(cls,icon,txt){
   if(st._k===key)return;st._k=key;
   st.className='status '+(cls||'');st.innerHTML=(icon||'')+'<span>'+h(txt)+'</span>';
 }
+// ---------- file ----------
+function readSongFile(f){
+  var isPdf=/\.pdf$/i.test(f.name)||f.type==='application/pdf';
+  return f.arrayBuffer().then(function(ab){
+    if(isPdf)return pdfToText(new Uint8Array(ab));
+    return {text:decodeTextFile(new Uint8Array(ab)),unknown:[]};
+  }).then(function(r){return {name:f.name,text:r.text,unknown:r.unknown};});
+}
+function songSetSource(side,r){
+  var box=$(side==='it'?'c-it':'c-en'),src=$('src-'+side);
+  box.value=r.text;state.editing=null;
+  src.hidden=false;src.textContent='Caricato da: '+r.name;
+  state.song.fix[side]=r.unknown||[];
+  analyzeSong();
+  if((r.unknown||[]).length)setTimeout(function(){$('fx-'+side).scrollIntoView({behavior:reduced()?'auto':'smooth',block:'center'});},150);
+}
+// più file insieme: si capisce quale è italiano e quale inglese
+function loadSongFiles(files,side){
+  files=Array.prototype.slice.call(files||[]);if(!files.length)return;
+  Promise.all(files.map(function(f){return readSongFile(f).catch(function(e){toast('"'+f.name+'": '+(e&&e.message||'non riesco a leggerlo')+' Puoi incollare il testo a mano.');return null;});})).then(function(rs){
+    rs=rs.filter(Boolean);if(!rs.length)return;
+    if(rs.length===1){songSetSource(side,rs[0]);toast('Testo caricato da '+rs[0].name+'.');return;}
+    var used={};
+    rs.forEach(function(r){r.lang=guessLang(r.text,r.name);});
+    rs.forEach(function(r){if(r.lang&&!used[r.lang]){used[r.lang]=r;}});
+    if(!used.it&&!used.en){toast('Non capisco quale file è italiano e quale inglese: caricali uno alla volta, ciascuno nel suo riquadro.');return;}
+    if(used.it)songSetSource('it',used.it);if(used.en)songSetSource('en',used.en);
+    toast('Caricati: '+[used.it&&'italiano ('+used.it.name+')',used.en&&'inglese ('+used.en.name+')'].filter(Boolean).join(', ')+'.');
+  });
+}
+// lettere del PDF che non si leggono: si mostrano le parole e una proposta da confermare
+var FIX_MARK=/\{\?\d+\}/;
+function songFixHtml(list){
+  var rows=list.map(function(u,i){
+    return '<div class="fx-row"><span class="fx-ctx">'+u.ctx.map(h).join(' · ')+'</span><span class="fx-arrow">→</span><input class="fx-in" type="text" data-i="'+i+'" value="'+h(u.suggest||'')+'" aria-label="Lettere al posto di '+h(u.mark)+'" spellcheck="false"><span class="fx-prev" data-i="'+i+'"></span></div>';
+  }).join('');
+  return '<b>Alcune lettere del PDF non si leggono</b><p>Il PDF usa caratteri speciali (spesso «tt» o «fi») che non so riconoscere. Controlla le lettere proposte e conferma.</p>'+rows+'<div class="fx-act"><button type="button" class="btn small primary" data-act="fx-apply">Conferma</button></div>';
+}
+function songFixPreview(box,list){
+  qsa('.fx-prev',box).forEach(function(sp){
+    var i=parseInt(sp.getAttribute('data-i'),10),u=list[i],v=(qs('.fx-in[data-i="'+i+'"]',box)||{}).value||'';
+    sp.textContent=u.ctx.slice(0,2).map(function(w){return w.split(u.mark).join(v);}).join(' · ');
+  });
+}
+function songFixRender(side){
+  var G=state.song,box=$('fx-'+side),text=$(side==='it'?'c-it':'c-en').value;
+  var list=(G.fix[side]||[]).filter(function(u){return text.indexOf(u.mark)>=0;});
+  G.fix[side]=list;
+  box.hidden=!list.length;
+  if(!list.length){box.innerHTML='';box._k='';return;}
+  var k=JSON.stringify(list.map(function(u){return u.mark+u.ctx.join('')+u.suggest;}));
+  if(box._k!==k){box._k=k;box.innerHTML=songFixHtml(list);}
+  songFixPreview(box,list);
+}
+function songFixApply(side){
+  var G=state.song,box=$('fx-'+side),list=G.fix[side]||[],boxText=$(side==='it'?'c-it':'c-en'),t=boxText.value;
+  for(var i=0;i<list.length;i++){
+    var v=((qs('.fx-in[data-i="'+i+'"]',box)||{}).value||'').trim();
+    if(!v){toast('Scrivi le lettere che mancano in «'+list[i].ctx[0]+'».');return;}
+  }
+  list.forEach(function(u,i){var v=qs('.fx-in[data-i="'+i+'"]',box).value.trim();t=t.split(u.mark).join(v);});
+  boxText.value=t;G.fix[side]=[];state.done=null;analyzeSong();
+}
 function secSig(s){return hash(s.it.join('\n')+'|'+s.en.join('\n'));}
 function ensureSec(m,key){
   if(m.secs[key])return m.secs[key];
@@ -20,6 +83,7 @@ function autoOrder(keys){var occ={};return keys.map(function(k){occ[k]=(occ[k]||
 function analyzeSong(){
   var G=state.song,itT=$('c-it').value,enT=$('c-en').value;
   state.done=null;
+  songFixRender('it');songFixRender('en');
   $('c-wrap').classList.toggle('has-text',!!(itT.trim()||enT.trim()));
   if(!itT.trim()&&!enT.trim()){G.model=null;G.view=null;renderSong();return;}
   var it=parseSongText(itT,'Italiano'),en=parseSongText(enT,'Inglese'),m=makeSong(it,en);
@@ -54,6 +118,9 @@ function songView(G){
     blocks.push({key:o.key,name:s.name,type:s.type,blank:!!r.blank,slides:r.slides,error:r.error});
     items.push({o:o,s:s,r:r,notes:notes,i:i,n:G.order.length,first:first});
   });
+  var pend=0;
+  Object.keys(m.secs).forEach(function(k){m.secs[k].it.concat(m.secs[k].en).forEach(function(l){if(FIX_MARK.test(l))pend++;});});
+  if(pend){var msg='Nel testo ci sono ancora lettere da confermare del PDF (segnate con {?1}, {?2}…).';if(errors.indexOf(msg)<0)errors.push(msg);}
   var info=[];
   if(m.chords.length)info.push('Ho tolto '+pl(m.chords.length,'riga di accordi','righe di accordi')+' ('+m.chords.filter(function(c,i,a){return a.indexOf(c)===i;}).slice(0,6).join(', ')+').');
   if(m.strays.length){nWarn++;info.push('Righe fuori da ogni sezione, ignorate: "'+m.strays.slice(0,3).join('" · "')+'".');}
@@ -254,9 +321,23 @@ function songOrderFromHeader(){
 }
 function bindSong(){
   var tm=null;
-  ['c-it','c-en'].forEach(function(id){$(id).addEventListener('input',function(){state.editing=null;clearTimeout(tm);tm=setTimeout(analyzeSong,200);});});
+  ['c-it','c-en'].forEach(function(id){$(id).addEventListener('input',function(){state.editing=null;var sd=id==='c-it'?'it':'en';if(!$(id).value.trim()){$('src-'+sd).hidden=true;}clearTimeout(tm);tm=setTimeout(analyzeSong,200);});});
+  ['it','en'].forEach(function(sd){
+    $('cf-'+sd).addEventListener('change',function(e){loadSongFiles(e.target.files,sd);e.target.value='';});
+    var fd=qs('.field[data-side="'+sd+'"]'),dep=0;
+    fd.addEventListener('dragenter',function(e){if(!e.dataTransfer||Array.prototype.indexOf.call(e.dataTransfer.types||[],'Files')<0)return;e.preventDefault();dep++;fd.classList.add('drag');});
+    fd.addEventListener('dragover',function(e){if(e.dataTransfer&&Array.prototype.indexOf.call(e.dataTransfer.types||[],'Files')>=0)e.preventDefault();});
+    fd.addEventListener('dragleave',function(){dep=Math.max(0,dep-1);if(!dep)fd.classList.remove('drag');});
+    fd.addEventListener('drop',function(e){
+      dep=0;fd.classList.remove('drag');
+      if(!e.dataTransfer||!e.dataTransfer.files||!e.dataTransfer.files.length)return;
+      e.preventDefault();e.stopPropagation();loadSongFiles(e.dataTransfer.files,sd);
+    });
+    $('fx-'+sd).addEventListener('click',function(e){if(e.target.closest&&e.target.closest('[data-act="fx-apply"]'))songFixApply(sd);});
+    $('fx-'+sd).addEventListener('input',function(){songFixPreview($('fx-'+sd),state.song.fix[sd]||[]);});
+  });
   $('c-clear').addEventListener('click',function(){
-    var G=state.song;state.editing=null;$('c-it').value='';$('c-en').value='';G.manual={};G.touched=false;G.order=null;G.extra={};
+    var G=state.song;state.editing=null;G.fix={it:[],en:[]};$('src-it').hidden=true;$('src-en').hidden=true;$('c-it').value='';$('c-en').value='';G.manual={};G.touched=false;G.order=null;G.extra={};
     analyzeSong();$('c-it').focus();
   });
   $('c-list').addEventListener('click',function(e){

@@ -135,6 +135,37 @@ const [dls] = await Promise.all([pg.waitForEvent('download'), pg.click('#dlbtn')
 await pg.waitForFunction(() => document.getElementById('dlbtn').dataset.state === 'done');
 if (!/\.pro$/.test(dls.suggestedFilename())) fail('nome file canzone inatteso: ' + dls.suggestedFilename());
 if (!/riletto il file/.test(await pg.locator('#dlstatus').innerText())) fail('manca la conferma della rilettura (canzoni)');
+// ---------- caricare file ----------
+const pdfIt = fileURLToPath(new URL('./fixtures/taste-it.pdf', import.meta.url)), pdfEn = fileURLToPath(new URL('./fixtures/taste-en.pdf', import.meta.url));
+await pg.click('#c-clear');
+await pg.setInputFiles('#cf-en', pdfEn);
+await pg.waitForFunction(() => document.getElementById('c-en').value.includes('Sure as the sun'));
+if (!/Caricato da: taste-en\.pdf/.test(await pg.locator('#src-en').innerText())) fail('manca il nome del file caricato (inglese)');
+if (await pg.locator('#fx-en').isVisible()) fail('il PDF inglese non dovrebbe chiedere conferme');
+await pg.setInputFiles('#cf-it', pdfIt);
+await pg.waitForSelector('#fx-it:not([hidden])');
+if ((await pg.locator('#fx-it .fx-row').count()) !== 2) fail('il PDF italiano dovrebbe chiedere 2 conferme');
+if (!(await pg.locator('#dlbtn').isDisabled())) fail('con lettere da confermare non si deve poter scaricare');
+await pg.click('#fx-it [data-act="fx-apply"]');
+await pg.waitForFunction(() => document.getElementById('fx-it').hidden);
+if ((await itBox()).includes('{?')) fail('i segnaposto non sono stati sostituiti');
+if (!(await itBox()).includes('Come il sole che sorge al mattino')) fail('la lettura del PDF italiano è sbagliata');
+if ((await nCard()) !== 19) fail('dai PDF dovrebbero uscire 19 sezioni, sono ' + (await nCard()));
+const [dlp] = await Promise.all([pg.waitForEvent('download'), pg.click('#dlbtn')]);
+await pg.waitForFunction(() => document.getElementById('dlbtn').dataset.state === 'done');
+// due file insieme: si capisce quale è quale
+await pg.click('#c-clear');
+await pg.setInputFiles('#cf-it', [pdfEn, pdfIt]);
+await pg.waitForFunction(() => document.getElementById('c-en').value.includes('Sure as the sun') && document.getElementById('c-it').value.includes('Come il sole'));
+// file di testo con codifica Windows-1252
+await pg.click('#c-clear');
+await pg.setInputFiles('#cf-it', { name: 'Canzone - ITA.txt', mimeType: 'text/plain', buffer: Buffer.concat([Buffer.from('Verse 1\nLa tua bont'), Buffer.from([0xE0]), Buffer.from('\n')]) });
+await pg.waitForFunction(() => document.getElementById('c-it').value.includes('bontà'));
+// un file che non è leggibile: avviso, nessun errore
+await pg.setInputFiles('#cf-en', { name: 'falso.pdf', mimeType: 'application/pdf', buffer: Buffer.from('non sono un pdf') });
+await pg.waitForSelector('#toast.show');
+if (!/non sembra un PDF/.test(await pg.locator('#toast').innerText())) fail('manca il messaggio per il PDF non valido');
+
 // si torna ai versetti
 await pg.click('#tab-bibbia');
 if (!(await pg.locator('#s-msg').isVisible()) || (await pg.locator('#c-in').isVisible())) fail('il ritorno ai versetti non mostra le sezioni giuste');
