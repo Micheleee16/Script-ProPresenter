@@ -24,10 +24,14 @@
     </div>
     <button class="icon-btn" id="theme" type="button" aria-label="Tema"></button>
   </header>
-  <p class="lead">Incolla il messaggio del pastore e scarica le slide dei versetti per ProPresenter.</p>
+  <p class="lead" id="lead">Incolla il messaggio del pastore e scarica le slide dei versetti per ProPresenter.</p>
+  <div class="modes" role="tablist" aria-label="Cosa vuoi preparare">
+    <button type="button" role="tab" id="tab-bibbia" aria-selected="true" aria-controls="s-msg">Versetti</button>
+    <button type="button" role="tab" id="tab-canzoni" aria-selected="false" aria-controls="c-in">Canzoni</button>
+  </div>
 
   <main>
-    <section class="sec" id="s-msg" aria-labelledby="h-msg">
+    <section class="sec m-bibbia" id="s-msg" aria-labelledby="h-msg">
       <h2 id="h-msg"><span class="n">1</span>Incolla il messaggio</h2>
       <p class="sub">Va bene anche copiato da WhatsApp: orari e nomi vengono ignorati. Ogni versetto deve avere il suo numero.</p>
       <div class="field" id="msgwrap">
@@ -42,7 +46,7 @@
       </div>
     </section>
 
-    <section class="sec" id="s-img" aria-labelledby="h-img">
+    <section class="sec m-bibbia" id="s-img" aria-labelledby="h-img">
       <h2 id="h-img"><span class="n">2</span>Immagini <span class="opt">facoltative</span></h2>
       <p class="sub">Trascina un file sul riquadro oppure scegli dal computer. Restano salvate per la prossima volta.</p>
       <div class="imgs">
@@ -71,7 +75,7 @@
       </div>
     </section>
 
-    <section class="sec" id="out" aria-labelledby="h-rev">
+    <section class="sec m-bibbia" id="out" aria-labelledby="h-rev">
       <h2 id="h-rev"><span class="n">3</span>Controlla le slide</h2>
 
       <div class="empty" id="empty">
@@ -97,7 +101,7 @@
       </div>
     </section>
 
-    <details class="more" id="more">
+    <details class="more m-bibbia" id="more">
       <summary>Impostazioni</summary>
       <div class="more-b">
         <p class="sub">Di norma c'è un versetto per slide, e un versetto non viene mai spezzato.</p>
@@ -108,6 +112,61 @@
           <button class="link" id="reset" type="button">Ripristina i valori iniziali</button>
           <button class="link" id="dlpro" type="button" hidden>Scarica solo la presentazione (.pro), senza le immagini</button>
         </div>
+      </div>
+    </details>
+
+    <section class="sec m-canzoni" id="c-in" aria-labelledby="h-cin" hidden>
+      <h2 id="h-cin"><span class="n">1</span>Incolla i testi</h2>
+      <p class="sub">Incolla il testo italiano e quello inglese, con i nomi delle sezioni (Verse 1, Chorus, Bridge…). Accordi, numeri di pagina e intestazioni vengono ignorati. Se vuoi spezzare una riga in due, fallo qui nel testo.</p>
+      <div class="two" id="c-wrap">
+        <div class="field"><label class="lab" for="c-it">Italiano</label><textarea id="c-it" spellcheck="false" placeholder="Verse 1&#10;Come il sole che sorge al mattino&#10;La tua bontà mi ricorda che&#10;…"></textarea></div>
+        <div class="field"><label class="lab" for="c-en">Inglese</label><textarea id="c-en" spellcheck="false" placeholder="Verse 1&#10;Sure as the sun rises up every morning&#10;I am reminded the Lord is Good&#10;…"></textarea></div>
+      </div>
+      <div class="under">
+        <span class="count" id="c-count" aria-live="polite">Nessun testo incollato</span>
+        <div class="btns"><button class="btn ghost" id="c-clear" type="button">Svuota</button></div>
+      </div>
+    </section>
+
+    <section class="sec m-canzoni" id="c-out" aria-labelledby="h-cout" hidden>
+      <h2 id="h-cout"><span class="n">2</span>Ordine e righe</h2>
+      <p class="sub" id="c-sub">Qui vedi le slide, una per riga o gruppo di righe. A sinistra l'italiano, che va sulla slide; a destra l'inglese, che va nelle note. Passa sopra una riga per unirla alla successiva.</p>
+      <div class="empty" id="c-empty">
+        <p>Incolla i due testi qui sopra. Per ogni sezione serve il nome su una riga, seguito dalle righe del testo:</p>
+        <pre class="fmt">Verse 1
+Come il sole che sorge al mattino
+La tua bontà mi ricorda che
+
+Chorus
+Buono sei, buono sei</pre>
+        <p>Le sezioni compaiono nell'ordine del testo inglese. Poi puoi duplicarle, spostarle o toglierle.</p>
+      </div>
+      <div id="c-review" hidden>
+        <div class="status-box" id="c-sum" data-state="ok" role="status">
+          <span class="sum-ic" id="c-sum-ic"></span>
+          <div class="sum-tx"><b id="c-sum-t"></b><span id="c-sum-p"></span></div>
+          <button class="btn small" id="c-sum-go" type="button" hidden>Vai al primo</button>
+        </div>
+        <div class="order-bar">
+          <label class="add"><span>Aggiungi una sezione</span><select id="c-add"></select></label>
+          <button class="btn small" id="c-add-btn" type="button">Aggiungi</button>
+          <span class="order-sp"></span>
+          <button class="btn small ghost" id="c-ord-en" type="button" hidden>Ordine del testo inglese</button>
+          <button class="btn small ghost" id="c-ord-hd" type="button" hidden>Ordine dell'intestazione</button>
+        </div>
+        <p class="sub hint" id="c-hint" hidden></p>
+        <ol class="plist" id="c-list"></ol>
+        <details class="ignored" id="c-info" hidden>
+          <summary id="c-info-s"></summary>
+          <ul id="c-info-l"></ul>
+        </details>
+      </div>
+    </section>
+
+    <details class="more m-canzoni" id="c-more" hidden>
+      <summary>Impostazioni</summary>
+      <div class="more-b">
+        <label class="chk"><input type="checkbox" id="c-video" checked><span>Inizia con il video di sfondo (Sfondo 1.mov, già nella libreria di ProPresenter)</span></label>
       </div>
     </details>
   </main>

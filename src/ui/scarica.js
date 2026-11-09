@@ -16,6 +16,7 @@ function build(onlyPro){
   return {name:base+'.probundle',bytes:makeZip(files)};
 }
 function download(onlyPro){
+  if(state.mode==='canzoni')return downloadSong();
   var r=state.res;if(!r||!r.passages.length||state.busy)return;
   state.busy=true;renderDock();
   // una breve pausa fa vedere che sta succedendo qualcosa (il lavoro vero è istantaneo)

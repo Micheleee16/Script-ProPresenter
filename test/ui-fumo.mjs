@@ -1,6 +1,7 @@
 // Prova nel browser (richiede Playwright, già presente nell'ambiente): node test/ui-fumo.mjs
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+import { readFileSync } from 'node:fs';
 const { chromium } = createRequire(import.meta.url)('playwright');
 
 const url = 'file://' + fileURLToPath(new URL('../dist/Versi.html', import.meta.url));
@@ -78,6 +79,48 @@ if (!(await pg.locator('#theme').getAttribute('data-m'))) fail('il pulsante del 
 // svuota: torna allo stato vuoto
 await pg.click('#clear');
 if (!(await pg.locator('#empty').isVisible())) fail('dopo "Svuota" dovrebbe tornare lo stato vuoto');
+
+// ---------- canzoni ----------
+const fx = (n) => readFileSync(fileURLToPath(new URL('./fixtures/' + n, import.meta.url)), 'utf8');
+await pg.click('#tab-canzoni');
+if (!(await pg.locator('#c-in').isVisible()) || (await pg.locator('#s-msg').isVisible())) fail('il cambio di modalità non mostra le sezioni giuste');
+if (!(await pg.locator('#dlbtn').isDisabled())) fail('senza testi non si dovrebbe poter scaricare');
+await pg.fill('#c-it', fx('taste-it.txt')); await pg.fill('#c-en', fx('taste-en.txt'));
+await pg.waitForSelector('#c-list .pc');
+const nCard = () => pg.locator('#c-list .pc').count();
+const nomi = async () => pg.evaluate(() => [...document.querySelectorAll('#c-list .pc h3')].map((h) => h.textContent));
+if ((await nCard()) !== 19) fail('attese 19 sezioni, trovate ' + (await nCard()));
+if ((await pg.inputValue('#nome')) !== 'Taste and See - ITA + ENG') fail('nome inatteso: ' + (await pg.inputValue('#nome')));
+if ((await nomi())[0] !== 'Intro') fail('la prima sezione dovrebbe essere Intro');
+// duplicare, spostare, togliere
+await pg.click('#c-list .pc >> nth=2 >> button[data-act="dup"]');
+if ((await nCard()) !== 20) fail('Duplica non ha aggiunto una sezione');
+await pg.click('#c-list .pc >> nth=3 >> button[data-act="del"]');
+if ((await nCard()) !== 19) fail('Elimina non ha tolto la sezione');
+await pg.click('#c-list .pc >> nth=0 >> button[data-act="down"]');
+if ((await nomi())[0] !== 'Verse 1') fail('Sposta giù non ha spostato Intro');
+await pg.click('#c-ord-en');                                   // torna all'ordine del testo
+if ((await nomi())[0] !== 'Intro') fail('l\'ordine del testo non è tornato');
+// righe che non tornano: separa una riga del Chorus -> errore, poi si rimette a posto
+const chorus = '#c-list .pc:has(h3:text-is("Chorus")) >> nth=0';
+await pg.click(chorus + ' >> button[data-act="split"][data-side="it"] >> nth=0');
+await pg.waitForFunction(() => document.getElementById('c-sum').dataset.state === 'err');
+if (!(await pg.locator('#dlbtn').isDisabled())) fail('con righe che non tornano non si deve poter scaricare');
+await pg.click(chorus + ' >> button[data-act="merge"][data-side="it"] >> nth=0');
+await pg.waitForFunction(() => document.getElementById('c-sum').dataset.state !== 'err');
+// ordine dell'intestazione e sezione aggiunta
+await pg.click('#c-ord-hd');
+if ((await nCard()) !== 20) fail('l\'ordine dell\'intestazione dovrebbe avere 20 sezioni, ha ' + (await nCard()));
+await pg.selectOption('#c-add', 'tag'); await pg.click('#c-add-btn');
+if ((await nCard()) !== 21) fail('Aggiungi non ha aggiunto la sezione');
+// scarica con rilettura
+const [dls] = await Promise.all([pg.waitForEvent('download'), pg.click('#dlbtn')]);
+await pg.waitForFunction(() => document.getElementById('dlbtn').dataset.state === 'done');
+if (!/\.pro$/.test(dls.suggestedFilename())) fail('nome file canzone inatteso: ' + dls.suggestedFilename());
+if (!/riletto il file/.test(await pg.locator('#dlstatus').innerText())) fail('manca la conferma della rilettura (canzoni)');
+// si torna ai versetti
+await pg.click('#tab-bibbia');
+if (!(await pg.locator('#s-msg').isVisible()) || (await pg.locator('#c-in').isVisible())) fail('il ritorno ai versetti non mostra le sezioni giuste');
 
 console.log({ passi, slide, file: dl.suggestedFilename(), errori });
 await b.close();

@@ -1,7 +1,11 @@
 # Versi
 
-Pagina unica, senza dipendenze e senza server (funziona offline) che trasforma il messaggio
-del pastore in una presentazione ProPresenter 7 con l'aspetto del template "Messaggio Modena".
+Pagina unica, senza dipendenze e senza server (funziona offline) che prepara presentazioni
+ProPresenter 7:
+
+- **Versetti:** trasforma il messaggio del pastore in slide, con l'aspetto del template "Messaggio Modena".
+- **Canzoni:** da un testo italiano e uno inglese fa le slide come nel modello "Breakthrough's Coming - ITA + ENG"
+  (italiano in maiuscolo sulla slide, inglese nelle note, un gruppo per ogni sezione).
 
 **Per usarla:** apri `dist/Versi.html` nel browser.
 
@@ -12,10 +16,11 @@ src/index.html        struttura della pagina (con due segnaposto: stile e script
 src/ui/stile.css      aspetto: una sola colonna, colori chiari e scuri, animazioni sobrie, telefono
 src/ui/*.js           interfaccia: base (strumenti), anteprima, controllo (riepilogo, schede e barra Scarica),
                       scarica, immagini (si ricordano per la volta dopo), ingrandimento, avvio
-src/engine/*.js       engine: formato Protocol Buffers, RTF, libri, lettura del messaggio,
+src/engine/*.js       engine (canzoni.js e canzone.js per le canzoni): formato Protocol Buffers, RTF, libri, lettura del messaggio,
                       raggruppamento in slide (anche con correzioni a mano), costruzione della presentazione,
                       rilettura finale del file generato, zip
-template/             Messaggio_Modena.pro, il template originale (incorporato nella pagina in base64)
+template/             Messaggio_Modena.pro (versetti) e Canzone_ITA-ENG.pro (canzoni): i modelli originali,
+                      incorporati nella pagina in base64
 build.mjs             assembla dist/Versi.html
 test/                 test automatici (node --test)
 dist/Versi.html       il file finale, generato: non modificarlo a mano

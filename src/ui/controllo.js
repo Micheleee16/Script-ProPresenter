@@ -21,7 +21,7 @@ function paintCount(){
 
 // Aggiorna l'elenco dei passi senza ricrearlo: le schede già presenti restano com'erano
 // (stato aperto/chiuso compreso) e solo quelle nuove entrano con l'animazione.
-function reconcile(list,items){
+function reconcile(list,items,prefix){
   var old={};
   Array.prototype.slice.call(list.children).forEach(function(el){old[el.getAttribute('data-key')]=el;});
   var els=items.map(function(it,i){
@@ -37,7 +37,7 @@ function reconcile(list,items){
       el.innerHTML=it.html;
       (function(e){setTimeout(function(){e.classList.remove('enter');},1900);})(el);
     }
-    el.setAttribute('data-pid',it.pid);el.id='p-'+it.pid;
+    el.setAttribute('data-pid',it.pid);el.id=(prefix||'p-')+it.pid;
     return el;
   });
   Object.keys(old).forEach(function(k){old[k].remove();});
@@ -121,6 +121,7 @@ function render(){
 }
 
 function renderDock(){
+  if(state.mode==='canzoni')return renderDockSong();
   var r=state.res,btn=$('dlbtn'),st=$('dlstatus'),aw=$('ackwrap'),c=state.counts,anyImg=!!(state.img.bg||state.img.sep);
   function say(cls,icon,txt){
     var key=cls+'|'+txt;

@@ -17,7 +17,7 @@ function esc(s){
 // Il contrario di esc(): dal testo RTF di una slide al testo semplice.
 var CPR={};Object.keys(CP).forEach(function(u){CPR[CP[u]]=+u;});
 function rtfPlain(s){
-  var i=s.indexOf('\\f0\\fs');if(i>=0)s=s.slice(i);   // salta l'intestazione (font e colori)
+  var i=s.indexOf('\\cf');if(i<0)i=s.indexOf('\\f0\\fs');if(i>=0)s=s.slice(i);   // salta l'intestazione (font e colori): il testo comincia al primo \cf
   var o='',m,re=/\\uc0\\u(-?\d+) ?|\\'([0-9a-fA-F]{2})|\\([\\{}])|\\[a-zA-Z]+-?\d* ?|[{}]|([^\\{}]+)/g;
   while((m=re.exec(s))){
     if(m[1]!==undefined){var n=+m[1];o+=String.fromCharCode(n<0?n+65536:n);}

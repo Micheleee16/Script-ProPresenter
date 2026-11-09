@@ -8,6 +8,33 @@ function applyTheme(m){
   b.setAttribute('aria-label',lbl+'. Tocca per cambiare.');b.title=lbl;b.setAttribute('data-m',m);
 }
 
+// ---------- versetti o canzoni ----------
+function setMode(m){
+  state.mode=m;store('versi.modo',m==='canzoni'?'canzoni':null);
+  qsa('.m-bibbia').forEach(function(el){el.hidden=m!=='bibbia';});
+  qsa('.m-canzoni').forEach(function(el){el.hidden=m!=='canzoni';});
+  $('tab-bibbia').setAttribute('aria-selected',m==='bibbia'?'true':'false');
+  $('tab-canzoni').setAttribute('aria-selected',m==='canzoni'?'true':'false');
+  $('lead').textContent=m==='canzoni'?'Incolla il testo italiano e quello inglese di una canzone e scarica le slide per ProPresenter.':'Incolla il messaggio del pastore e scarica le slide dei versetti per ProPresenter.';
+  state.done=null;
+  if(!state.nameTouched){
+    var t=state.song.model&&state.song.model.title;
+    $('nome').value=m==='canzoni'?(t?t+' - ITA + ENG':'Canzone - ITA + ENG'):defaultName();
+  }
+  if(m==='canzoni')analyzeSong();else analyze();
+}
+function bindModes(){
+  var tabs=[$('tab-bibbia'),$('tab-canzoni')];
+  $('tab-bibbia').addEventListener('click',function(){setMode('bibbia');});
+  $('tab-canzoni').addEventListener('click',function(){setMode('canzoni');});
+  tabs.forEach(function(t,i){
+    t.addEventListener('keydown',function(e){
+      if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight')return;
+      e.preventDefault();var n=tabs[(i+1)%2];n.focus();n.click();
+    });
+  });
+}
+
 function firstProblem(){
   var el=qs('#plist .pc.err')||qs('#plist .pc.has-warn');
   if(el)goCard(el.parentNode.getAttribute('data-pid'));
@@ -59,7 +86,7 @@ function bindOutput(){
   });
   $('sum-go').addEventListener('click',firstProblem);
   $('ack').addEventListener('change',renderDock);
-  $('nome').addEventListener('input',function(){state.done=null;renderDock();});
+  $('nome').addEventListener('input',function(){state.nameTouched=true;state.done=null;renderDock();});
   $('dlbtn').addEventListener('click',function(){download(false);});
   $('dlpro').addEventListener('click',function(){download(true);});
   bindEdit();
@@ -78,8 +105,9 @@ function bindOutput(){
   window.addEventListener('dragover',function(e){e.preventDefault();});
   window.addEventListener('drop',function(e){e.preventDefault();});
   ['bg','sep'].forEach(bindSlot);
-  bindMessage();bindRules();bindOutput();bindViewer();
+  bindMessage();bindRules();bindOutput();bindViewer();bindSong();bindModes();
   analyze();restoreImages();
-  if(window.matchMedia&&window.matchMedia('(hover:hover)').matches)$('msg').focus();
+  if(store('versi.modo')==='canzoni')setMode('canzoni');
+  else if(window.matchMedia&&window.matchMedia('(hover:hover)').matches)$('msg').focus();
   window.__versi={readMessage:readMessage,group:group,buildPresentation:buildPresentation,analyze:analyze,makeZip:makeZip};
 })();
