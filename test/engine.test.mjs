@@ -155,3 +155,15 @@ test('senza dimensioni note il template resta com\'è', () => {
   const r = read(`Romani 6:5-6\n5 ${T('a')}\n6 ${T('b')}`);
   assert.deepEqual(mediaSize(cuesBytes(pres(r.passages, { bg: { name: 'x.png' }, sep: null }))[0]), [1920, 1080]);
 });
+
+test('ogni abbreviazione indica un solo libro', () => {
+  const seen = new Map();
+  for (const [nome, alias] of E.BOOKS) {
+    for (const k of [nome.toLowerCase().replace(/\s/g, ''), ...alias.split(' ')]) {
+      assert.ok(!seen.has(k) || seen.get(k) === nome, `"${k}" indica sia ${seen.get(k)} sia ${nome}`);
+      seen.set(k, nome);
+    }
+  }
+  assert.equal(E.canonBook('Gn'), 'Genesi');
+  assert.equal(E.canonBook('Giona'), 'Giona');
+});

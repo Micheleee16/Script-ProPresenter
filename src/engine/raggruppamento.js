@@ -1,13 +1,13 @@
 // ====================== regola per dividere in slide ======================
 // Quello che finisce davvero sulla slide: l'ultimo versetto perde spazi e virgole finali.
-function finalVerses(sl){sl=sl.slice();var L=sl[sl.length-1];sl[sl.length-1]=[L[0],L[1].replace(/\s+$/,'').replace(/,+$/,'').replace(/\s+$/,'')];return sl;}
+function finalVerses(sl){sl=sl.slice();const L=sl[sl.length-1];sl[sl.length-1]=[L[0],L[1].replace(/\s+$/,'').replace(/,+$/,'').replace(/\s+$/,'')];return sl;}
 function vlen(v){return (v[0]+' '+v[1]).length;}
 function group(verses,corto,max){
-  var out=[],i=0;
+  let out=[],i=0;
   while(i<verses.length){
-    var a=verses[i];
+    const a=verses[i];
     if(i+1<verses.length){
-      var b=verses[i+1];
+      const b=verses[i+1];
       if(vlen(a)<corto&&vlen(a)+1+vlen(b)<=max){out.push([a,b]);i+=2;continue;}
     }
     out.push([a]);i++;
@@ -18,19 +18,28 @@ function group(verses,corto,max){
 
 // Quali versetti la divisione automatica mette insieme: {numero del versetto a sinistra: true}
 function autoJoins(verses,corto,max){
-  var j={};
-  group(verses,corto,max).forEach(function(sl){for(var k=0;k<sl.length-1;k++)j[sl[k][0]]=true;});
+  const j={};
+  group(verses,corto,max).forEach(function(sl){for(let k=0;k<sl.length-1;k++)j[sl[k][0]]=true;});
   return j;
 }
 // Divisione automatica con le correzioni fatte a mano.
 // ov = {numero del versetto a sinistra: true (uniti) oppure false (separati)}
+/**
+ * Divide i versetti in slide: regola automatica più le correzioni fatte a mano.
+ * @param {Array<[number,string]>} verses versetti ([numero, testo])
+ * @param {number} corto sotto questa lunghezza un versetto può stare con il successivo
+ * @param {number} max lunghezza massima di due versetti insieme
+ * @param {Object<number,boolean>=} ov correzioni a mano: numero del versetto a sinistra -> true (uniti) / false (separati)
+ * @returns {Array<Array<[number,string]>>} le slide, ognuna con uno o due versetti
+ */
 function groupWith(verses,corto,max,ov){
   if(!ov)return group(verses,corto,max);
-  var auto=autoJoins(verses,corto,max),out=[],cur=[verses[0]];
-  for(var i=1;i<verses.length;i++){
-    var left=verses[i-1][0],joined=ov[left]!==undefined?ov[left]:auto[left]===true;
+  let auto=autoJoins(verses,corto,max),out=[],cur=[verses[0]];
+  for(let i=1;i<verses.length;i++){
+    const left=verses[i-1][0],joined=ov[left]!==undefined?ov[left]:auto[left]===true;
     if(joined)cur.push(verses[i]);else{out.push(cur);cur=[verses[i]];}
   }
   out.push(cur);
   return out;
 }
+

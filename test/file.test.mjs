@@ -166,3 +166,55 @@ test('colori scelti per Intro, Instrumental e Outro', () => {
   assert.deepEqual(rgb('Outro'), [0, 0, 1, 1]);
   assert.deepEqual(E.verifySongFile(bytes, bl, { video: false }), []);
 });
+
+// PDF 1.5: catalogo, pagine, pagina e carattere stanno dentro un flusso di oggetti compresso (come nei PDF di Word)
+import { deflateSync } from 'node:zlib';
+function pdfConFlussoDiOggetti(testo) {
+  const oggetti = ['<< /Type /Catalog /Pages 2 0 R >>', '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 5 0 R /Resources << /Font << /F1 4 0 R >> >> >>',
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>'];
+  let corpo = '', intestazione = '';
+  oggetti.forEach((o, i) => { intestazione += `${i + 1} ${corpo.length} `; corpo += o + '\n'; });
+  const flusso = deflateSync(Buffer.from(intestazione + corpo, 'latin1'));
+  const contenuto = deflateSync(Buffer.from(`BT /F1 14 Tf 72 700 Td (${testo}) Tj ET`, 'latin1'));
+  const parti = [Buffer.from('%PDF-1.5\n'),
+    Buffer.from(`6 0 obj\n<< /Type /ObjStm /N 4 /First ${intestazione.length} /Filter /FlateDecode /Length ${flusso.length} >>\nstream\n`), flusso, Buffer.from('\nendstream\nendobj\n'),
+    Buffer.from(`5 0 obj\n<< /Filter /FlateDecode /Length ${contenuto.length} >>\nstream\n`), contenuto, Buffer.from('\nendstream\nendobj\n'),
+    Buffer.from('trailer\n<< /Root 1 0 R /Size 7 >>\n%%EOF\n')];
+  return new Uint8Array(Buffer.concat(parti));
+}
+
+test('PDF con oggetti compressi (PDF 1.5): si legge il testo', async () => {
+  const r = await E.pdfToText(pdfConFlussoDiOggetti('Buono sei, buono sei'));
+  assert.equal(r.text, 'Buono sei, buono sei');
+});
+
+test('PDF che è solo una scansione: messaggio chiaro', async () => {
+  const pdf = `%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /Contents 4 0 R /Resources << /XObject << /Im1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 28 >>
+stream
+q 100 0 0 100 0 0 cm /Im1 Do Q
+endstream
+endobj
+5 0 obj
+<< /Type /XObject /Subtype /Image /Width 1 /Height 1 /ColorSpace /DeviceGray /BitsPerComponent 8 /Length 1 >>
+stream
+x
+endstream
+endobj
+trailer
+<< /Root 1 0 R >>
+%%EOF
+`;
+  await assert.rejects(E.pdfToText(new TextEncoder().encode(pdf)), /solo immagini/);
+});

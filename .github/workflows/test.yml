@@ -1,0 +1,29 @@
+name: Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Genera la pagina
+        run: node build.mjs
+      - name: Test dell'engine
+        run: node --test test/*.test.mjs
+      - name: Installa Playwright e Chromium
+        run: |
+          npm install --no-save --no-package-lock playwright@1 axe-core@4
+          npx playwright install --with-deps chromium
+      - name: Test dell'interfaccia
+        run: |
+          node test/ui-fumo.mjs
+          node test/ui-novita.mjs
+          node test/ui-layout.mjs
+          node test/ui-accessibilita.mjs
+          node test/ui-axe.mjs

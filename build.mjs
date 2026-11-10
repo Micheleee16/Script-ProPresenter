@@ -11,11 +11,11 @@ const rd = (p) => readFileSync(join(ROOT, p), 'utf8');
 // L'ordine conta: ogni file usa le funzioni di quelli che lo precedono.
 export const ENGINE = [
   'protobuf', 'bytes', 'rtf', 'bibbia', 'parser',
-  'raggruppamento', 'presentazione', 'verifica', 'canzoni', 'canzone', 'pdf', 'office', 'zip',
+  'raggruppamento', 'presentazione', 'layout', 'verifica', 'canzoni', 'canzone', 'pdf', 'office', 'zip',
 ].map((n) => `src/engine/${n}.js`);
 
 export const UI = [
-  'base', 'anteprima', 'controllo', 'canzoni', 'scarica', 'immagini', 'ingrandimento', 'avvio',
+  'base', 'anteprima', 'controllo', 'controlli', 'canzoni', 'canzoni-file', 'canzoni-azioni', 'canzoni-impostazioni', 'scarica', 'immagini', 'ingrandimento', 'avvio',
 ].map((n) => `src/ui/${n}.js`);
 
 export const TEMPLATE_FILE = 'template/Messaggio_Modena.pro';
@@ -24,7 +24,7 @@ export const SONG_TEMPLATE_FILE = 'template/Canzone_ITA-ENG.pro';
 export function templateLine() {
   const b64 = readFileSync(join(ROOT, TEMPLATE_FILE)).toString('base64');
   const song = readFileSync(join(ROOT, SONG_TEMPLATE_FILE)).toString('base64');
-  return `var TEMPLATE_B64 = "${b64}";\nvar SONG_TEMPLATE_B64 = "${song}";\n`;
+  return `const TEMPLATE_B64 = "${b64}";\nconst SONG_TEMPLATE_B64 = "${song}";\n`;
 }
 
 // Codice dell'engine (formato ProPresenter, lettura del messaggio, zip) con il template incorporato.

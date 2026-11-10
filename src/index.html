@@ -39,9 +39,6 @@
     </div>
   </header>
 
-  <div class="hero">
-    <h1 class="hero-t" id="hero-t">Versetti</h1>
-      </div>
 
   <div class="resume" id="resume" role="status" hidden>
     <span id="resume-t"></span>
@@ -49,6 +46,9 @@
   </div>
 
   <main>
+    <div class="hero">
+      <h1 class="hero-t" id="hero-t">Versetti</h1>
+        </div>
     <section class="sec m-bibbia" id="s-msg" aria-labelledby="h-msg">
       <h2 id="h-msg">Messaggio</h2>
       <div class="field" id="msgwrap">
@@ -121,7 +121,6 @@
       <div class="more-b">
         <label for="corto">Versetto corto sotto</label><span class="num-in"><input id="corto" type="number" inputmode="numeric" min="20" max="400" value="120"><i>caratteri</i></span>
         <label for="max">Due versetti insieme fino a</label><span class="num-in"><input id="max" type="number" inputmode="numeric" min="60" max="600" value="200"><i>caratteri</i></span>
-        <label for="lungo">Avviso slide lunga oltre</label><span class="num-in"><input id="lungo" type="number" inputmode="numeric" min="100" max="800" value="240"><i>caratteri</i></span>
         <div class="more-f">
           <button class="link" id="reset" type="button">Ripristina</button>
           <button class="link" id="dlpro" type="button" hidden>Scarica solo il .pro, senza immagini</button>
@@ -216,6 +215,10 @@ Buono sei, buono sei</pre>
       <input type="checkbox" id="ack"><span class="sw" aria-hidden="true"></span><span id="acktext"></span>
     </label>
     <p class="status" id="dlstatus" role="status" aria-live="polite"></p>
+    <details class="checks" id="checks" hidden>
+      <summary id="checks-s"></summary>
+      <ul id="checks-l"></ul>
+    </details>
   </section>
   <footer class="foot">Script Pro · versione @@VERSIONE@@</footer>
 </div>
