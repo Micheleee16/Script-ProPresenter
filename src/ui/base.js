@@ -32,7 +32,7 @@ var ICON={
 };
 var EMPTYTXT={bg:'Facoltativo',sep:'Facoltativa'};
 var MISSTXT={bg:'Slide senza sfondo',sep:'Nessuno stacco tra i passi'};
-var DEFAULTS={corto:120,max:200,lungo:240};
+var DEFAULTS={corto:120,max:200};
 var state={editing:null,mode:'bibbia',nameTouched:false,song:{vista:'table',undo:[],videoInfo:null,colors:null,fix:{it:[],en:[]},model:null,order:null,touched:false,uid:0,view:null,video:true,extra:{}},res:null,img:{bg:null,sep:null},flat:[],cur:0,done:null,busy:false,verified:false,ov:{},counts:{err:0,warn:0,slides:0,passages:0}};
 
 // ---------- memoria del browser (può non essere disponibile: la pagina funziona lo stesso) ----------
@@ -45,11 +45,11 @@ function store(k,v){
 }
 function rules(){
   function v(id,d){var n=parseInt($(id).value,10);return n>0?n:d;}
-  return {corto:v('corto',DEFAULTS.corto),max:v('max',DEFAULTS.max),lungo:v('lungo',DEFAULTS.lungo)};
+  return {corto:v('corto',DEFAULTS.corto),max:v('max',DEFAULTS.max)};
 }
 function saveRules(){store('versi.regole',JSON.stringify(rules()));}
 function loadRules(){
-  try{var r=JSON.parse(store('versi.regole')||'null');if(r){['corto','max','lungo'].forEach(function(k){if(r[k]>0)$(k).value=r[k];});}}catch(e){}
+  try{var r=JSON.parse(store('versi.regole')||'null');if(r){['corto','max'].forEach(function(k){if(r[k]>0)$(k).value=r[k];});}}catch(e){}
 }
 function defaultName(){var d=new Date();function p(n){return ('0'+n).slice(-2);}return 'Versi '+p(d.getDate())+'-'+p(d.getMonth()+1)+'-'+d.getFullYear();}
 function nome(){return ($('nome').value||'').trim()||defaultName();}

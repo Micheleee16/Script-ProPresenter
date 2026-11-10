@@ -11,7 +11,7 @@ const rd = (p) => readFileSync(join(ROOT, p), 'utf8');
 // L'ordine conta: ogni file usa le funzioni di quelli che lo precedono.
 export const ENGINE = [
   'protobuf', 'bytes', 'rtf', 'bibbia', 'parser',
-  'raggruppamento', 'presentazione', 'verifica', 'canzoni', 'canzone', 'pdf', 'office', 'zip',
+  'raggruppamento', 'presentazione', 'layout', 'verifica', 'canzoni', 'canzone', 'pdf', 'office', 'zip',
 ].map((n) => `src/engine/${n}.js`);
 
 export const UI = [

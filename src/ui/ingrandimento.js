@@ -4,12 +4,12 @@ function showSlide(i,dir){
   var n=state.flat.length;if(!n)return;
   i=Math.max(0,Math.min(n-1,i));
   var moved=i!==state.cur;state.cur=i;
-  var d=state.flat[i],rl=rules(),vs=$('vslide'),t=slideLen(d.sl);
+  var d=state.flat[i],rl=rules(),vs=$('vslide'),fi=slideFitInfo(d.sl),pr=fitProblem(fi);
   $('vtitle').textContent=d.label;
   vs.innerHTML=slideMarkup(d.sl,d.label,rl,'div',0);
   if(moved&&dir){vs.classList.remove('to-next','to-prev');void vs.offsetWidth;vs.classList.add(dir>0?'to-next':'to-prev');}
-  $('vinfo').textContent='Slide '+(i+1)+' di '+n+' · '+pl(t,'carattere','caratteri');
-  $('vnote').textContent=t>rl.lungo?'Slide lunga':'';
+  $('vinfo').textContent='Slide '+(i+1)+' di '+n+' · circa '+pl(fi.lines,'riga','righe');
+  $('vnote').textContent=pr?'Attenzione: '+pr.msg+'.':'';
   $('vbar').style.width=((i+1)/n*100)+'%';
   $('vprev').disabled=i===0;$('vnext').disabled=i===n-1;
   // quali correzioni sono possibili su questa slide (solo dentro lo stesso passo)

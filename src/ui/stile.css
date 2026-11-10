@@ -216,7 +216,7 @@ textarea:focus{outline:none;box-shadow:0 0 0 4px var(--accent-ring),0 0 0 1px va
 .slide{container-type:inline-size;position:relative;display:block;width:100%;aspect-ratio:16/9;border-radius:12px;border:0;padding:0;text-align:left;overflow:hidden;color:var(--on-slide);
   background:radial-gradient(120% 120% at 50% 0%,var(--slide-a),var(--slide-b)) center/cover no-repeat;box-shadow:0 1px 2px rgba(0,0,0,.2),0 8px 20px -10px rgba(0,0,0,.55);
   transition:transform .4s var(--spring),box-shadow .35s}
-.bg-on .slide{background-image:linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2)),var(--bgimg);text-shadow:0 1px 4px rgba(0,0,0,.65)}
+.bg-on .slide{background-image:linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2)),var(--bgimg)}
 button.slide{cursor:zoom-in}
 button.slide:hover{transform:translateY(-2px) scale(1.012);box-shadow:0 2px 4px rgba(0,0,0,.2),0 18px 32px -12px rgba(0,0,0,.6)}
 button.slide:active{transform:scale(.985)}
@@ -224,11 +224,14 @@ button.slide:focus-visible{outline-offset:3px;border-radius:12px}
 .slide::after{content:"";position:absolute;inset:0;border-radius:12px;box-shadow:inset 0 0 0 .5px rgba(255,255,255,.14);pointer-events:none;transition:box-shadow .25s}
 button.slide:hover::after{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.4)}
 .slide.long::after{box-shadow:inset 0 0 0 3px var(--warn-fill) !important}
-.stext{position:absolute;left:5.5cqw;right:5.5cqw;top:0;bottom:11cqw;display:flex;flex-direction:column;justify-content:center;font-size:clamp(11px,4.6cqw,48px);line-height:1.36;text-align:justify;hyphens:manual}
-.slide .n{width:auto;height:auto;display:inline;background:none;color:inherit;font-size:.66em;opacity:.75;margin-right:.3em;font-weight:600;vertical-align:.18em}
-.sref{position:absolute;left:5.5cqw;bottom:3.6cqw;font-size:clamp(9px,3.2cqw,28px);opacity:.8}
-.slide .tag{position:absolute;top:3cqw;right:3cqw;font-size:clamp(9px,3cqw,24px);background:rgba(255,255,255,.2);color:#fff;border-radius:6px;padding:0 .6em;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-.slide .tag.l{left:3cqw;right:auto;background:var(--warn-fill);color:#1b1300;font-weight:650}
+.slide{font-family:"Neue Montreal","Helvetica Neue",Helvetica,Arial,sans-serif;text-shadow:.26cqw .26cqw .26cqw rgba(0,0,0,.75)}
+/* misure del modello (slide 1920 x 1080): riquadro del versetto, corpo 60 pt, numeri 40 pt, riferimento 80 pt */
+.stext{position:absolute;left:5.815cqw;top:5.253cqw;width:88.37cqw;height:20.855cqw;font-size:3.125cqw;line-height:1.2;text-align:justify;hyphens:manual}
+.slide.long .stext{outline:.15cqw dashed var(--warn-fill);outline-offset:.4cqw}
+.slide .n{width:auto;height:auto;display:inline;background:none;color:inherit;font-size:.6667em;font-weight:inherit}
+.sref{position:absolute;left:5.815cqw;top:28.125cqw;font-size:4.167cqw;line-height:1.2;white-space:nowrap}
+.slide .tag{position:absolute;bottom:3cqw;right:3cqw;text-shadow:none;font-size:clamp(9px,3cqw,24px);background:rgba(255,255,255,.2);color:#fff;border-radius:6px;padding:0 .6em;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.slide .tag.l{left:5.815cqw;right:auto;background:var(--warn-fill);color:#1b1300;font-weight:650}
 @media (prefers-reduced-motion:no-preference){
   .pitem.enter .slide{animation:rise .55s var(--ease) calc(var(--d,0ms) + var(--i,0) * 40ms) backwards}
 }

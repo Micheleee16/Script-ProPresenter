@@ -102,8 +102,8 @@ function bindMessage(){
 }
 
 function bindRules(){
-  ['corto','max','lungo'].forEach(function(id){$(id).addEventListener('input',function(){saveRules();state.done=null;render();});});
-  $('reset').addEventListener('click',function(){['corto','max','lungo'].forEach(function(k){$(k).value=DEFAULTS[k];});saveRules();state.done=null;render();});
+  ['corto','max'].forEach(function(id){$(id).addEventListener('input',function(){saveRules();state.done=null;render();});});
+  $('reset').addEventListener('click',function(){['corto','max'].forEach(function(k){$(k).value=DEFAULTS[k];});saveRules();state.done=null;render();});
 }
 
 function bindOutput(){

@@ -82,14 +82,14 @@ function render(){
     var g=groupWith(p.verses,rl.corto,rl.max,p.ov),notes=[],slides='';
     (byPid[p.pid]||[]).forEach(function(w){notes.push({k:'w',msg:w.msg});});
     g.forEach(function(sl,k){
-      var t=slideLen(sl),first=sl[0][0],last=sl[sl.length-1][0],ref=p.book+' '+p.chap+':'+first+(sl.length>1?'-'+last:'');
-      if(t>rl.lungo)notes.push({k:'w',msg:'Slide '+ref+': lunga ('+t+' caratteri)'});
+      var fp=fitProblem(slideFitInfo(sl)),first=sl[0][0],last=sl[sl.length-1][0],ref=p.book+' '+p.chap+':'+first+(sl.length>1?'-'+last:'');
+      if(fp)notes.push({k:'w',msg:'Slide '+ref+': '+fp.msg});
       slides+=slideMarkup(sl,p.label,rl,'button',k);
       state.flat.push({sl:sl,label:p.label,pid:p.pid,p:p});
     });
     nslide+=g.length;nWarn+=notes.length;
     var c={label:p.label,verses:p.verses.length,slides:g.length,notes:notes,slidesHtml:slides,sepBefore:ip>0,sepOn:sepOn,edited:!!p.ov};
-    var sig=hash(rl.corto+'|'+rl.max+'|'+rl.lungo+'|'+(ip>0?1:0)+(sepOn?1:0)+'|'+JSON.stringify(p.verses)+'|'+JSON.stringify(notes)+'|'+JSON.stringify(p.ov||{}));
+    var sig=hash(rl.corto+'|'+rl.max+'|'+(ip>0?1:0)+(sepOn?1:0)+'|'+JSON.stringify(p.verses)+'|'+JSON.stringify(notes)+'|'+JSON.stringify(p.ov||{}));
     var pk=p.label;occ[pk]=(occ[pk]||0)+1;
     items.push({key:pk+'#'+occ[pk],sig:sig,pid:p.pid,html:cardHtml(c)});
     ip++;

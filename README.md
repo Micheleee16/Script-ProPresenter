@@ -20,7 +20,7 @@ src/ui/stile.css      aspetto in stile Apple: caratteri di sistema, superfici ra
                       controlli segmentati e interruttori, colori chiari e scuri, animazioni a molla, telefono
 src/ui/*.js           interfaccia: base (strumenti), anteprima, controllo (riepilogo, schede e barra Scarica),
                       scarica, immagini (si ricordano per la volta dopo), ingrandimento, avvio
-src/engine/*.js       engine (canzoni.js e canzone.js per le canzoni, pdf.js e office.js per i file): formato Protocol Buffers, RTF, libri, lettura del messaggio,
+src/engine/*.js       engine (layout.js: misure del modello e righe di testo; canzoni.js e canzone.js per le canzoni, pdf.js e office.js per i file): formato Protocol Buffers, RTF, libri, lettura del messaggio,
                       raggruppamento in slide (anche con correzioni a mano), costruzione della presentazione,
                       rilettura finale del file generato, zip
 template/             Messaggio_Modena.pro (versetti) e Canzone_ITA-ENG.pro (canzoni): i modelli originali,
@@ -38,6 +38,7 @@ node build.mjs     # rigenera dist/Script-Pro.html dai sorgenti
 node --test test/*.test.mjs   # esegue i test dell'engine
 node test/ui-fumo.mjs         # prova l'interfaccia nel browser (serve Playwright)
 node test/ui-novita.mjs       # prova bozza, anteprima, annulla, video, colori, file Word e zip
+node test/ui-layout.mjs       # prova l'avviso quando il testo non entra nel riquadro della slide
 ```
 
 Dopo ogni modifica ai sorgenti: `node build.mjs`, poi i test. I test dell'interfaccia aprono `dist/Script-Pro.html`, quindi vanno lanciati dopo la build. La CI esegue gli stessi passi a ogni push.

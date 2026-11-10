@@ -7,6 +7,6 @@
   "scripts": {
     "build": "node build.mjs",
     "test": "node --test test/*.test.mjs",
-    "test:ui": "node test/ui-fumo.mjs && node test/ui-novita.mjs"
+    "test:ui": "node test/ui-fumo.mjs && node test/ui-novita.mjs && node test/ui-layout.mjs"
   }
 }

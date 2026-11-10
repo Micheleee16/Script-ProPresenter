@@ -9,7 +9,7 @@ export function loadEngine() {
       return a;
     },
   };
-  const names = 'readMessage group buildPresentation makeZip parse ser path latin1Str esc canonBook crc32 b64ToBytes TEMPLATE_B64 groupWith autoJoins verifyPresentation rtfPlain pick tokens parseSongText makeSong sectionSlides songBlocks defaultJoins chunksOf isChordLine sectionHeader arrangementOf buildSongFile verifySongFile slideFit editSongText pdfToText decodeTextFile guessLang mergeSongLines zipList zipRead docxToText docxXmlToText zipTextFile fileToText'.split(' ');
+  const names = 'readMessage group buildPresentation makeZip parse ser path latin1Str esc canonBook crc32 b64ToBytes TEMPLATE_B64 groupWith autoJoins verifyPresentation rtfPlain pick tokens parseSongText makeSong sectionSlides songBlocks defaultJoins chunksOf isChordLine sectionHeader arrangementOf buildSongFile verifySongFile slideFit editSongText pdfToText decodeTextFile guessLang mergeSongLines zipList zipRead docxToText docxXmlToText zipTextFile fileToText verseGeometry fitVerseSlide approxWidth'.split(' ');
   const f = new Function('crypto', engineSource() + `\nreturn {${names.join(',')}};`);
   return f(fakeCrypto);
 }
