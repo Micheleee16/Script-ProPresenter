@@ -7,10 +7,10 @@
 <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Versi">
+<meta name="apple-mobile-web-app-title" content="Script Pro">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%235ac8fa'/%3E%3Cstop offset='1' stop-color='%230a64ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='40' height='40' rx='9.5' fill='url(%23g)'/%3E%3Cpath d='M20 12.2c-2.7-1.8-6.1-2.3-9.6-1.6v16.4c3.5-.7 6.9-.2 9.6 1.6 2.7-1.8 6.1-2.3 9.6-1.6V10.6c-3.5-.7-6.9-.2-9.6 1.6zM20 12.2v16.4' fill='none' stroke='white' stroke-width='1.9' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E">
-<title>Versi</title>
+<title>Script Pro</title>
 <script>try{var t=localStorage.getItem('versi.tema');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <style>
 /* =====================================================================
@@ -113,7 +113,7 @@ ol,ul{list-style:none}
 .modes:has(#tab-canzoni[aria-selected="true"]) .mthumb,.seg:has(button[data-v="preview"][aria-pressed="true"]) .mthumb{transform:translateX(100%)}
 
 /* ---------- titolo grande ---------- */
-.hero{padding:26px 0 30px}
+.hero{padding:28px 0 26px}
 .hero-t{font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.035em}
 .lead{margin-top:8px;color:var(--muted);font-size:17px;max-width:58ch}
 @media (prefers-reduced-motion:no-preference){
@@ -490,7 +490,7 @@ dialog.show::backdrop{opacity:1}
           <path d="M20 12.2c-2.7-1.8-6.1-2.3-9.6-1.6v16.4c3.5-.7 6.9-.2 9.6 1.6 2.7-1.8 6.1-2.3 9.6-1.6V10.6c-3.5-.7-6.9-.2-9.6 1.6z" fill="none" stroke="#fff" stroke-width="1.9" stroke-linejoin="round"/>
           <path d="M20 12.2v16.4" stroke="#fff" stroke-width="1.9" stroke-linecap="round" opacity=".85"/>
         </svg>
-        <span class="brand-n">Versi</span>
+        <span class="brand-n">Script Pro</span>
       </div>
       <div class="modes" role="tablist" aria-label="Cosa vuoi preparare">
         <span class="mthumb" aria-hidden="true"></span>
@@ -503,42 +503,39 @@ dialog.show::backdrop{opacity:1}
 
   <div class="hero">
     <h1 class="hero-t" id="hero-t">Versetti</h1>
-    <p class="lead" id="lead">Incolla il messaggio del pastore e scarica le slide dei versetti per ProPresenter.</p>
-  </div>
+      </div>
 
   <div class="resume" id="resume" role="status" hidden>
     <span id="resume-t"></span>
-    <span class="resume-b"><button class="btn small" id="resume-no" type="button">Ricomincia da zero</button><button class="ib" id="resume-x" type="button" aria-label="Chiudi l'avviso"></button></span>
+    <span class="resume-b"><button class="btn small" id="resume-no" type="button">Ricomincia</button><button class="ib" id="resume-x" type="button" aria-label="Chiudi l'avviso"></button></span>
   </div>
 
   <main>
     <section class="sec m-bibbia" id="s-msg" aria-labelledby="h-msg">
-      <h2 id="h-msg"><span class="n">1</span>Incolla il messaggio</h2>
-      <p class="sub">Va bene anche copiato da WhatsApp: orari e nomi vengono ignorati. Ogni versetto deve avere il suo numero. Puoi anche caricare il file di una chat esportata da WhatsApp (.zip o .txt).</p>
+      <h2 id="h-msg">Messaggio</h2>
       <div class="field" id="msgwrap">
-        <textarea id="msg" spellcheck="false" placeholder="Incolla qui il messaggio del pastore…" aria-describedby="count"></textarea>
+        <textarea id="msg" spellcheck="false" placeholder="Incolla qui il messaggio del pastore" aria-label="Messaggio del pastore" aria-describedby="count"></textarea>
       </div>
       <div class="under">
-        <span class="count" id="count" aria-live="polite">Nessun testo incollato</span>
+        <span class="count" id="count" aria-live="polite"></span>
         <div class="btns">
           <label class="btn file"><input class="sr" type="file" id="bf-msg" accept=".txt,.text,.zip,.docx,.pdf,text/plain,application/pdf"><span>Carica file</span></label>
-          <button class="btn" id="paste" type="button">Incolla dagli appunti</button>
+          <button class="btn" id="paste" type="button">Incolla</button>
           <button class="btn ghost" id="clear" type="button">Svuota</button>
         </div>
       </div>
     </section>
 
     <section class="sec m-bibbia" id="s-img" aria-labelledby="h-img">
-      <h2 id="h-img"><span class="n">2</span>Immagini <span class="opt">facoltative</span></h2>
-      <p class="sub">Trascina un file sul riquadro oppure scegli dal computer. Restano salvate per la prossima volta.</p>
+      <h2 id="h-img">Immagini</h2>
       <div class="imgs">
         <div class="img" id="slot-bg">
           <span class="thumb" id="th-bg"></span>
           <div class="img-tx">
-            <b>Sfondo dei versetti</b>
+            <b>Sfondo</b>
             <span class="fn" id="fn-bg"></span>
             <div class="img-act">
-              <label class="btn small"><input class="sr" type="file" id="f-bg" accept="image/*"><span id="lt-bg">Scegli immagine</span></label>
+              <label class="btn small"><input class="sr" type="file" id="f-bg" accept="image/*"><span id="lt-bg">Scegli</span></label>
               <button class="btn small ghost" id="rm-bg" type="button" hidden>Togli</button>
             </div>
           </div>
@@ -546,10 +543,10 @@ dialog.show::backdrop{opacity:1}
         <div class="img" id="slot-sep">
           <span class="thumb" id="th-sep"></span>
           <div class="img-tx">
-            <b>Tra un passo e l'altro</b>
+            <b>Tra i passi</b>
             <span class="fn" id="fn-sep"></span>
             <div class="img-act">
-              <label class="btn small"><input class="sr" type="file" id="f-sep" accept="image/*"><span id="lt-sep">Scegli immagine</span></label>
+              <label class="btn small"><input class="sr" type="file" id="f-sep" accept="image/*"><span id="lt-sep">Scegli</span></label>
               <button class="btn small ghost" id="rm-sep" type="button" hidden>Togli</button>
             </div>
           </div>
@@ -558,14 +555,13 @@ dialog.show::backdrop{opacity:1}
     </section>
 
     <section class="sec m-bibbia" id="out" aria-labelledby="h-rev">
-      <h2 id="h-rev"><span class="n">3</span>Controlla le slide</h2>
+      <h2 id="h-rev">Slide</h2>
 
       <div class="empty" id="empty">
-        <p>Qui compariranno le slide, prima di scaricarle. Per ogni passo servono il riferimento e i versetti con il loro numero:</p>
+        <p>Le slide compariranno qui. Formato:</p>
         <pre class="fmt">Romani 6:5-11
 5 Testo del primo versetto
 6 Testo del secondo versetto</pre>
-        <p>Puoi incollare più passi di seguito. Quello che non è un passo biblico, come i saluti, viene ignorato.</p>
       </div>
 
       <div id="review" hidden>
@@ -574,7 +570,6 @@ dialog.show::backdrop{opacity:1}
           <div class="sum-tx"><b id="sum-t"></b><span id="sum-p"></span></div>
           <button class="btn small" id="sum-go" type="button" hidden>Vai al primo</button>
         </div>
-        <p class="sub tap" id="rev-sub">Tocca una slide per ingrandirla: lì puoi anche unire o separare i versetti.</p>
         <ol class="plist" id="plist"></ol>
         <details class="ignored" id="ign" hidden>
           <summary id="ign-s"></summary>
@@ -586,42 +581,38 @@ dialog.show::backdrop{opacity:1}
     <details class="more m-bibbia" id="more">
       <summary>Impostazioni</summary>
       <div class="more-b">
-        <p class="sub">Di norma c'è un versetto per slide, e un versetto non viene mai spezzato.</p>
-        <label for="corto">Un versetto è corto se ha meno di</label><span class="num-in"><input id="corto" type="number" inputmode="numeric" min="20" max="400" value="120"><i>caratteri</i></span>
-        <label for="max">Due versetti stanno insieme solo se non superano</label><span class="num-in"><input id="max" type="number" inputmode="numeric" min="60" max="600" value="200"><i>caratteri</i></span>
-        <label for="lungo">Avvisami se una slide supera</label><span class="num-in"><input id="lungo" type="number" inputmode="numeric" min="100" max="800" value="240"><i>caratteri</i></span>
+        <label for="corto">Versetto corto sotto</label><span class="num-in"><input id="corto" type="number" inputmode="numeric" min="20" max="400" value="120"><i>caratteri</i></span>
+        <label for="max">Due versetti insieme fino a</label><span class="num-in"><input id="max" type="number" inputmode="numeric" min="60" max="600" value="200"><i>caratteri</i></span>
+        <label for="lungo">Avviso slide lunga oltre</label><span class="num-in"><input id="lungo" type="number" inputmode="numeric" min="100" max="800" value="240"><i>caratteri</i></span>
         <div class="more-f">
-          <button class="link" id="reset" type="button">Ripristina i valori iniziali</button>
-          <button class="link" id="dlpro" type="button" hidden>Scarica solo la presentazione (.pro), senza le immagini</button>
+          <button class="link" id="reset" type="button">Ripristina</button>
+          <button class="link" id="dlpro" type="button" hidden>Scarica solo il .pro, senza immagini</button>
         </div>
       </div>
     </details>
 
     <section class="sec m-canzoni" id="c-in" aria-labelledby="h-cin" hidden>
-      <h2 id="h-cin"><span class="n">1</span>Incolla i testi</h2>
-      <p class="sub">Incolla il testo italiano e quello inglese, oppure carica i file (.txt, .pdf o Word .docx): puoi anche trascinarli sui riquadri. Ci vogliono i nomi delle sezioni (Verse 1, Chorus, Bridge…). Accordi, numeri di pagina e intestazioni vengono ignorati.</p>
+      <h2 id="h-cin">Testi</h2>
       <div class="two" id="c-wrap">
-        <div class="field" data-side="it"><div class="lab-row"><label class="lab" for="c-it">Italiano</label><label class="btn small file"><input class="sr" type="file" id="cf-it" accept=".txt,.text,.md,.pdf,.docx,.zip,text/plain,application/pdf" multiple><span>Carica file</span></label></div><textarea id="c-it" spellcheck="false" placeholder="Verse 1&#10;Come il sole che sorge al mattino&#10;La tua bontà mi ricorda che&#10;…"></textarea><p class="src" id="src-it" hidden></p><div class="fixup" id="fx-it" hidden></div></div>
-        <div class="field" data-side="en"><div class="lab-row"><label class="lab" for="c-en">Inglese</label><label class="btn small file"><input class="sr" type="file" id="cf-en" accept=".txt,.text,.md,.pdf,.docx,.zip,text/plain,application/pdf" multiple><span>Carica file</span></label></div><textarea id="c-en" spellcheck="false" placeholder="Verse 1&#10;Sure as the sun rises up every morning&#10;I am reminded the Lord is Good&#10;…"></textarea><p class="src" id="src-en" hidden></p><div class="fixup" id="fx-en" hidden></div></div>
+        <div class="field" data-side="it"><div class="lab-row"><label class="lab" for="c-it">Italiano</label><label class="btn small file"><input class="sr" type="file" id="cf-it" accept=".txt,.text,.md,.pdf,.docx,.zip,text/plain,application/pdf" multiple><span>Carica file</span></label></div><textarea id="c-it" spellcheck="false" placeholder="Verse 1&#10;Come il sole che sorge al mattino&#10;…"></textarea><p class="src" id="src-it" hidden></p><div class="fixup" id="fx-it" hidden></div></div>
+        <div class="field" data-side="en"><div class="lab-row"><label class="lab" for="c-en">Inglese</label><label class="btn small file"><input class="sr" type="file" id="cf-en" accept=".txt,.text,.md,.pdf,.docx,.zip,text/plain,application/pdf" multiple><span>Carica file</span></label></div><textarea id="c-en" spellcheck="false" placeholder="Verse 1&#10;Sure as the sun rises up every morning&#10;…"></textarea><p class="src" id="src-en" hidden></p><div class="fixup" id="fx-en" hidden></div></div>
       </div>
       <div class="under">
-        <span class="count" id="c-count" aria-live="polite">Nessun testo incollato</span>
+        <span class="count" id="c-count" aria-live="polite"></span>
         <div class="btns"><button class="btn ghost" id="c-clear" type="button">Svuota</button></div>
       </div>
     </section>
 
     <section class="sec m-canzoni" id="c-out" aria-labelledby="h-cout" hidden>
-      <h2 id="h-cout"><span class="n">2</span>Ordine e righe</h2>
-      <p class="sub" id="c-sub">Ogni riga italiana è una slide, con la sua traduzione inglese nelle note. Se le righe dei due testi non sono in pari, lo segnalo qui e ti dico dove. Per correggere, tocca una riga.</p>
+      <h2 id="h-cout">Sezioni</h2>
       <div class="empty" id="c-empty">
-        <p>Incolla i due testi qui sopra. Per ogni sezione serve il nome su una riga, seguito dalle righe del testo:</p>
+        <p>Le sezioni compariranno qui. Formato:</p>
         <pre class="fmt">Verse 1
 Come il sole che sorge al mattino
 La tua bontà mi ricorda che
 
 Chorus
 Buono sei, buono sei</pre>
-        <p>Le sezioni compaiono nell'ordine del testo inglese. Poi puoi duplicarle, spostarle o toglierle.</p>
       </div>
       <div id="c-review" hidden>
         <div class="status-box" id="c-sum" data-state="ok" role="status">
@@ -630,21 +621,20 @@ Buono sei, buono sei</pre>
           <button class="btn small" id="c-sum-go" type="button" hidden>Vai al primo</button>
         </div>
         <div class="view-bar">
-          <div class="seg" id="c-views" role="group" aria-label="Come mostrare le slide">
+          <div class="seg" id="c-views" role="group" aria-label="Vista">
             <span class="mthumb" aria-hidden="true"></span>
             <button type="button" data-v="table" aria-pressed="true">Tabella</button>
             <button type="button" data-v="preview" aria-pressed="false">Anteprima</button>
           </div>
-          <button class="btn small ghost" id="c-undo" type="button" hidden>Annulla l'ultima modifica</button>
+          <button class="btn small ghost" id="c-undo" type="button" hidden>Annulla</button>
         </div>
         <div class="order-bar">
-          <label class="add"><span>Aggiungi una sezione</span><select id="c-add"></select></label>
+          <select id="c-add" aria-label="Sezione da aggiungere"></select>
           <button class="btn small" id="c-add-btn" type="button">Aggiungi</button>
           <span class="order-sp"></span>
-          <button class="btn small ghost" id="c-ord-en" type="button" hidden>Ordine del testo inglese</button>
+          <button class="btn small ghost" id="c-ord-en" type="button" hidden>Ordine del testo</button>
           <button class="btn small ghost" id="c-ord-hd" type="button" hidden>Ordine dell'intestazione</button>
         </div>
-        <p class="sub hint" id="c-hint" hidden></p>
         <ol class="plist" id="c-list"></ol>
         <details class="ignored" id="c-info" hidden>
           <summary id="c-info-s"></summary>
@@ -656,19 +646,19 @@ Buono sei, buono sei</pre>
     <details class="more m-canzoni" id="c-more" hidden>
       <summary>Impostazioni</summary>
       <div class="more-b">
-        <label class="chk"><input type="checkbox" id="c-video" checked><span>Inizia con il video di sfondo</span></label>
+        <label class="chk"><input type="checkbox" id="c-video" checked><span>Video di sfondo all'inizio</span></label>
         <div class="set-row">
-          <label for="c-vname">Nome del file video (già nella libreria di ProPresenter)</label>
-          <div class="set-in"><input id="c-vname" type="text" value="Sfondo 1.mov" spellcheck="false" autocomplete="off"><label class="btn small file"><input class="sr" type="file" id="c-vfile" accept="video/*,.mov,.mp4,.m4v"><span>Scegli file</span></label></div>
+          <label for="c-vname">File video</label>
+          <div class="set-in"><input id="c-vname" type="text" value="Sfondo 1.mov" spellcheck="false" autocomplete="off"><label class="btn small file"><input class="sr" type="file" id="c-vfile" accept="video/*,.mov,.mp4,.m4v"><span>Scegli</span></label></div>
           <p class="sub" id="c-vinfo"></p>
         </div>
         <div class="set-row">
-          <span class="set-t">Colori dei gruppi senza un colore nel modello</span>
+          <span class="set-t">Colori</span>
           <div class="cols">
             <label>Intro <input type="color" id="c-col-intro" value="#999999"></label>
             <label>Instrumental <input type="color" id="c-col-inst" value="#999999"></label>
             <label>Outro <input type="color" id="c-col-outro" value="#cc2929"></label>
-            <button class="link" id="c-col-reset" type="button">Ripristina i colori</button>
+            <button class="link" id="c-col-reset" type="button">Ripristina</button>
           </div>
         </div>
       </div>
@@ -676,9 +666,9 @@ Buono sei, buono sei</pre>
   </main>
 
   <section class="bar" id="dock" aria-labelledby="h-dl">
-    <h2 class="sr" id="h-dl">Scarica la presentazione</h2>
+    <h2 class="sr" id="h-dl">Scarica</h2>
     <div class="bar-row">
-      <label class="nm"><span><b class="n">4</b>Nome in ProPresenter</span><input id="nome" type="text" autocomplete="off" spellcheck="false"></label>
+      <label class="nm"><span>Nome</span><input id="nome" type="text" autocomplete="off" spellcheck="false"></label>
       <button id="dlbtn" class="btn primary dl" type="button" data-state="idle" disabled>
         <span class="dl-ic"><span class="i-down"></span><span class="i-spin"></span><span class="i-ok"></span></span>
         <span class="dl-t">Scarica</span>
@@ -689,7 +679,7 @@ Buono sei, buono sei</pre>
     </label>
     <p class="status" id="dlstatus" role="status" aria-live="polite"></p>
   </section>
-  <footer class="foot">Versi · versione 2.1.0</footer>
+  <footer class="foot">Script Pro · versione 2.2.0</footer>
 </div>
 
 <dialog id="viewer" aria-label="Slide ingrandita">
@@ -706,7 +696,7 @@ Buono sei, buono sei</pre>
     <div class="v-bar" aria-hidden="true"><i id="vbar"></i></div>
     <p id="vnote" class="v-note"></p>
     <div class="v-edit" id="vedit">
-      <span class="v-edit-t">Divisione dei versetti</span>
+      <span class="v-edit-t">Versetti</span>
       <button class="btn small" id="v-pj" type="button">Unisci con la precedente</button>
       <button class="btn small" id="v-sp" type="button">Separa i versetti</button>
       <button class="btn small" id="v-nj" type="button">Unisci con la successiva</button>
@@ -846,14 +836,14 @@ function findStarts(body,s,e,warn){
     if(cands.length>1){
       var firstP=null;for(var i=0;i<cands.length;i++)if(cands[i].punct){firstP=cands[i];break;}
       if(firstP)pick=firstP;
-      if(pick.punct)warn('Il numero '+n+' compare '+cands.length+' volte nel testo. Ho scelto quello dopo la punteggiatura: controlla che il versetto '+n+' inizi nel punto giusto.');
-      else warn('Il numero '+n+' compare '+cands.length+' volte nel testo e nessuno segue una punteggiatura o un a capo. Ho scelto il primo: controlla che il versetto '+n+' inizi nel punto giusto.');
+      if(pick.punct)warn('Il numero '+n+' compare '+cands.length+' volte: ho scelto quello dopo la punteggiatura. Controlla dove inizia il versetto '+n+'.');
+      else warn('Il numero '+n+' compare '+cands.length+' volte, nessuno dopo la punteggiatura: ho scelto il primo. Controlla dove inizia il versetto '+n+'.');
     }else if(!pick.punct){
       loose.push(n);
     }
     starts.push([n,pick.idx]);pos=pick.end;n++;
   }
-  if(loose.length)warn((loose.length===1?'Il versetto '+loose[0]+' inizia':'I versetti '+loose.join(', ')+' iniziano')+' dopo una parola senza punteggiatura né a capo. Controlla che '+(loose.length===1?'quel numero sia':'quei numeri siano')+' davvero '+(loose.length===1?'l\'inizio del versetto':'l\'inizio dei versetti')+' (e non, per esempio, "'+loose[0]+' volte").');
+  if(loose.length)warn((loose.length===1?'Il versetto '+loose[0]+' inizia':'I versetti '+loose.join(', ')+' iniziano')+' dopo una parola senza punteggiatura: controlla che '+(loose.length===1?'sia':'siano')+' davvero '+(loose.length===1?'un nuovo versetto':'nuovi versetti')+'.');
   return starts;
 }
 
@@ -897,7 +887,7 @@ function readMessage(raw){
       var nome=hd.b+' '+chap+':'+s+(e&&e!==s?'-'+e:'');
       var pw=[];   // avvisi del passo: si registrano solo se il passo viene incluso, con il riferimento definitivo
       var W=function(msg){pw.push(msg);};
-      if(preForLast!==null&&i===heads.length-1)W('Il riferimento è scritto dopo il testo: ho usato come versetti il testo che lo precede. Controlla che sia giusto.');
+      if(preForLast!==null&&i===heads.length-1)W('Il riferimento è dopo il testo: ho usato il testo che lo precede.');
       var E=function(msg){errs.push({pid:id,ref:nome,msg:msg});};
       var starts=findStarts(body,s,e,W),verses=[];
       for(var j=0;j<starts.length;j++){
@@ -910,15 +900,15 @@ function readMessage(raw){
       }
       var lastn=verses[verses.length-1][0];
       var lab=hd.b+' '+chap+':'+s+(lastn!==s?'-'+lastn:'');
-      if(e&&e>s&&verses.length===1){E('Mancano i numeri dei versetti: ne servono '+(e-s+1)+' (dal '+s+' al '+e+'). Scrivi il numero davanti a ogni versetto. Questo passo non sarà nella presentazione. Testo ricevuto: "'+verses[0][1].slice(0,90)+'".');return;}
-      if(e&&lastn!==e){E('Ho trovato i versetti dal '+s+' al '+lastn+', ma ne servono fino al '+e+'. Controlla che il versetto '+(lastn+1)+' abbia il suo numero davanti. Questo passo non sarà nella presentazione.');return;}
-      if(!e&&verses.length>1){nome=lab;W('Il riferimento non dice fino a che versetto arriva: ho riconosciuto i versetti dal '+s+' al '+lastn+'. Controlla che ci siano tutti.');}
-      if(verses.some(function(v){return !v[1];})){E('Un versetto è vuoto. Questo passo non sarà nella presentazione.');return;}
-      verses.forEach(function(v){if(/\d/.test(v[1]))W('Il versetto '+v[0]+' contiene una cifra: controlla che non sia un numero di versetto.');});
+      if(e&&e>s&&verses.length===1){E('Mancano i numeri dei versetti: ne servono '+(e-s+1)+', dal '+s+' al '+e+'. Passo escluso. Testo: "'+verses[0][1].slice(0,60)+'"');return;}
+      if(e&&lastn!==e){E('Trovati i versetti dal '+s+' al '+lastn+', ne servono fino al '+e+': controlla il numero davanti al versetto '+(lastn+1)+'. Passo escluso.');return;}
+      if(!e&&verses.length>1){nome=lab;W('Il riferimento non indica l\'ultimo versetto: letti dal '+s+' al '+lastn+'.');}
+      if(verses.some(function(v){return !v[1];})){E('Un versetto è vuoto. Passo escluso.');return;}
+      verses.forEach(function(v){if(/\d/.test(v[1]))W('Il versetto '+v[0]+' contiene una cifra: controlla.');});
       var lo=leftover(body,verses);cw+=lo.total;cl+=lo.left;
       if(lo.left){
         var shown=lo.runs.slice(0,3).map(function(x){return '"'+(x.length>70?x.slice(0,70)+'…':x)+'"';}).join(' · ')+(lo.runs.length>3?' · …':'');
-        W('Nel messaggio c\'è del testo che non è finito nelle slide ('+lo.left+(lo.left===1?' parola':' parole')+'): '+shown+'. Se fa parte di un versetto, togli la riga vuota o aggiungi il numero; se non serve, ignora questo avviso.');
+        W('Testo non incluso nelle slide ('+lo.left+(lo.left===1?' parola':' parole')+'): '+shown+'. Se è parte di un versetto, togli la riga vuota o aggiungi il numero.');
       }
       pw.forEach(function(msg){warns.push({pid:id,ref:nome,msg:msg});});
       out.push({pid:id,book:hd.b,chap:chap,verses:verses,label:lab});
@@ -1889,8 +1879,8 @@ var ICON={
   pen:svg('<path d="M4.5 19.5l3.6-.9L19 7.7l-2.7-2.7L5.4 15.9z"/><path d="M14.6 6.7l2.7 2.7"/>'),
   spin:svg('<path d="M12 3.5a8.5 8.5 0 108.5 8.5" opacity=".95"/>')
 };
-var EMPTYTXT={bg:'Senza sfondo, le slide restano scure.',sep:'Senza immagine, i passi si susseguono senza stacco.'};
-var MISSTXT={bg:'Manca: le slide saranno senza sfondo.',sep:'Manca: tra un passo e l\'altro non ci sarà nessuna immagine.'};
+var EMPTYTXT={bg:'Facoltativo',sep:'Facoltativa'};
+var MISSTXT={bg:'Slide senza sfondo',sep:'Nessuno stacco tra i passi'};
 var DEFAULTS={corto:120,max:200,lungo:240};
 var state={editing:null,mode:'bibbia',nameTouched:false,song:{vista:'table',undo:[],videoInfo:null,colors:null,fix:{it:[],en:[]},model:null,order:null,touched:false,uid:0,view:null,video:true,extra:{}},res:null,img:{bg:null,sep:null},flat:[],cur:0,done:null,busy:false,verified:false,ov:{},counts:{err:0,warn:0,slides:0,passages:0}};
 
@@ -1985,11 +1975,11 @@ function analyze(){
 
 function paintCount(){
   var c=$('count'),r=state.res,txt,cls;
-  if(!r){txt='Nessun testo incollato';cls='chip';}
+  if(!r){txt='';cls='count';}
   else{
     var tot=r.passages.length+r.errs.length;
-    if(!tot){txt='Non riconosco nessun passo biblico';cls='chip bad';}
-    else{txt=pl(tot,'passo riconosciuto','passi riconosciuti')+(r.errs.length?', '+pl(r.errs.length,'con errore','con errori'):'');cls='chip '+(r.errs.length?'bad':'ok');}
+    if(!tot){txt='Nessun passo riconosciuto';cls='count bad';}
+    else{txt=pl(tot,'passo','passi')+(r.errs.length?' · '+pl(r.errs.length,'con errore','con errori'):'');cls='count '+(r.errs.length?'bad':'ok');}
   }
   var changed=c.textContent!==txt;
   c.textContent=txt;c.className=cls;
@@ -2059,7 +2049,7 @@ function render(){
     (byPid[p.pid]||[]).forEach(function(w){notes.push({k:'w',msg:w.msg});});
     g.forEach(function(sl,k){
       var t=slideLen(sl),first=sl[0][0],last=sl[sl.length-1][0],ref=p.book+' '+p.chap+':'+first+(sl.length>1?'-'+last:'');
-      if(t>rl.lungo)notes.push({k:'w',msg:'La slide '+ref+' è lunga ('+t+' caratteri): controlla che il testo entri nello schermo.'});
+      if(t>rl.lungo)notes.push({k:'w',msg:'Slide '+ref+': lunga ('+t+' caratteri)'});
       slides+=slideMarkup(sl,p.label,rl,'button',k);
       state.flat.push({sl:sl,label:p.label,pid:p.pid,p:p});
     });
@@ -2083,16 +2073,14 @@ function render(){
     sic.innerHTML=st==='ok'?ICON.check:(st==='warn'?ICON.warn:ICON.err);
     replay(sic,'pop');
   }
-  var head=r.passages.length?pl(r.passages.length,'passo','passi')+', '+pl(nslide,'slide','slide'):'Nessun passo può essere incluso';
-  var more=nErr?(nErr===1?'Un passo ha un errore e non sarà nella presentazione. Correggilo nel messaggio: la pagina si aggiorna da sola.':nErr+' passi hanno un errore e non saranno nella presentazione. Correggili nel messaggio: la pagina si aggiorna da sola.')
-    :(nWarn?pl(nWarn,'punto da controllare','punti da controllare')+', segnati in giallo qui sotto.':'Tutto a posto. Tutto il testo dei versetti è nelle slide.');
+  var head=r.passages.length?pl(r.passages.length,'passo','passi')+' · '+pl(nslide,'slide','slide'):'Nessun passo incluso';
+  var more=nErr?(nErr===1?'1 passo con errore: escluso':nErr+' passi con errore: esclusi'):(nWarn?pl(nWarn,'punto','punti')+' da controllare':'Tutto a posto');
   $('sum-t').textContent=head;$('sum-p').textContent=more;
   var go=$('sum-go');go.hidden=!(nErr||nWarn);go.textContent=nErr?'Vai all\'errore':'Vai al primo';
-  $('rev-sub').hidden=!r.passages.length;
 
   // ---- messaggi scartati ----
   $('ign').hidden=!r.ignored.length;
-  $('ign-s').textContent='Ho ignorato '+pl(r.ignored.length,'messaggio','messaggi')+' senza riferimenti biblici';
+  $('ign-s').textContent=pl(r.ignored.length,'messaggio ignorato','messaggi ignorati');
   $('ign-l').innerHTML=r.ignored.map(function(m){return '<li>'+h(m)+'</li>';}).join('');
   renderDock();
 }
@@ -2109,20 +2097,19 @@ function renderDock(){
   btn.setAttribute('data-state',s);
   qs('.dl-t',btn).textContent=s==='work'?'Preparo…':(s==='done'?'Scaricato':'Scarica');
   $('dlpro').hidden=!(anyImg&&r&&c.passages);
-  if(!r){btn.disabled=true;aw.hidden=true;say('','','Incolla un messaggio per poter scaricare.');return;}
+  if(!r){btn.disabled=true;aw.hidden=true;say('','','');return;}
   if(!c.passages){
     btn.disabled=true;aw.hidden=true;
-    say('bad',ICON.err,r.errs.length?'Nessun passo può essere scaricato: correggi gli errori qui sopra.':'Non ho riconosciuto nessun passo. Scrivi il riferimento, per esempio «Romani 6:5-11», seguito dai versetti.');
+    say('bad',ICON.err,r.errs.length?'Correggi gli errori per scaricare.':'Nessun passo riconosciuto.');
     return;
   }
   aw.hidden=!c.err;
-  if(c.err)$('acktext').textContent=c.err===1?'Ho letto l\'errore: scarica gli altri passi, senza quello escluso.':'Ho letto gli errori: scarica gli altri passi, senza i '+c.err+' esclusi.';
+  if(c.err)$('acktext').textContent=c.err===1?'Scarica senza il passo con errore':'Scarica senza i '+c.err+' passi con errore';
   btn.disabled=(!!c.err&&!$('ack').checked)||state.busy;
-  if(state.done){say('ok',ICON.check,'Scaricato: '+state.done+'. '+(state.verified?'Ho riletto il file: ogni slide contiene il testo previsto. ':'')+'Ora trascinalo in ProPresenter.');return;}
+  if(state.done){say('ok',ICON.check,(state.verified?'Scaricato e controllato':'Scaricato')+'. Trascinalo in ProPresenter.');return;}
   if(c.err&&!$('ack').checked){say('','','');return;}   // l'interruttore sopra spiega già cosa fare
-  var what=pl(c.passages,'passo','passi')+', '+pl(c.slides,'slide','slide');
-  if(c.warn)say('warn',ICON.warn,'Pronto: '+what+'. '+pl(c.warn,'punto','punti')+' da controllare.');
-  else say('ok',ICON.check,'Pronto: '+what+'.');
+  if(c.warn)say('warn',ICON.warn,pl(c.warn,'punto','punti')+' da controllare');
+  else say('ok',ICON.check,'Pronto');
 }
 // ---------- canzoni ----------
 var SONG_COL={verse:'#5aa9ff',prechorus:'#cc298c',chorus:'#b04dff',bridge:'#3fc1e6',outro:'#d33a3a',tag:'#d33a3a',intro:'#9aa3ad',inst:'#9aa3ad'};
@@ -2164,7 +2151,7 @@ function songSetSource(side,r){
   var box=$(side==='it'?'c-it':'c-en'),src=$('src-'+side);
   if(box.value.trim())pushUndo();
   box.value=r.text;state.editing=null;
-  src.hidden=false;src.textContent='Caricato da: '+r.name;
+  src.hidden=false;src.textContent=r.name;
   state.song.fix[side]=r.unknown||[];
   analyzeSong();
   if((r.unknown||[]).length)setTimeout(function(){$('fx-'+side).scrollIntoView({behavior:reduced()?'auto':'smooth',block:'center'});},150);
@@ -2172,15 +2159,15 @@ function songSetSource(side,r){
 // più file insieme: si capisce quale è italiano e quale inglese
 function loadSongFiles(files,side){
   files=Array.prototype.slice.call(files||[]);if(!files.length)return;
-  Promise.all(files.map(function(f){return readSongFile(f).catch(function(e){toast('"'+f.name+'": '+(e&&e.message||'non riesco a leggerlo')+' Puoi incollare il testo a mano.');return null;});})).then(function(rs){
+  Promise.all(files.map(function(f){return readSongFile(f).catch(function(e){toast(f.name+': '+(e&&e.message||'non riesco a leggerlo'));return null;});})).then(function(rs){
     rs=rs.filter(Boolean);if(!rs.length)return;
-    if(rs.length===1){songSetSource(side,rs[0]);toast('Testo caricato da '+rs[0].name+'.');return;}
+    if(rs.length===1){songSetSource(side,rs[0]);toast('Caricato: '+rs[0].name);return;}
     var used={};
     rs.forEach(function(r){r.lang=guessLang(r.text,r.name);});
     rs.forEach(function(r){if(r.lang&&!used[r.lang]){used[r.lang]=r;}});
-    if(!used.it&&!used.en){toast('Non capisco quale file è italiano e quale inglese: caricali uno alla volta, ciascuno nel suo riquadro.');return;}
+    if(!used.it&&!used.en){toast('Non capisco quale è italiano e quale inglese: caricali uno alla volta.');return;}
     if(used.it)songSetSource('it',used.it);if(used.en)songSetSource('en',used.en);
-    toast('Caricati: '+[used.it&&'italiano ('+used.it.name+')',used.en&&'inglese ('+used.en.name+')'].filter(Boolean).join(', ')+'.');
+    toast('Caricati italiano e inglese');
   });
 }
 // lettere del PDF che non si leggono: si mostrano le parole e una proposta da confermare
@@ -2189,7 +2176,7 @@ function songFixHtml(list){
   var rows=list.map(function(u,i){
     return '<div class="fx-row"><span class="fx-ctx">'+u.ctx.map(h).join(' · ')+'</span><span class="fx-arrow">→</span><input class="fx-in" type="text" data-i="'+i+'" value="'+h(u.suggest||'')+'" aria-label="Lettere al posto di '+h(u.mark)+'" spellcheck="false"><span class="fx-prev" data-i="'+i+'"></span></div>';
   }).join('');
-  return '<b>Alcune lettere del PDF non si leggono</b><p>Il PDF usa caratteri speciali (spesso «tt» o «fi») che non so riconoscere. Controlla le lettere proposte e conferma.</p>'+rows+'<div class="fx-act"><button type="button" class="btn small primary" data-act="fx-apply">Conferma</button></div>';
+  return '<b>Lettere del PDF da confermare</b>'+rows+'<div class="fx-act"><button type="button" class="btn small primary" data-act="fx-apply">Conferma</button></div>';
 }
 function songFixPreview(box,list){
   qsa('.fx-prev',box).forEach(function(sp){
@@ -2211,7 +2198,7 @@ function songFixApply(side){
   var G=state.song,box=$('fx-'+side),list=G.fix[side]||[],boxText=$(side==='it'?'c-it':'c-en'),t=boxText.value;
   for(var i=0;i<list.length;i++){
     var v=((qs('.fx-in[data-i="'+i+'"]',box)||{}).value||'').trim();
-    if(!v){toast('Scrivi le lettere che mancano in «'+list[i].ctx[0]+'».');return;}
+    if(!v){toast('Scrivi le lettere per «'+list[i].ctx[0]+'»');return;}
   }
   pushUndo();
   list.forEach(function(u,i){var v=qs('.fx-in[data-i="'+i+'"]',box).value.trim();t=t.split(u.mark).join(v);});
@@ -2224,7 +2211,7 @@ function paintUndo(){$('c-undo').hidden=!state.song.undo.length;}
 function songUndo(){
   var G=state.song,s=G.undo.pop();if(!s)return;
   $('c-it').value=s.it;$('c-en').value=s.en;G.order=JSON.parse(s.order);G.touched=s.touched;G.extra=JSON.parse(s.extra);G.fix=JSON.parse(s.fix);
-  state.editing=null;state.done=null;paintUndo();analyzeSong();toast('Modifica annullata.');
+  state.editing=null;state.done=null;paintUndo();analyzeSong();toast('Annullato');
 }
 function ensureSec(m,key){
   if(m.secs[key])return m.secs[key];
@@ -2262,7 +2249,7 @@ function songView(G){
       r.slides.forEach(function(sl,j){
       var rows=fitLines(sl.it[0]);
       if(rows>2&&first){
-        notes.push({k:'w',msg:'La riga della slide '+(j+1)+' è molto lunga: andrà su '+rows+' righe e potrebbe non entrare nello schermo.'});
+        notes.push({k:'w',msg:'Slide '+(j+1)+': la riga va su '+rows+' righe'});
         nWarn++;
       }
       });
@@ -2273,10 +2260,10 @@ function songView(G){
   });
   var pend=0;
   Object.keys(m.secs).forEach(function(k){m.secs[k].it.concat(m.secs[k].en).forEach(function(l){if(FIX_MARK.test(l))pend++;});});
-  if(pend){var msg='Nel testo ci sono ancora lettere da confermare del PDF (segnate con {?1}, {?2}…).';if(errors.indexOf(msg)<0)errors.push(msg);}
+  if(pend){var msg='Ci sono lettere del PDF da confermare ({?1}…)';if(errors.indexOf(msg)<0)errors.push(msg);}
   var info=[];
-  if(m.chords.length)info.push('Ho tolto '+pl(m.chords.length,'riga di accordi','righe di accordi')+' ('+m.chords.filter(function(c,i,a){return a.indexOf(c)===i;}).slice(0,6).join(', ')+').');
-  if(m.strays.length){nWarn++;info.push('Righe fuori da ogni sezione, ignorate: "'+m.strays.slice(0,3).join('" · "')+'".');}
+  if(m.chords.length)info.push(pl(m.chords.length,'riga di accordi tolta','righe di accordi tolte')+' ('+m.chords.filter(function(c,i,a){return a.indexOf(c)===i;}).slice(0,6).join(', ')+')');
+  if(m.strays.length){nWarn++;info.push('Righe fuori da una sezione: "'+m.strays.slice(0,3).join('" · "')+'"');}
   m.warns.forEach(function(w){nWarn++;info.push(w);});
   return {items:items,blocks:blocks,errors:errors,slides:slides,nWarn:nWarn,nMis:nMis,misSig:misSig.join('|'),info:info};
 }
@@ -2284,11 +2271,11 @@ function songView(G){
 function lineHtml(side,key,gi,text,shown){
   var ed=state.editing,m=state.song.model,sc=m&&m.secs[key],last=!sc||gi>=(side==='it'?sc.it.length:sc.en.length)-1;
   if(ed&&ed.key===key&&ed.side===side&&ed.i===gi)
-    return '<span class="editor"><input class="ed-in" type="text" value="'+h(text)+'" aria-label="Modifica la riga" spellcheck="false"><span class="ed-btns"><button type="button" class="btn small primary" data-act="ed-save">Salva</button><button type="button" class="btn small" data-act="ed-split">Spezza qui</button><button type="button" class="btn small" data-act="ed-merge"'+(last?' disabled':'')+'>Unisci con la successiva</button><button type="button" class="btn small ghost" data-act="ed-cancel">Annulla</button></span><span class="ed-hint">Metti il cursore dove vuoi andare a capo e premi «Spezza qui», oppure unisci questa riga alla successiva. Invio salva, Esc annulla.</span></span>';
+    return '<span class="editor"><input class="ed-in" type="text" value="'+h(text)+'" aria-label="Modifica la riga" spellcheck="false"><span class="ed-btns"><button type="button" class="btn small primary" data-act="ed-save">Salva</button><button type="button" class="btn small" data-act="ed-split">Spezza qui</button><button type="button" class="btn small" data-act="ed-merge"'+(last?' disabled':'')+'>Unisci con la successiva</button><button type="button" class="btn small ghost" data-act="ed-cancel">Annulla</button></span><span class="ed-hint">Cursore dove andare a capo, poi «Spezza qui». Invio salva, Esc annulla.</span></span>';
   return '<button type="button" class="ln" data-act="edit" data-side="'+side+'" data-i="'+gi+'" title="Correggi o spezza la riga" aria-label="Correggi o spezza la riga: '+h(text)+'"><span class="tx">'+h(shown)+'</span><span class="pen">'+ICON.pen+'</span></button>';
 }
 function songPairsHtml(s,r){
-  var out='<div class="pairs"><div class="ph" style="grid-area:1/1">Sulla slide (italiano), una riga per slide</div><div class="ph" style="grid-area:1/2">Nelle note (inglese)</div>',row=2,slideNo=0,k;
+  var out='<div class="pairs"><div class="ph" style="grid-area:1/1">Slide (italiano)</div><div class="ph" style="grid-area:1/2">Note (inglese)</div>',row=2,slideNo=0,k;
   r.groups.forEach(function(g){
     var rows=g.it.length,mis=g.it.length!==g.en.length,cls=mis?' mis':'';
     g.it.forEach(function(l,j){
@@ -2312,13 +2299,13 @@ function songMismatchNote(s,r){
       ?'Righe italiane '+misRange(g.itFrom,g.itTo)+' ('+it+') ↔ riga inglese '+misRange(g.enFrom,g.enTo)+' ('+en+')'
       :'Righe inglesi '+misRange(g.enFrom,g.enTo)+' ('+en+') ↔ riga italiana '+misRange(g.itFrom,g.itTo)+' ('+it+')';
   });
-  return {k:'w',html:'<b>'+h(s.name)+': '+r.counts[0]+' righe italiane e '+r.counts[1]+' inglesi, non corrispondono.</b> Dove:<ul class="mis-l">'+items.map(function(x){return '<li>'+h(x)+'</li>';}).join('')+'</ul><span class="mis-h">Tocca una riga e usa «Spezza qui» o «Unisci con la successiva» finché sono in pari. Se scarichi così, la riga che copre più righe viene ripetuta nelle note di ognuna.</span>'};
+  return {k:'w',html:'<b>'+r.counts[0]+' righe italiane, '+r.counts[1]+' inglesi</b><ul class="mis-l">'+items.map(function(x){return '<li>'+h(x)+'</li>';}).join('')+'</ul><span class="mis-h">Tocca una riga per spezzarla o unirla.</span>'};
 }
 function songCardHtml(c){
   var s=c.s,btn=function(act,label,icon,dis){return '<button type="button" class="ib" data-act="'+act+'" aria-label="'+label+': '+h(s.name)+'" title="'+label+'"'+(dis?' disabled':'')+'>'+icon+'</button>';};
   var acts='<span class="acts">'+btn('up','Sposta su',ICON.up,c.i===0)+btn('down','Sposta giù','<span class="flip">'+ICON.up+'</span>',c.i===c.n-1)+btn('dup','Duplica',ICON.copy,false)+btn('del','Elimina',ICON.trash,false)+'</span>';
-  var meta=c.r.blank?'slide vuota con SONGS':(c.r.error?'da sistemare':pl(c.r.slides.length,'slide','slide'));
-  var body=c.r.blank?'':(c.first?(state.song.vista==='preview'?songPreviewHtml(s,c.r):songPairsHtml(s,c.r)):'<p class="same">Stesse slide della prima «'+h(s.name)+'»: le righe si sistemano lì e valgono per tutte le copie.</p>');
+  var meta=c.r.blank?'slide vuota':(c.r.error?'da sistemare':pl(c.r.slides.length,'slide','slide'));
+  var body=c.r.blank?'':(c.first?(state.song.vista==='preview'?songPreviewHtml(s,c.r):songPairsHtml(s,c.r)):'<p class="same">Come la prima «'+h(s.name)+'»</p>');
   var notes=c.notes.length?'<ul class="notes">'+c.notes.map(noteHtml).join('')+'</ul>':'';
   var cls=c.notes.some(function(n){return n.k==='e';})?' err':(c.notes.length?' has-warn':'')+(c.first?'':' copy');
   return '<article class="pc song'+cls+'" style="--sc:'+(SONG_COL[s.type]||'#9aa3ad')+'"><header class="pc-h"><h3>'+h(s.name)+'</h3><span class="meta">'+meta+'</span>'+acts+'</header>'+notes+body+'</article>';
@@ -2330,12 +2317,12 @@ function renderSong(){
   $('c-empty').hidden=!!m;$('c-review').hidden=!m;
   if(!m){
     reconcile($('c-list'),[],'c-');
-    $('c-count').textContent='Nessun testo incollato';$('c-count').className='count';
+    $('c-count').textContent='';$('c-count').className='count';
     G.view=null;state.counts={err:0,warn:0,slides:0,passages:0};renderDock();paintUndo();draftQueue();return;
   }
   var v=G.view=songView(G);
   itN=Object.keys(m.itInfo.lib).length;enN=Object.keys(m.enInfo.lib).length;
-  $('c-count').textContent='Italiano: '+pl(itN,'sezione','sezioni')+' · Inglese: '+pl(enN,'sezione','sezioni');
+  $('c-count').textContent='IT '+pl(itN,'sezione','sezioni')+' · EN '+pl(enN,'sezione','sezioni');
   $('c-count').className='count '+(itN&&enN?'ok':'');
 
   // elenco delle sezioni
@@ -2352,27 +2339,24 @@ function renderSong(){
     sic.innerHTML=st==='ok'?ICON.check:(st==='warn'?ICON.warn:ICON.err);
     replay(sic,'pop');
   }
-  $('c-sum-t').textContent=v.blocks.length?pl(v.blocks.length,'sezione','sezioni')+', '+pl(v.slides,'slide','slide'):'Nessuna sezione';
-  $('c-sum-p').textContent=nErr?(nErr===1?'C\'è un problema da sistemare prima di scaricare: '+v.errors[0]:nErr+' problemi da sistemare prima di scaricare. Il primo: '+v.errors[0])
-    :(nWarn?pl(nWarn,'punto da controllare','punti da controllare')+', segnati in giallo qui sotto.':'Tutto a posto.');
+  $('c-sum-t').textContent=v.blocks.length?pl(v.blocks.length,'sezione','sezioni')+' · '+pl(v.slides,'slide','slide'):'Nessuna sezione';
+  $('c-sum-p').textContent=nErr?v.errors[0]:(nWarn?pl(nWarn,'punto','punti')+' da controllare':'Tutto a posto');
   $('c-sum-go').hidden=!(nErr||nWarn);
 
   // aggiungere sezioni, cambiare ordine
   var sel=$('c-add'),keep=sel.value,opts='';
   Object.keys(m.secs).forEach(function(k){opts+='<option value="'+h(k)+'">'+h(m.secs[k].name)+'</option>';});
-  ['intro','inst','tag'].forEach(function(k){if(!m.secs[k])opts+='<option value="'+k+'">'+h(secName(k,0))+' (slide vuota)</option>';});
+  ['intro','inst','tag'].forEach(function(k){if(!m.secs[k])opts+='<option value="'+k+'">'+h(secName(k,0))+'</option>';});
   if(sel._o!==opts){sel.innerHTML=opts;sel._o=opts;if(keep)sel.value=keep;}
   var textKeys=m.order.join(','),curKeys=G.order.map(function(o){return o.key;}).join(',');
   var arr=m.arrangement,arrKeys=arr?arr.keys.join(','):'';
   $('c-ord-en').hidden=!G.touched;
   $('c-ord-hd').hidden=!(arr&&arrKeys!==curKeys);
-  var hint=$('c-hint');
-  hint.hidden=!(arr&&arrKeys!==textKeys&&!G.touched);
-  if(!hint.hidden)hint.textContent='L\'intestazione del testo inglese indica quest\'ordine: '+arr.src+'. Qui sotto invece le sezioni seguono il testo. Puoi usare quello dell\'intestazione con il pulsante.';
+  $('c-ord-hd').title=arr?'Ordine indicato: '+arr.src:'';
 
   // note
   $('c-info').hidden=!v.info.length;
-  $('c-info-s').textContent=pl(v.info.length,'nota sui testi','note sui testi');
+  $('c-info-s').textContent=pl(v.info.length,'nota','note');
   $('c-info-l').innerHTML=v.info.map(function(x){return '<li>'+h(x)+'</li>';}).join('');
   state.counts={err:nErr,warn:nWarn,slides:v.slides,passages:v.blocks.length};
   renderDock();
@@ -2387,17 +2371,16 @@ function renderDockSong(){
   var mis=v&&v.nMis?v.nMis:0;
   if(v&&G.misSigSeen!==v.misSig){G.misSigSeen=v.misSig;$('ack').checked=false;}      // righe cambiate: la conferma vale da capo
   $('ackwrap').hidden=!mis;
-  if(mis)$('acktext').textContent=mis===1?'Ho controllato le righe che non corrispondono: scarica comunque.':'Ho controllato le '+mis+' sezioni con righe che non corrispondono: scarica comunque.';
+  if(mis)$('acktext').textContent=mis===1?'Ho controllato le righe: scarica comunque':'Ho controllato le '+mis+' sezioni: scarica comunque';
   btn.setAttribute('data-state',s);
   qs('.dl-t',btn).textContent=s==='work'?'Preparo…':(s==='done'?'Scaricato':'Scarica');
-  if(!v||!v.blocks.length){btn.disabled=true;dockSay('','','Incolla i testi per poter scaricare.');return;}
-  if(v.errors.length){btn.disabled=true;dockSay('bad',ICON.err,'Non posso scaricare ancora: '+v.errors[0]);return;}
+  if(!v||!v.blocks.length){btn.disabled=true;dockSay('','','');return;}
+  if(v.errors.length){btn.disabled=true;dockSay('bad',ICON.err,v.errors[0]);return;}
   btn.disabled=state.busy||(mis>0&&!$('ack').checked);
-  if(mis&&!$('ack').checked&&!state.done){dockSay('warn',ICON.warn,mis===1?'In una sezione le righe italiane e inglesi non corrispondono (vedi il riquadro giallo). Controlla, poi spunta l\'interruttore per scaricare.':'In '+mis+' sezioni le righe italiane e inglesi non corrispondono. Controlla, poi spunta l\'interruttore per scaricare.');return;}
-  if(state.done){dockSay('ok',ICON.check,'Scaricato: '+state.done+'. '+(state.verified?'Ho riletto il file: ogni slide contiene il testo previsto. ':'')+'Ora trascinalo in ProPresenter.');return;}
-  var what=pl(v.blocks.length,'sezione','sezioni')+', '+pl(v.slides,'slide','slide');
-  if(v.nWarn)dockSay('warn',ICON.warn,'Pronto: '+what+'. '+pl(v.nWarn,'punto','punti')+' da controllare.');
-  else dockSay('ok',ICON.check,'Pronto: '+what+'.');
+  if(mis&&!$('ack').checked&&!state.done){dockSay('warn',ICON.warn,'Righe non in pari: conferma per scaricare');return;}
+  if(state.done){dockSay('ok',ICON.check,(state.verified?'Scaricato e controllato':'Scaricato')+'. Trascinalo in ProPresenter.');return;}
+  if(v.nWarn)dockSay('warn',ICON.warn,pl(v.nWarn,'punto','punti')+' da controllare');
+  else dockSay('ok',ICON.check,'Pronto');
 }
 function downloadSong(){
   var G=state.song,v=G.view;
@@ -2409,7 +2392,7 @@ function downloadSong(){
       var problems=verifySongFile(bytes,v.blocks,{video:o.video});
       if(problems.length)throw new Error('il controllo finale ha trovato una differenza. '+problems[0]);
       var fname=nm.replace(/[\/:\\]/g,'-')+'.pro';
-      saveBlob(bytes,fname);state.done=fname;state.verified=true;toast('Scaricato: '+fname);
+      saveBlob(bytes,fname);state.done=fname;state.verified=true;toast('Scaricato');
     }catch(e){
       state.done=null;state.verified=false;
       var st=$('dlstatus');st._k='';st.className='status bad';st.innerHTML=ICON.err+'<span>Non scarico il file perché non è sicuro ('+h(e&&e.message||e)+'). Riprova, e se succede ancora avvisa chi mantiene la pagina.</span>';
@@ -2443,12 +2426,12 @@ function songEdit(act,btn){
   }
   if(act==='ed-save'){
     var v=inp.value.replace(/\s+/g,' ').trim();
-    if(!v){toast('La riga non può restare vuota.');return;}
+    if(!v){toast('La riga non può essere vuota');return;}
     if(v===old){state.editing=null;renderSong();return;}
     songEditApply([v]);
   }else if(act==='ed-split'){
     var pos=inp.selectionStart,a=inp.value.slice(0,pos).replace(/\s+/g,' ').trim(),b=inp.value.slice(pos).replace(/\s+/g,' ').trim();
-    if(!a||!b){toast('Metti il cursore nel punto in cui vuoi spezzare la riga, tra due parole.');inp.focus();return;}
+    if(!a||!b){toast('Metti il cursore tra due parole');inp.focus();return;}
     songEditApply([a,b]);
   }
 }
@@ -2477,7 +2460,7 @@ function songOrderFromHeader(){
     order.push({id:'b'+(++G.uid),key:k});
   });
   pushUndo();G.order=order;G.touched=true;state.done=null;renderSong();
-  if(missing.length)toast('L\'intestazione cita sezioni che non hai incollato: '+missing.map(function(k){return secName(k.replace(/\d+$/,''),parseInt((k.match(/\d+$/)||[0])[0],10)||0);}).join(', ')+'.');
+  if(missing.length)toast('Sezioni mancanti: '+missing.map(function(k){return secName(k.replace(/\d+$/,''),parseInt((k.match(/\d+$/)||[0])[0],10)||0);}).join(', ')+'.');
 }
 // ---------- impostazioni: video di sfondo e colori ----------
 var VIDEO_STD='Sfondo 1.mov',COL_DEF={intro:'#999999',inst:'#999999',outro:'#cc2929'};
@@ -2489,9 +2472,9 @@ function songOpts(){
 }
 function paintVideoInfo(){
   var i=state.song.videoInfo,name=$('c-vname').value.trim()||VIDEO_STD,el=$('c-vinfo');
-  if(name===VIDEO_STD)el.textContent='È il video del tuo modello: durata e dimensioni sono già giuste.';
-  else if(i&&i.duration>0)el.textContent='Durata '+i.duration.toFixed(1).replace('.',',')+' s, dimensioni '+i.w+'×'+i.h+' (lette dal file). Controlla in ProPresenter che si veda e parta.';
-  else el.textContent='Uso il nome scritto qui; durata e dimensioni restano quelle del modello e ProPresenter le rilegge dal file. Controlla che si veda e parta.';
+  if(name===VIDEO_STD)el.textContent='';
+  else if(i&&i.duration>0)el.textContent='Durata '+i.duration.toFixed(1).replace('.',',')+' s · '+i.w+'×'+i.h;
+  else el.textContent='Durata e dimensioni del modello: controlla in ProPresenter che parta.';
 }
 function setVideoInfo(info){
   state.song.videoInfo=info&&info.name&&info.name!==VIDEO_STD?info:null;
@@ -2520,7 +2503,7 @@ function bindSongSettings(){
     readVideoMeta(f).then(function(m){
       $('c-vname').value=name;
       setVideoInfo({name:name,duration:m?m.duration:0,w:m?m.w:0,h:m?m.h:0});
-      if(!m)toast('Non riesco a leggere durata e dimensioni di quel video: uso solo il nome.');
+      if(!m)toast('Durata del video non leggibile: uso il nome');
     });
   });
   try{var cs=JSON.parse(store('versi.colori')||'null');if(cs)Object.keys(COL_DEF).forEach(function(k){if(/^#[0-9a-f]{6}$/i.test(cs[k]||''))$('c-col-'+k).value=cs[k];});}catch(e){}
@@ -2608,7 +2591,7 @@ function build(onlyPro){
   var r=state.res,rl=rules(),nm=nome(),pro=buildPresentation(r.passages,nm,rl.corto,rl.max,state.img),base=nm.replace(/[\/:\\]/g,'-'),files=[];
   // rilegge il file appena costruito: se qualcosa non corrisponde al testo previsto, non si scarica
   var problems=verifyPresentation(pro,r.passages,rl.corto,rl.max,state.img);
-  if(problems.length)throw new Error('il controllo finale ha trovato una differenza. '+problems[0]);
+  if(problems.length)throw new Error(problems[0]);
   if(state.img.bg)files.push({name:MEDIA_ZIP+state.img.bg.name,data:state.img.bg.bytes});
   if(state.img.sep)files.push({name:MEDIA_ZIP+state.img.sep.name,data:state.img.sep.bytes});
   if(onlyPro||!files.length)return {name:base+'.pro',bytes:pro};
@@ -2625,10 +2608,10 @@ function download(onlyPro){
       var f=build(onlyPro);
       saveBlob(f.bytes,f.name);
       state.done=f.name;state.verified=true;
-      toast('Scaricato: '+f.name);
+      toast('Scaricato');
     }catch(e){
       state.done=null;state.verified=false;
-      var st=$('dlstatus');st._k='';st.className='status bad';st.innerHTML=ICON.err+'<span>Non scarico il file perché non è sicuro ('+h(e&&e.message||e)+'). Riprova, e se succede ancora avvisa chi mantiene la pagina.</span>';
+      var st=$('dlstatus');st._k='';st.className='status bad';st.innerHTML=ICON.err+'<span>Non scaricato: il controllo finale ha trovato un problema ('+h(e&&e.message||e)+')</span>';
       state.busy=false;$('dlbtn').setAttribute('data-state','idle');qs('.dl-t',$('dlbtn')).textContent='Scarica';
       return;
     }
@@ -2669,13 +2652,13 @@ function paintSlot(k){
   if(im){
     th.style.backgroundImage='url("'+im.url+'")';th.innerHTML='';
     var bad=Math.abs(im.w/im.h-16/9)>0.02;
-    fn.textContent=im.name+' ('+im.w+'×'+im.h+')'+(im.remembered?'\nSalvata dalla volta scorsa.':'')+(bad?'\nNon è 16:9: sullo schermo potrebbe essere tagliata o deformata.':'');
+    fn.textContent=im.name+' ('+im.w+'×'+im.h+')'+(im.remembered?'\nSalvata':'')+(bad?'\nNon è 16:9: può essere tagliata':'');
     $('rm-'+k).hidden=false;$('lt-'+k).textContent='Cambia';
     sl.classList.add('filled');sl.classList.toggle('warn',bad);
   }else{
     th.style.backgroundImage='';th.innerHTML=ICON.image;
     fn.textContent=needed?MISSTXT[k]:EMPTYTXT[k];
-    $('rm-'+k).hidden=true;$('lt-'+k).textContent='Scegli immagine';
+    $('rm-'+k).hidden=true;$('lt-'+k).textContent='Scegli';
     sl.classList.remove('filled');sl.classList.toggle('warn',needed);
   }
 }
@@ -2685,8 +2668,7 @@ function remember(k,im){
 function setImage(kind,file,quiet){
   if(!file)return;
   if(!/^image\//.test(file.type||'')&&!/\.(png|jpe?g|gif|webp|heic)$/i.test(file.name)){
-    $('fn-'+kind).textContent='"'+file.name+'" non è un\'immagine. Scegli un file PNG o JPG.';
-    toast('Quel file non è un\'immagine.');return;
+    toast('Non è un\'immagine.');return;
   }
   file.arrayBuffer().then(function(ab){
     var bytes=new Uint8Array(ab),url=URL.createObjectURL(new Blob([bytes],{type:file.type||'image/png'})),img=new Image();
@@ -2698,7 +2680,7 @@ function setImage(kind,file,quiet){
       remember(kind,state.img[kind]);
       render();
     };
-    img.onerror=function(){URL.revokeObjectURL(url);$('fn-'+kind).textContent='Non riesco a leggere "'+file.name+'". Scegli un\'immagine PNG o JPG.';toast('Non riesco a leggere quell\'immagine.');};
+    img.onerror=function(){URL.revokeObjectURL(url);toast('Immagine non leggibile.');};
     img.src=url;
   });
 }
@@ -2736,7 +2718,7 @@ function showSlide(i,dir){
   vs.innerHTML=slideMarkup(d.sl,d.label,rl,'div',0);
   if(moved&&dir){vs.classList.remove('to-next','to-prev');void vs.offsetWidth;vs.classList.add(dir>0?'to-next':'to-prev');}
   $('vinfo').textContent='Slide '+(i+1)+' di '+n+' · '+pl(t,'carattere','caratteri');
-  $('vnote').textContent=t>rl.lungo?'Slide lunga: controlla che il testo entri nello schermo.':'';
+  $('vnote').textContent=t>rl.lungo?'Slide lunga':'';
   $('vbar').style.width=((i+1)/n*100)+'%';
   $('vprev').disabled=i===0;$('vnext').disabled=i===n-1;
   // quali correzioni sono possibili su questa slide (solo dentro lo stesso passo)
@@ -2824,7 +2806,6 @@ function setMode(m){
   $('tab-bibbia').setAttribute('aria-selected',m==='bibbia'?'true':'false');
   $('tab-canzoni').setAttribute('aria-selected',m==='canzoni'?'true':'false');
   $('hero-t').textContent=m==='canzoni'?'Canzoni':'Versetti';
-  $('lead').textContent=m==='canzoni'?'Incolla il testo italiano e quello inglese di una canzone e scarica le slide per ProPresenter.':'Incolla il messaggio del pastore e scarica le slide dei versetti per ProPresenter.';
   state.done=null;
   if(!state.nameTouched){
     var t=state.song.model&&state.song.model.title;
@@ -2852,8 +2833,8 @@ function firstProblem(){
 function loadBibleFile(f){
   f.arrayBuffer().then(function(ab){return fileToText(f.name,new Uint8Array(ab));}).then(function(r){
     $('msg').value=r.text;analyze();
-    toast('Messaggio caricato da '+f.name+'.'+(r.unknown&&r.unknown.length?' Attenzione: nel PDF ci sono lettere che non so leggere.':''));
-  }).catch(function(e){toast('"'+f.name+'": '+(e&&e.message||'non riesco a leggerlo')+' Puoi incollare il testo.');});
+    toast('Caricato: '+f.name+(r.unknown&&r.unknown.length?'. Nel PDF ci sono lettere illeggibili.':''));
+  }).catch(function(e){toast(f.name+': '+(e&&e.message||'non riesco a leggerlo'));});
 }
 
 // ---------- bozza ----------
@@ -2863,9 +2844,9 @@ function restoreDraft(d){
   G.order=d.order||null;G.touched=!!d.touched;G.extra=d.extra||{};G.uid=d.uid||0;G.fix=d.fix||{it:[],en:[]};
   [['it',d.srcIt],['en',d.srcEn]].forEach(function(a){if(a[1]){$('src-'+a[0]).hidden=false;$('src-'+a[0]).textContent=a[1];}});
   if(d.nome){$('nome').value=d.nome;state.nameTouched=true;}
-  var when=new Date(d.t).toLocaleString('it-IT',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
-  var what=d.mode==='canzoni'?'la canzone'+(d.title?' «'+d.title+'»':''):'il messaggio dei versetti';
-  $('resume-t').textContent='Ho ripreso il lavoro di '+when+': '+what+'.';
+  var when=new Date(d.t).toLocaleString('it-IT',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+  var what=d.mode==='canzoni'?(d.title||'Canzone'):'Versetti';
+  $('resume-t').textContent='Ripreso: '+what+' · '+when;
   $('resume').hidden=false;
 }
 function bindResume(){
@@ -2887,10 +2868,10 @@ function bindMessage(){
   $('msg').addEventListener('input',function(){clearTimeout(tm);tm=setTimeout(analyze,150);});
   $('clear').addEventListener('click',function(){$('msg').value='';state.ov={};analyze();$('msg').focus();});
   $('paste').addEventListener('click',function(){
-    function fail(){$('msg').focus();toast('Non posso leggere gli appunti da qui: clicca nel riquadro e premi '+(isMac()?'⌘V':'Ctrl+V')+'.');}
+    function fail(){$('msg').focus();toast('Premi '+(isMac()?'⌘V':'Ctrl+V')+' nel riquadro.');}
     if(navigator.clipboard&&navigator.clipboard.readText){
       navigator.clipboard.readText().then(function(x){
-        if(!x||!x.trim()){toast('Gli appunti sono vuoti.');return;}
+        if(!x||!x.trim()){toast('Appunti vuoti.');return;}
         $('msg').value=x;analyze();$('msg').focus();
       }).catch(fail);
     }else fail();

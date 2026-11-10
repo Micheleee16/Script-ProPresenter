@@ -1,4 +1,4 @@
-# Versi
+# Script Pro
 
 Pagina unica, senza dipendenze e senza server (funziona offline) che prepara presentazioni
 ProPresenter 7:
@@ -10,7 +10,7 @@ ProPresenter 7:
 - Il messaggio dei versetti si può caricare anche da una chat esportata da WhatsApp (`.zip` o `.txt`, formati computer, iPhone e Android).
 - Il lavoro in corso si salva da solo nel browser e si riprende alla prossima apertura.
 
-**Per usarla:** apri `dist/Versi.html` nel browser.
+**Per usarla:** apri `dist/Script-Pro.html` nel browser.
 
 ## Struttura
 
@@ -25,15 +25,15 @@ src/engine/*.js       engine (canzoni.js e canzone.js per le canzoni, pdf.js e o
                       rilettura finale del file generato, zip
 template/             Messaggio_Modena.pro (versetti) e Canzone_ITA-ENG.pro (canzoni): i modelli originali,
                       incorporati nella pagina in base64
-build.mjs             assembla dist/Versi.html
+build.mjs             assembla dist/Script-Pro.html
 test/                 test automatici (node --test)
-dist/Versi.html       il file finale, generato: non modificarlo a mano
+dist/Script-Pro.html  il file finale, generato: non modificarlo a mano
 ```
 
 ## Comandi (serve Node 18 o più recente, nessun pacchetto da installare)
 
 ```bash
-node build.mjs     # rigenera dist/Versi.html dai sorgenti
+node build.mjs     # rigenera dist/Script-Pro.html dai sorgenti
 node --test test/*.test.mjs   # esegue i test dell'engine
 node test/ui-fumo.mjs         # prova l'interfaccia nel browser (serve Playwright)
 node test/ui-novita.mjs       # prova bozza, anteprima, annulla, video, colori, file Word e zip

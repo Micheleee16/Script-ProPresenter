@@ -1,9 +1,9 @@
 {
-  "name": "versi",
-  "version": "2.1.0",
+  "name": "script-pro",
+  "version": "2.2.0",
   "private": true,
   "type": "module",
-  "description": "Versi: dal messaggio del pastore alla presentazione ProPresenter (pagina unica, offline).",
+  "description": "Script Pro: versetti e canzoni in presentazioni ProPresenter (pagina unica, offline).",
   "scripts": {
     "build": "node build.mjs",
     "test": "node --test test/*.test.mjs",

@@ -9,11 +9,11 @@ function analyze(){
 
 function paintCount(){
   var c=$('count'),r=state.res,txt,cls;
-  if(!r){txt='Nessun testo incollato';cls='chip';}
+  if(!r){txt='';cls='count';}
   else{
     var tot=r.passages.length+r.errs.length;
-    if(!tot){txt='Non riconosco nessun passo biblico';cls='chip bad';}
-    else{txt=pl(tot,'passo riconosciuto','passi riconosciuti')+(r.errs.length?', '+pl(r.errs.length,'con errore','con errori'):'');cls='chip '+(r.errs.length?'bad':'ok');}
+    if(!tot){txt='Nessun passo riconosciuto';cls='count bad';}
+    else{txt=pl(tot,'passo','passi')+(r.errs.length?' · '+pl(r.errs.length,'con errore','con errori'):'');cls='count '+(r.errs.length?'bad':'ok');}
   }
   var changed=c.textContent!==txt;
   c.textContent=txt;c.className=cls;
@@ -83,7 +83,7 @@ function render(){
     (byPid[p.pid]||[]).forEach(function(w){notes.push({k:'w',msg:w.msg});});
     g.forEach(function(sl,k){
       var t=slideLen(sl),first=sl[0][0],last=sl[sl.length-1][0],ref=p.book+' '+p.chap+':'+first+(sl.length>1?'-'+last:'');
-      if(t>rl.lungo)notes.push({k:'w',msg:'La slide '+ref+' è lunga ('+t+' caratteri): controlla che il testo entri nello schermo.'});
+      if(t>rl.lungo)notes.push({k:'w',msg:'Slide '+ref+': lunga ('+t+' caratteri)'});
       slides+=slideMarkup(sl,p.label,rl,'button',k);
       state.flat.push({sl:sl,label:p.label,pid:p.pid,p:p});
     });
@@ -107,16 +107,14 @@ function render(){
     sic.innerHTML=st==='ok'?ICON.check:(st==='warn'?ICON.warn:ICON.err);
     replay(sic,'pop');
   }
-  var head=r.passages.length?pl(r.passages.length,'passo','passi')+', '+pl(nslide,'slide','slide'):'Nessun passo può essere incluso';
-  var more=nErr?(nErr===1?'Un passo ha un errore e non sarà nella presentazione. Correggilo nel messaggio: la pagina si aggiorna da sola.':nErr+' passi hanno un errore e non saranno nella presentazione. Correggili nel messaggio: la pagina si aggiorna da sola.')
-    :(nWarn?pl(nWarn,'punto da controllare','punti da controllare')+', segnati in giallo qui sotto.':'Tutto a posto. Tutto il testo dei versetti è nelle slide.');
+  var head=r.passages.length?pl(r.passages.length,'passo','passi')+' · '+pl(nslide,'slide','slide'):'Nessun passo incluso';
+  var more=nErr?(nErr===1?'1 passo con errore: escluso':nErr+' passi con errore: esclusi'):(nWarn?pl(nWarn,'punto','punti')+' da controllare':'Tutto a posto');
   $('sum-t').textContent=head;$('sum-p').textContent=more;
   var go=$('sum-go');go.hidden=!(nErr||nWarn);go.textContent=nErr?'Vai all\'errore':'Vai al primo';
-  $('rev-sub').hidden=!r.passages.length;
 
   // ---- messaggi scartati ----
   $('ign').hidden=!r.ignored.length;
-  $('ign-s').textContent='Ho ignorato '+pl(r.ignored.length,'messaggio','messaggi')+' senza riferimenti biblici';
+  $('ign-s').textContent=pl(r.ignored.length,'messaggio ignorato','messaggi ignorati');
   $('ign-l').innerHTML=r.ignored.map(function(m){return '<li>'+h(m)+'</li>';}).join('');
   renderDock();
 }
@@ -133,18 +131,17 @@ function renderDock(){
   btn.setAttribute('data-state',s);
   qs('.dl-t',btn).textContent=s==='work'?'Preparo…':(s==='done'?'Scaricato':'Scarica');
   $('dlpro').hidden=!(anyImg&&r&&c.passages);
-  if(!r){btn.disabled=true;aw.hidden=true;say('','','Incolla un messaggio per poter scaricare.');return;}
+  if(!r){btn.disabled=true;aw.hidden=true;say('','','');return;}
   if(!c.passages){
     btn.disabled=true;aw.hidden=true;
-    say('bad',ICON.err,r.errs.length?'Nessun passo può essere scaricato: correggi gli errori qui sopra.':'Non ho riconosciuto nessun passo. Scrivi il riferimento, per esempio «Romani 6:5-11», seguito dai versetti.');
+    say('bad',ICON.err,r.errs.length?'Correggi gli errori per scaricare.':'Nessun passo riconosciuto.');
     return;
   }
   aw.hidden=!c.err;
-  if(c.err)$('acktext').textContent=c.err===1?'Ho letto l\'errore: scarica gli altri passi, senza quello escluso.':'Ho letto gli errori: scarica gli altri passi, senza i '+c.err+' esclusi.';
+  if(c.err)$('acktext').textContent=c.err===1?'Scarica senza il passo con errore':'Scarica senza i '+c.err+' passi con errore';
   btn.disabled=(!!c.err&&!$('ack').checked)||state.busy;
-  if(state.done){say('ok',ICON.check,'Scaricato: '+state.done+'. '+(state.verified?'Ho riletto il file: ogni slide contiene il testo previsto. ':'')+'Ora trascinalo in ProPresenter.');return;}
+  if(state.done){say('ok',ICON.check,(state.verified?'Scaricato e controllato':'Scaricato')+'. Trascinalo in ProPresenter.');return;}
   if(c.err&&!$('ack').checked){say('','','');return;}   // l'interruttore sopra spiega già cosa fare
-  var what=pl(c.passages,'passo','passi')+', '+pl(c.slides,'slide','slide');
-  if(c.warn)say('warn',ICON.warn,'Pronto: '+what+'. '+pl(c.warn,'punto','punti')+' da controllare.');
-  else say('ok',ICON.check,'Pronto: '+what+'.');
+  if(c.warn)say('warn',ICON.warn,pl(c.warn,'punto','punti')+' da controllare');
+  else say('ok',ICON.check,'Pronto');
 }

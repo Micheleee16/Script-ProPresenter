@@ -30,8 +30,8 @@ var ICON={
   pen:svg('<path d="M4.5 19.5l3.6-.9L19 7.7l-2.7-2.7L5.4 15.9z"/><path d="M14.6 6.7l2.7 2.7"/>'),
   spin:svg('<path d="M12 3.5a8.5 8.5 0 108.5 8.5" opacity=".95"/>')
 };
-var EMPTYTXT={bg:'Senza sfondo, le slide restano scure.',sep:'Senza immagine, i passi si susseguono senza stacco.'};
-var MISSTXT={bg:'Manca: le slide saranno senza sfondo.',sep:'Manca: tra un passo e l\'altro non ci sarà nessuna immagine.'};
+var EMPTYTXT={bg:'Facoltativo',sep:'Facoltativa'};
+var MISSTXT={bg:'Slide senza sfondo',sep:'Nessuno stacco tra i passi'};
 var DEFAULTS={corto:120,max:200,lungo:240};
 var state={editing:null,mode:'bibbia',nameTouched:false,song:{vista:'table',undo:[],videoInfo:null,colors:null,fix:{it:[],en:[]},model:null,order:null,touched:false,uid:0,view:null,video:true,extra:{}},res:null,img:{bg:null,sep:null},flat:[],cur:0,done:null,busy:false,verified:false,ov:{},counts:{err:0,warn:0,slides:0,passages:0}};
 

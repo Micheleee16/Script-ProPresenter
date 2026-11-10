@@ -37,7 +37,7 @@ test('gli avvisi riguardano il versetto 8 senza punteggiatura e il riferimento s
   const msgs = r.warns.map((w) => w.msg);
   assert.equal(r.warns.length, 2);
   assert.ok(msgs.some((m) => /Il versetto 8 inizia dopo una parola senza punteggiatura/.test(m)));
-  assert.ok(msgs.some((m) => /non dice fino a che versetto/.test(m)));
+  assert.ok(msgs.some((m) => /non indica l'ultimo versetto/.test(m)));
   assert.ok(r.warns.every((w) => w.ref === '1 Corinzi 15:1-11'));
 });
 

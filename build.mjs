@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Assembla dist/Versi.html partendo dai sorgenti in src/ e dal template in template/.
+// Assembla dist/Script-Pro.html partendo dai sorgenti in src/ e dal template in template/.
 // Uso:  node build.mjs        (nessuna dipendenza, serve solo Node 18 o più recente)
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -44,9 +44,9 @@ export function buildHtml() {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const out = join(ROOT, 'dist', 'Versi.html');
+  const out = join(ROOT, 'dist', 'Script-Pro.html');
   mkdirSync(dirname(out), { recursive: true });
   const html = buildHtml();
   writeFileSync(out, html);
-  console.log(`dist/Versi.html scritto (${(html.length / 1024).toFixed(0)} KB)`);
+  console.log(`dist/Script-Pro.html scritto (${(html.length / 1024).toFixed(0)} KB)`);
 }

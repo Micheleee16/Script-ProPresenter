@@ -9,7 +9,7 @@ function showSlide(i,dir){
   vs.innerHTML=slideMarkup(d.sl,d.label,rl,'div',0);
   if(moved&&dir){vs.classList.remove('to-next','to-prev');void vs.offsetWidth;vs.classList.add(dir>0?'to-next':'to-prev');}
   $('vinfo').textContent='Slide '+(i+1)+' di '+n+' · '+pl(t,'carattere','caratteri');
-  $('vnote').textContent=t>rl.lungo?'Slide lunga: controlla che il testo entri nello schermo.':'';
+  $('vnote').textContent=t>rl.lungo?'Slide lunga':'';
   $('vbar').style.width=((i+1)/n*100)+'%';
   $('vprev').disabled=i===0;$('vnext').disabled=i===n-1;
   // quali correzioni sono possibili su questa slide (solo dentro lo stesso passo)

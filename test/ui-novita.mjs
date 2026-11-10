@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { loadEngine } from './carica.mjs';
 const { chromium } = createRequire(import.meta.url)('playwright');
 const E = loadEngine();
-const url = 'file://' + fileURLToPath(new URL('../dist/Versi.html', import.meta.url));
+const url = 'file://' + fileURLToPath(new URL('../dist/Script-Pro.html', import.meta.url));
 const FX = (n) => fileURLToPath(new URL('./fixtures/' + n, import.meta.url));
 const fx = (n) => readFileSync(FX(n), 'utf8');
 
@@ -36,7 +36,7 @@ await pg.waitForFunction(() => document.querySelectorAll('#plist .pc').length ==
 await attesa(800);
 await pg.reload();
 await pg.waitForSelector('#resume:not([hidden])');
-if (!/Ho ripreso il lavoro/.test(await pg.locator('#resume-t').innerText())) fail('manca il testo del banner della bozza');
+if (!/Ripreso/.test(await pg.locator('#resume-t').innerText())) fail('manca il testo del banner della bozza');
 if (!(await pg.inputValue('#msg')).includes('Romani 6:5-11')) fail('la bozza dei versetti non è tornata');
 await pg.waitForFunction(() => document.querySelectorAll('#plist .pc').length === 9);
 await pg.click('#resume-no');
@@ -91,13 +91,13 @@ await pg.click('#c-list .pc >> nth=2 >> button[data-act="dup"]');
 await attesa(800); await pg.reload();
 await pg.waitForSelector('#resume:not([hidden])');
 await pg.waitForSelector('#c-list .pc');
-if (!/la canzone «Taste and See»/.test(await pg.locator('#resume-t').innerText())) fail('il banner non nomina la canzone: ' + (await pg.locator('#resume-t').innerText()));
+if (!/Taste and See/.test(await pg.locator('#resume-t').innerText())) fail('il banner non nomina la canzone: ' + (await pg.locator('#resume-t').innerText()));
 if ((await nCard()) !== 20) fail('la bozza non ha riportato l\'ordine modificato: ' + (await nCard()));
 
 // video diverso e colori
 await pg.click('#c-more summary');
 await pg.fill('#c-vname', 'Mio sfondo.mov');
-if (!/restano quelle del modello/.test(await pg.locator('#c-vinfo').innerText())) fail('manca la nota sul video senza durata');
+if (!/del modello/.test(await pg.locator('#c-vinfo').innerText())) fail('manca la nota sul video senza durata');
 await pg.fill('#c-col-intro', '#ff0000');
 const bytes = await scarica();
 const top = E.parse(bytes), cues = {}; top.filter((x) => x.f === 13).forEach((x) => { cues[Buffer.from(E.path(x.v, 1, 1)).toString()] = x.v; });

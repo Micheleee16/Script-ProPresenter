@@ -98,7 +98,7 @@ ol,ul{list-style:none}
 .modes:has(#tab-canzoni[aria-selected="true"]) .mthumb,.seg:has(button[data-v="preview"][aria-pressed="true"]) .mthumb{transform:translateX(100%)}
 
 /* ---------- titolo grande ---------- */
-.hero{padding:26px 0 30px}
+.hero{padding:28px 0 26px}
 .hero-t{font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.035em}
 .lead{margin-top:8px;color:var(--muted);font-size:17px;max-width:58ch}
 @media (prefers-reduced-motion:no-preference){

@@ -130,7 +130,7 @@ test('nessun avviso se i versetti sono a capo o dopo la punteggiatura', () => {
 test('avviso: riferimento scritto dopo il testo', () => {
   const r = read(`1 Questo è un versetto abbastanza lungo.\n2 Anche questo lo è, direi.\nRomani 6:1-2`);
   assert.equal(r.passages.length, 1);
-  assert.match(r.warns.map((x) => x.msg).join(' '), /riferimento è scritto dopo il testo/);
+  assert.match(r.warns.map((x) => x.msg).join(' '), /riferimento è dopo il testo/);
 });
 
 // ---- dimensioni dell'immagine nel template ----

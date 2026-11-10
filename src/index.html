@@ -7,10 +7,10 @@
 <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Versi">
+<meta name="apple-mobile-web-app-title" content="Script Pro">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%235ac8fa'/%3E%3Cstop offset='1' stop-color='%230a64ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='40' height='40' rx='9.5' fill='url(%23g)'/%3E%3Cpath d='M20 12.2c-2.7-1.8-6.1-2.3-9.6-1.6v16.4c3.5-.7 6.9-.2 9.6 1.6 2.7-1.8 6.1-2.3 9.6-1.6V10.6c-3.5-.7-6.9-.2-9.6 1.6zM20 12.2v16.4' fill='none' stroke='white' stroke-width='1.9' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E">
-<title>Versi</title>
+<title>Script Pro</title>
 <script>try{var t=localStorage.getItem('versi.tema');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <style>
 @@STILE@@
@@ -28,7 +28,7 @@
           <path d="M20 12.2c-2.7-1.8-6.1-2.3-9.6-1.6v16.4c3.5-.7 6.9-.2 9.6 1.6 2.7-1.8 6.1-2.3 9.6-1.6V10.6c-3.5-.7-6.9-.2-9.6 1.6z" fill="none" stroke="#fff" stroke-width="1.9" stroke-linejoin="round"/>
           <path d="M20 12.2v16.4" stroke="#fff" stroke-width="1.9" stroke-linecap="round" opacity=".85"/>
         </svg>
-        <span class="brand-n">Versi</span>
+        <span class="brand-n">Script Pro</span>
       </div>
       <div class="modes" role="tablist" aria-label="Cosa vuoi preparare">
         <span class="mthumb" aria-hidden="true"></span>
@@ -41,42 +41,39 @@
 
   <div class="hero">
     <h1 class="hero-t" id="hero-t">Versetti</h1>
-    <p class="lead" id="lead">Incolla il messaggio del pastore e scarica le slide dei versetti per ProPresenter.</p>
-  </div>
+      </div>
 
   <div class="resume" id="resume" role="status" hidden>
     <span id="resume-t"></span>
-    <span class="resume-b"><button class="btn small" id="resume-no" type="button">Ricomincia da zero</button><button class="ib" id="resume-x" type="button" aria-label="Chiudi l'avviso"></button></span>
+    <span class="resume-b"><button class="btn small" id="resume-no" type="button">Ricomincia</button><button class="ib" id="resume-x" type="button" aria-label="Chiudi l'avviso"></button></span>
   </div>
 
   <main>
     <section class="sec m-bibbia" id="s-msg" aria-labelledby="h-msg">
-      <h2 id="h-msg"><span class="n">1</span>Incolla il messaggio</h2>
-      <p class="sub">Va bene anche copiato da WhatsApp: orari e nomi vengono ignorati. Ogni versetto deve avere il suo numero. Puoi anche caricare il file di una chat esportata da WhatsApp (.zip o .txt).</p>
+      <h2 id="h-msg">Messaggio</h2>
       <div class="field" id="msgwrap">
-        <textarea id="msg" spellcheck="false" placeholder="Incolla qui il messaggio del pastore…" aria-describedby="count"></textarea>
+        <textarea id="msg" spellcheck="false" placeholder="Incolla qui il messaggio del pastore" aria-label="Messaggio del pastore" aria-describedby="count"></textarea>
       </div>
       <div class="under">
-        <span class="count" id="count" aria-live="polite">Nessun testo incollato</span>
+        <span class="count" id="count" aria-live="polite"></span>
         <div class="btns">
           <label class="btn file"><input class="sr" type="file" id="bf-msg" accept=".txt,.text,.zip,.docx,.pdf,text/plain,application/pdf"><span>Carica file</span></label>
-          <button class="btn" id="paste" type="button">Incolla dagli appunti</button>
+          <button class="btn" id="paste" type="button">Incolla</button>
           <button class="btn ghost" id="clear" type="button">Svuota</button>
         </div>
       </div>
     </section>
 
     <section class="sec m-bibbia" id="s-img" aria-labelledby="h-img">
-      <h2 id="h-img"><span class="n">2</span>Immagini <span class="opt">facoltative</span></h2>
-      <p class="sub">Trascina un file sul riquadro oppure scegli dal computer. Restano salvate per la prossima volta.</p>
+      <h2 id="h-img">Immagini</h2>
       <div class="imgs">
         <div class="img" id="slot-bg">
           <span class="thumb" id="th-bg"></span>
           <div class="img-tx">
-            <b>Sfondo dei versetti</b>
+            <b>Sfondo</b>
             <span class="fn" id="fn-bg"></span>
             <div class="img-act">
-              <label class="btn small"><input class="sr" type="file" id="f-bg" accept="image/*"><span id="lt-bg">Scegli immagine</span></label>
+              <label class="btn small"><input class="sr" type="file" id="f-bg" accept="image/*"><span id="lt-bg">Scegli</span></label>
               <button class="btn small ghost" id="rm-bg" type="button" hidden>Togli</button>
             </div>
           </div>
@@ -84,10 +81,10 @@
         <div class="img" id="slot-sep">
           <span class="thumb" id="th-sep"></span>
           <div class="img-tx">
-            <b>Tra un passo e l'altro</b>
+            <b>Tra i passi</b>
             <span class="fn" id="fn-sep"></span>
             <div class="img-act">
-              <label class="btn small"><input class="sr" type="file" id="f-sep" accept="image/*"><span id="lt-sep">Scegli immagine</span></label>
+              <label class="btn small"><input class="sr" type="file" id="f-sep" accept="image/*"><span id="lt-sep">Scegli</span></label>
               <button class="btn small ghost" id="rm-sep" type="button" hidden>Togli</button>
             </div>
           </div>
@@ -96,14 +93,13 @@
     </section>
 
     <section class="sec m-bibbia" id="out" aria-labelledby="h-rev">
-      <h2 id="h-rev"><span class="n">3</span>Controlla le slide</h2>
+      <h2 id="h-rev">Slide</h2>
 
       <div class="empty" id="empty">
-        <p>Qui compariranno le slide, prima di scaricarle. Per ogni passo servono il riferimento e i versetti con il loro numero:</p>
+        <p>Le slide compariranno qui. Formato:</p>
         <pre class="fmt">Romani 6:5-11
 5 Testo del primo versetto
 6 Testo del secondo versetto</pre>
-        <p>Puoi incollare più passi di seguito. Quello che non è un passo biblico, come i saluti, viene ignorato.</p>
       </div>
 
       <div id="review" hidden>
@@ -112,7 +108,6 @@
           <div class="sum-tx"><b id="sum-t"></b><span id="sum-p"></span></div>
           <button class="btn small" id="sum-go" type="button" hidden>Vai al primo</button>
         </div>
-        <p class="sub tap" id="rev-sub">Tocca una slide per ingrandirla: lì puoi anche unire o separare i versetti.</p>
         <ol class="plist" id="plist"></ol>
         <details class="ignored" id="ign" hidden>
           <summary id="ign-s"></summary>
@@ -124,42 +119,38 @@
     <details class="more m-bibbia" id="more">
       <summary>Impostazioni</summary>
       <div class="more-b">
-        <p class="sub">Di norma c'è un versetto per slide, e un versetto non viene mai spezzato.</p>
-        <label for="corto">Un versetto è corto se ha meno di</label><span class="num-in"><input id="corto" type="number" inputmode="numeric" min="20" max="400" value="120"><i>caratteri</i></span>
-        <label for="max">Due versetti stanno insieme solo se non superano</label><span class="num-in"><input id="max" type="number" inputmode="numeric" min="60" max="600" value="200"><i>caratteri</i></span>
-        <label for="lungo">Avvisami se una slide supera</label><span class="num-in"><input id="lungo" type="number" inputmode="numeric" min="100" max="800" value="240"><i>caratteri</i></span>
+        <label for="corto">Versetto corto sotto</label><span class="num-in"><input id="corto" type="number" inputmode="numeric" min="20" max="400" value="120"><i>caratteri</i></span>
+        <label for="max">Due versetti insieme fino a</label><span class="num-in"><input id="max" type="number" inputmode="numeric" min="60" max="600" value="200"><i>caratteri</i></span>
+        <label for="lungo">Avviso slide lunga oltre</label><span class="num-in"><input id="lungo" type="number" inputmode="numeric" min="100" max="800" value="240"><i>caratteri</i></span>
         <div class="more-f">
-          <button class="link" id="reset" type="button">Ripristina i valori iniziali</button>
-          <button class="link" id="dlpro" type="button" hidden>Scarica solo la presentazione (.pro), senza le immagini</button>
+          <button class="link" id="reset" type="button">Ripristina</button>
+          <button class="link" id="dlpro" type="button" hidden>Scarica solo il .pro, senza immagini</button>
         </div>
       </div>
     </details>
 
     <section class="sec m-canzoni" id="c-in" aria-labelledby="h-cin" hidden>
-      <h2 id="h-cin"><span class="n">1</span>Incolla i testi</h2>
-      <p class="sub">Incolla il testo italiano e quello inglese, oppure carica i file (.txt, .pdf o Word .docx): puoi anche trascinarli sui riquadri. Ci vogliono i nomi delle sezioni (Verse 1, Chorus, Bridge…). Accordi, numeri di pagina e intestazioni vengono ignorati.</p>
+      <h2 id="h-cin">Testi</h2>
       <div class="two" id="c-wrap">
-        <div class="field" data-side="it"><div class="lab-row"><label class="lab" for="c-it">Italiano</label><label class="btn small file"><input class="sr" type="file" id="cf-it" accept=".txt,.text,.md,.pdf,.docx,.zip,text/plain,application/pdf" multiple><span>Carica file</span></label></div><textarea id="c-it" spellcheck="false" placeholder="Verse 1&#10;Come il sole che sorge al mattino&#10;La tua bontà mi ricorda che&#10;…"></textarea><p class="src" id="src-it" hidden></p><div class="fixup" id="fx-it" hidden></div></div>
-        <div class="field" data-side="en"><div class="lab-row"><label class="lab" for="c-en">Inglese</label><label class="btn small file"><input class="sr" type="file" id="cf-en" accept=".txt,.text,.md,.pdf,.docx,.zip,text/plain,application/pdf" multiple><span>Carica file</span></label></div><textarea id="c-en" spellcheck="false" placeholder="Verse 1&#10;Sure as the sun rises up every morning&#10;I am reminded the Lord is Good&#10;…"></textarea><p class="src" id="src-en" hidden></p><div class="fixup" id="fx-en" hidden></div></div>
+        <div class="field" data-side="it"><div class="lab-row"><label class="lab" for="c-it">Italiano</label><label class="btn small file"><input class="sr" type="file" id="cf-it" accept=".txt,.text,.md,.pdf,.docx,.zip,text/plain,application/pdf" multiple><span>Carica file</span></label></div><textarea id="c-it" spellcheck="false" placeholder="Verse 1&#10;Come il sole che sorge al mattino&#10;…"></textarea><p class="src" id="src-it" hidden></p><div class="fixup" id="fx-it" hidden></div></div>
+        <div class="field" data-side="en"><div class="lab-row"><label class="lab" for="c-en">Inglese</label><label class="btn small file"><input class="sr" type="file" id="cf-en" accept=".txt,.text,.md,.pdf,.docx,.zip,text/plain,application/pdf" multiple><span>Carica file</span></label></div><textarea id="c-en" spellcheck="false" placeholder="Verse 1&#10;Sure as the sun rises up every morning&#10;…"></textarea><p class="src" id="src-en" hidden></p><div class="fixup" id="fx-en" hidden></div></div>
       </div>
       <div class="under">
-        <span class="count" id="c-count" aria-live="polite">Nessun testo incollato</span>
+        <span class="count" id="c-count" aria-live="polite"></span>
         <div class="btns"><button class="btn ghost" id="c-clear" type="button">Svuota</button></div>
       </div>
     </section>
 
     <section class="sec m-canzoni" id="c-out" aria-labelledby="h-cout" hidden>
-      <h2 id="h-cout"><span class="n">2</span>Ordine e righe</h2>
-      <p class="sub" id="c-sub">Ogni riga italiana è una slide, con la sua traduzione inglese nelle note. Se le righe dei due testi non sono in pari, lo segnalo qui e ti dico dove. Per correggere, tocca una riga.</p>
+      <h2 id="h-cout">Sezioni</h2>
       <div class="empty" id="c-empty">
-        <p>Incolla i due testi qui sopra. Per ogni sezione serve il nome su una riga, seguito dalle righe del testo:</p>
+        <p>Le sezioni compariranno qui. Formato:</p>
         <pre class="fmt">Verse 1
 Come il sole che sorge al mattino
 La tua bontà mi ricorda che
 
 Chorus
 Buono sei, buono sei</pre>
-        <p>Le sezioni compaiono nell'ordine del testo inglese. Poi puoi duplicarle, spostarle o toglierle.</p>
       </div>
       <div id="c-review" hidden>
         <div class="status-box" id="c-sum" data-state="ok" role="status">
@@ -168,21 +159,20 @@ Buono sei, buono sei</pre>
           <button class="btn small" id="c-sum-go" type="button" hidden>Vai al primo</button>
         </div>
         <div class="view-bar">
-          <div class="seg" id="c-views" role="group" aria-label="Come mostrare le slide">
+          <div class="seg" id="c-views" role="group" aria-label="Vista">
             <span class="mthumb" aria-hidden="true"></span>
             <button type="button" data-v="table" aria-pressed="true">Tabella</button>
             <button type="button" data-v="preview" aria-pressed="false">Anteprima</button>
           </div>
-          <button class="btn small ghost" id="c-undo" type="button" hidden>Annulla l'ultima modifica</button>
+          <button class="btn small ghost" id="c-undo" type="button" hidden>Annulla</button>
         </div>
         <div class="order-bar">
-          <label class="add"><span>Aggiungi una sezione</span><select id="c-add"></select></label>
+          <select id="c-add" aria-label="Sezione da aggiungere"></select>
           <button class="btn small" id="c-add-btn" type="button">Aggiungi</button>
           <span class="order-sp"></span>
-          <button class="btn small ghost" id="c-ord-en" type="button" hidden>Ordine del testo inglese</button>
+          <button class="btn small ghost" id="c-ord-en" type="button" hidden>Ordine del testo</button>
           <button class="btn small ghost" id="c-ord-hd" type="button" hidden>Ordine dell'intestazione</button>
         </div>
-        <p class="sub hint" id="c-hint" hidden></p>
         <ol class="plist" id="c-list"></ol>
         <details class="ignored" id="c-info" hidden>
           <summary id="c-info-s"></summary>
@@ -194,19 +184,19 @@ Buono sei, buono sei</pre>
     <details class="more m-canzoni" id="c-more" hidden>
       <summary>Impostazioni</summary>
       <div class="more-b">
-        <label class="chk"><input type="checkbox" id="c-video" checked><span>Inizia con il video di sfondo</span></label>
+        <label class="chk"><input type="checkbox" id="c-video" checked><span>Video di sfondo all'inizio</span></label>
         <div class="set-row">
-          <label for="c-vname">Nome del file video (già nella libreria di ProPresenter)</label>
-          <div class="set-in"><input id="c-vname" type="text" value="Sfondo 1.mov" spellcheck="false" autocomplete="off"><label class="btn small file"><input class="sr" type="file" id="c-vfile" accept="video/*,.mov,.mp4,.m4v"><span>Scegli file</span></label></div>
+          <label for="c-vname">File video</label>
+          <div class="set-in"><input id="c-vname" type="text" value="Sfondo 1.mov" spellcheck="false" autocomplete="off"><label class="btn small file"><input class="sr" type="file" id="c-vfile" accept="video/*,.mov,.mp4,.m4v"><span>Scegli</span></label></div>
           <p class="sub" id="c-vinfo"></p>
         </div>
         <div class="set-row">
-          <span class="set-t">Colori dei gruppi senza un colore nel modello</span>
+          <span class="set-t">Colori</span>
           <div class="cols">
             <label>Intro <input type="color" id="c-col-intro" value="#999999"></label>
             <label>Instrumental <input type="color" id="c-col-inst" value="#999999"></label>
             <label>Outro <input type="color" id="c-col-outro" value="#cc2929"></label>
-            <button class="link" id="c-col-reset" type="button">Ripristina i colori</button>
+            <button class="link" id="c-col-reset" type="button">Ripristina</button>
           </div>
         </div>
       </div>
@@ -214,9 +204,9 @@ Buono sei, buono sei</pre>
   </main>
 
   <section class="bar" id="dock" aria-labelledby="h-dl">
-    <h2 class="sr" id="h-dl">Scarica la presentazione</h2>
+    <h2 class="sr" id="h-dl">Scarica</h2>
     <div class="bar-row">
-      <label class="nm"><span><b class="n">4</b>Nome in ProPresenter</span><input id="nome" type="text" autocomplete="off" spellcheck="false"></label>
+      <label class="nm"><span>Nome</span><input id="nome" type="text" autocomplete="off" spellcheck="false"></label>
       <button id="dlbtn" class="btn primary dl" type="button" data-state="idle" disabled>
         <span class="dl-ic"><span class="i-down"></span><span class="i-spin"></span><span class="i-ok"></span></span>
         <span class="dl-t">Scarica</span>
@@ -227,7 +217,7 @@ Buono sei, buono sei</pre>
     </label>
     <p class="status" id="dlstatus" role="status" aria-live="polite"></p>
   </section>
-  <footer class="foot">Versi · versione @@VERSIONE@@</footer>
+  <footer class="foot">Script Pro · versione @@VERSIONE@@</footer>
 </div>
 
 <dialog id="viewer" aria-label="Slide ingrandita">
@@ -244,7 +234,7 @@ Buono sei, buono sei</pre>
     <div class="v-bar" aria-hidden="true"><i id="vbar"></i></div>
     <p id="vnote" class="v-note"></p>
     <div class="v-edit" id="vedit">
-      <span class="v-edit-t">Divisione dei versetti</span>
+      <span class="v-edit-t">Versetti</span>
       <button class="btn small" id="v-pj" type="button">Unisci con la precedente</button>
       <button class="btn small" id="v-sp" type="button">Separa i versetti</button>
       <button class="btn small" id="v-nj" type="button">Unisci con la successiva</button>

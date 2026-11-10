@@ -27,14 +27,14 @@ function findStarts(body,s,e,warn){
     if(cands.length>1){
       var firstP=null;for(var i=0;i<cands.length;i++)if(cands[i].punct){firstP=cands[i];break;}
       if(firstP)pick=firstP;
-      if(pick.punct)warn('Il numero '+n+' compare '+cands.length+' volte nel testo. Ho scelto quello dopo la punteggiatura: controlla che il versetto '+n+' inizi nel punto giusto.');
-      else warn('Il numero '+n+' compare '+cands.length+' volte nel testo e nessuno segue una punteggiatura o un a capo. Ho scelto il primo: controlla che il versetto '+n+' inizi nel punto giusto.');
+      if(pick.punct)warn('Il numero '+n+' compare '+cands.length+' volte: ho scelto quello dopo la punteggiatura. Controlla dove inizia il versetto '+n+'.');
+      else warn('Il numero '+n+' compare '+cands.length+' volte, nessuno dopo la punteggiatura: ho scelto il primo. Controlla dove inizia il versetto '+n+'.');
     }else if(!pick.punct){
       loose.push(n);
     }
     starts.push([n,pick.idx]);pos=pick.end;n++;
   }
-  if(loose.length)warn((loose.length===1?'Il versetto '+loose[0]+' inizia':'I versetti '+loose.join(', ')+' iniziano')+' dopo una parola senza punteggiatura né a capo. Controlla che '+(loose.length===1?'quel numero sia':'quei numeri siano')+' davvero '+(loose.length===1?'l\'inizio del versetto':'l\'inizio dei versetti')+' (e non, per esempio, "'+loose[0]+' volte").');
+  if(loose.length)warn((loose.length===1?'Il versetto '+loose[0]+' inizia':'I versetti '+loose.join(', ')+' iniziano')+' dopo una parola senza punteggiatura: controlla che '+(loose.length===1?'sia':'siano')+' davvero '+(loose.length===1?'un nuovo versetto':'nuovi versetti')+'.');
   return starts;
 }
 
@@ -78,7 +78,7 @@ function readMessage(raw){
       var nome=hd.b+' '+chap+':'+s+(e&&e!==s?'-'+e:'');
       var pw=[];   // avvisi del passo: si registrano solo se il passo viene incluso, con il riferimento definitivo
       var W=function(msg){pw.push(msg);};
-      if(preForLast!==null&&i===heads.length-1)W('Il riferimento è scritto dopo il testo: ho usato come versetti il testo che lo precede. Controlla che sia giusto.');
+      if(preForLast!==null&&i===heads.length-1)W('Il riferimento è dopo il testo: ho usato il testo che lo precede.');
       var E=function(msg){errs.push({pid:id,ref:nome,msg:msg});};
       var starts=findStarts(body,s,e,W),verses=[];
       for(var j=0;j<starts.length;j++){
@@ -91,15 +91,15 @@ function readMessage(raw){
       }
       var lastn=verses[verses.length-1][0];
       var lab=hd.b+' '+chap+':'+s+(lastn!==s?'-'+lastn:'');
-      if(e&&e>s&&verses.length===1){E('Mancano i numeri dei versetti: ne servono '+(e-s+1)+' (dal '+s+' al '+e+'). Scrivi il numero davanti a ogni versetto. Questo passo non sarà nella presentazione. Testo ricevuto: "'+verses[0][1].slice(0,90)+'".');return;}
-      if(e&&lastn!==e){E('Ho trovato i versetti dal '+s+' al '+lastn+', ma ne servono fino al '+e+'. Controlla che il versetto '+(lastn+1)+' abbia il suo numero davanti. Questo passo non sarà nella presentazione.');return;}
-      if(!e&&verses.length>1){nome=lab;W('Il riferimento non dice fino a che versetto arriva: ho riconosciuto i versetti dal '+s+' al '+lastn+'. Controlla che ci siano tutti.');}
-      if(verses.some(function(v){return !v[1];})){E('Un versetto è vuoto. Questo passo non sarà nella presentazione.');return;}
-      verses.forEach(function(v){if(/\d/.test(v[1]))W('Il versetto '+v[0]+' contiene una cifra: controlla che non sia un numero di versetto.');});
+      if(e&&e>s&&verses.length===1){E('Mancano i numeri dei versetti: ne servono '+(e-s+1)+', dal '+s+' al '+e+'. Passo escluso. Testo: "'+verses[0][1].slice(0,60)+'"');return;}
+      if(e&&lastn!==e){E('Trovati i versetti dal '+s+' al '+lastn+', ne servono fino al '+e+': controlla il numero davanti al versetto '+(lastn+1)+'. Passo escluso.');return;}
+      if(!e&&verses.length>1){nome=lab;W('Il riferimento non indica l\'ultimo versetto: letti dal '+s+' al '+lastn+'.');}
+      if(verses.some(function(v){return !v[1];})){E('Un versetto è vuoto. Passo escluso.');return;}
+      verses.forEach(function(v){if(/\d/.test(v[1]))W('Il versetto '+v[0]+' contiene una cifra: controlla.');});
       var lo=leftover(body,verses);cw+=lo.total;cl+=lo.left;
       if(lo.left){
         var shown=lo.runs.slice(0,3).map(function(x){return '"'+(x.length>70?x.slice(0,70)+'…':x)+'"';}).join(' · ')+(lo.runs.length>3?' · …':'');
-        W('Nel messaggio c\'è del testo che non è finito nelle slide ('+lo.left+(lo.left===1?' parola':' parole')+'): '+shown+'. Se fa parte di un versetto, togli la riga vuota o aggiungi il numero; se non serve, ignora questo avviso.');
+        W('Testo non incluso nelle slide ('+lo.left+(lo.left===1?' parola':' parole')+'): '+shown+'. Se è parte di un versetto, togli la riga vuota o aggiungi il numero.');
       }
       pw.forEach(function(msg){warns.push({pid:id,ref:nome,msg:msg});});
       out.push({pid:id,book:hd.b,chap:chap,verses:verses,label:lab});

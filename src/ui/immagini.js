@@ -31,13 +31,13 @@ function paintSlot(k){
   if(im){
     th.style.backgroundImage='url("'+im.url+'")';th.innerHTML='';
     var bad=Math.abs(im.w/im.h-16/9)>0.02;
-    fn.textContent=im.name+' ('+im.w+'×'+im.h+')'+(im.remembered?'\nSalvata dalla volta scorsa.':'')+(bad?'\nNon è 16:9: sullo schermo potrebbe essere tagliata o deformata.':'');
+    fn.textContent=im.name+' ('+im.w+'×'+im.h+')'+(im.remembered?'\nSalvata':'')+(bad?'\nNon è 16:9: può essere tagliata':'');
     $('rm-'+k).hidden=false;$('lt-'+k).textContent='Cambia';
     sl.classList.add('filled');sl.classList.toggle('warn',bad);
   }else{
     th.style.backgroundImage='';th.innerHTML=ICON.image;
     fn.textContent=needed?MISSTXT[k]:EMPTYTXT[k];
-    $('rm-'+k).hidden=true;$('lt-'+k).textContent='Scegli immagine';
+    $('rm-'+k).hidden=true;$('lt-'+k).textContent='Scegli';
     sl.classList.remove('filled');sl.classList.toggle('warn',needed);
   }
 }
@@ -47,8 +47,7 @@ function remember(k,im){
 function setImage(kind,file,quiet){
   if(!file)return;
   if(!/^image\//.test(file.type||'')&&!/\.(png|jpe?g|gif|webp|heic)$/i.test(file.name)){
-    $('fn-'+kind).textContent='"'+file.name+'" non è un\'immagine. Scegli un file PNG o JPG.';
-    toast('Quel file non è un\'immagine.');return;
+    toast('Non è un\'immagine.');return;
   }
   file.arrayBuffer().then(function(ab){
     var bytes=new Uint8Array(ab),url=URL.createObjectURL(new Blob([bytes],{type:file.type||'image/png'})),img=new Image();
@@ -60,7 +59,7 @@ function setImage(kind,file,quiet){
       remember(kind,state.img[kind]);
       render();
     };
-    img.onerror=function(){URL.revokeObjectURL(url);$('fn-'+kind).textContent='Non riesco a leggere "'+file.name+'". Scegli un\'immagine PNG o JPG.';toast('Non riesco a leggere quell\'immagine.');};
+    img.onerror=function(){URL.revokeObjectURL(url);toast('Immagine non leggibile.');};
     img.src=url;
   });
 }

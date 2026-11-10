@@ -16,7 +16,6 @@ function setMode(m){
   $('tab-bibbia').setAttribute('aria-selected',m==='bibbia'?'true':'false');
   $('tab-canzoni').setAttribute('aria-selected',m==='canzoni'?'true':'false');
   $('hero-t').textContent=m==='canzoni'?'Canzoni':'Versetti';
-  $('lead').textContent=m==='canzoni'?'Incolla il testo italiano e quello inglese di una canzone e scarica le slide per ProPresenter.':'Incolla il messaggio del pastore e scarica le slide dei versetti per ProPresenter.';
   state.done=null;
   if(!state.nameTouched){
     var t=state.song.model&&state.song.model.title;
@@ -44,8 +43,8 @@ function firstProblem(){
 function loadBibleFile(f){
   f.arrayBuffer().then(function(ab){return fileToText(f.name,new Uint8Array(ab));}).then(function(r){
     $('msg').value=r.text;analyze();
-    toast('Messaggio caricato da '+f.name+'.'+(r.unknown&&r.unknown.length?' Attenzione: nel PDF ci sono lettere che non so leggere.':''));
-  }).catch(function(e){toast('"'+f.name+'": '+(e&&e.message||'non riesco a leggerlo')+' Puoi incollare il testo.');});
+    toast('Caricato: '+f.name+(r.unknown&&r.unknown.length?'. Nel PDF ci sono lettere illeggibili.':''));
+  }).catch(function(e){toast(f.name+': '+(e&&e.message||'non riesco a leggerlo'));});
 }
 
 // ---------- bozza ----------
@@ -55,9 +54,9 @@ function restoreDraft(d){
   G.order=d.order||null;G.touched=!!d.touched;G.extra=d.extra||{};G.uid=d.uid||0;G.fix=d.fix||{it:[],en:[]};
   [['it',d.srcIt],['en',d.srcEn]].forEach(function(a){if(a[1]){$('src-'+a[0]).hidden=false;$('src-'+a[0]).textContent=a[1];}});
   if(d.nome){$('nome').value=d.nome;state.nameTouched=true;}
-  var when=new Date(d.t).toLocaleString('it-IT',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
-  var what=d.mode==='canzoni'?'la canzone'+(d.title?' «'+d.title+'»':''):'il messaggio dei versetti';
-  $('resume-t').textContent='Ho ripreso il lavoro di '+when+': '+what+'.';
+  var when=new Date(d.t).toLocaleString('it-IT',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+  var what=d.mode==='canzoni'?(d.title||'Canzone'):'Versetti';
+  $('resume-t').textContent='Ripreso: '+what+' · '+when;
   $('resume').hidden=false;
 }
 function bindResume(){
@@ -79,10 +78,10 @@ function bindMessage(){
   $('msg').addEventListener('input',function(){clearTimeout(tm);tm=setTimeout(analyze,150);});
   $('clear').addEventListener('click',function(){$('msg').value='';state.ov={};analyze();$('msg').focus();});
   $('paste').addEventListener('click',function(){
-    function fail(){$('msg').focus();toast('Non posso leggere gli appunti da qui: clicca nel riquadro e premi '+(isMac()?'⌘V':'Ctrl+V')+'.');}
+    function fail(){$('msg').focus();toast('Premi '+(isMac()?'⌘V':'Ctrl+V')+' nel riquadro.');}
     if(navigator.clipboard&&navigator.clipboard.readText){
       navigator.clipboard.readText().then(function(x){
-        if(!x||!x.trim()){toast('Gli appunti sono vuoti.');return;}
+        if(!x||!x.trim()){toast('Appunti vuoti.');return;}
         $('msg').value=x;analyze();$('msg').focus();
       }).catch(fail);
     }else fail();

@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
 const { chromium } = createRequire(import.meta.url)('playwright');
 
-const url = 'file://' + fileURLToPath(new URL('../dist/Versi.html', import.meta.url));
+const url = 'file://' + fileURLToPath(new URL('../dist/Script-Pro.html', import.meta.url));
 const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64');
 const msg = 'Romani 6:5-6\n5 Testo di prova uno\n6 Testo di prova due\n\nAtti 2:1-2\n1 Testo di prova tre\n2 Testo di prova quattro';
 
@@ -24,7 +24,7 @@ const passi = await pg.locator('.pc').count(), slide = await pg.locator('button.
 if (passi !== 2 || slide !== 2) fail(`attesi 2 passi e 2 slide, trovati ${passi} e ${slide}`);
 
 // riepilogo: una riga sola, niente avvisi per un messaggio pulito
-if (!/2 passi, 2 slide/.test(await pg.locator('#sum-t').innerText())) fail('riepilogo inatteso: ' + await pg.locator('#sum-t').innerText());
+if (!/2 passi · 2 slide/.test(await pg.locator('#sum-t').innerText())) fail('riepilogo inatteso: ' + await pg.locator('#sum-t').innerText());
 if (await pg.locator('#sum').getAttribute('data-state') !== 'ok') fail('il riepilogo dovrebbe essere verde');
 
 // ingrandimento: apre, scorre con la tastiera, chiude con Esc
@@ -55,7 +55,7 @@ if (await pg.locator('.pc-reset').count()) fail('il ripristino non ha tolto la m
 // testo perso: una riga dopo la riga vuota viene segnalata
 await pg.fill('#msg', msg + '\n\nBuona domenica a tutti!');
 await pg.waitForSelector('.pc.has-warn');
-if (!/non è finito nelle slide/.test(await pg.locator('.pc.has-warn .note').first().innerText())) fail('manca l\'avviso sul testo perso');
+if (!/Testo non incluso nelle slide/.test(await pg.locator('.pc.has-warn .note').first().innerText())) fail('manca l\'avviso sul testo perso');
 await pg.fill('#msg', msg);
 await pg.waitForFunction(() => !document.querySelector('.pc.has-warn'));
 
@@ -70,7 +70,7 @@ if (await pg.locator('#slot-bg.filled').count()) fail('lo sfondo non è stato to
 const [dl] = await Promise.all([pg.waitForEvent('download'), pg.click('#dlbtn')]);
 await pg.waitForFunction(() => document.getElementById('dlbtn').dataset.state === 'done');
 if (!/\.pro$/.test(dl.suggestedFilename())) fail('nome file inatteso: ' + dl.suggestedFilename());
-if (!/riletto il file/.test(await pg.locator('#dlstatus').innerText())) fail('manca la conferma della rilettura del file');
+if (!/controllato/.test(await pg.locator('#dlstatus').innerText())) fail('manca la conferma della rilettura del file');
 
 // tema: cambia e resta valido
 await pg.click('#theme');
@@ -107,7 +107,7 @@ const enBox = () => pg.inputValue('#c-en'), itBox = () => pg.inputValue('#c-it')
 const ackIf = async () => { if ((await pg.locator('#ackwrap').isVisible()) && !(await pg.isChecked('#ack'))) await pg.click('#ackwrap'); };
 if ((await pg.locator('#c-list .note').count()) < 2) fail('Chorus e Bridge dovrebbero avere l\'avviso delle righe che non corrispondono');
 const avviso = await pg.locator('#c-list .pc:has(h3:text-is("Chorus")) >> nth=0 >> .note').first().innerText();
-if (!/6 righe italiane e 5 inglesi/.test(avviso) || !/Righe italiane 1-2/.test(avviso) || !/riga inglese 1/.test(avviso)) fail('l\'avviso non dice dove: ' + avviso);
+if (!/6 righe italiane, 5 inglesi/.test(avviso) || !/Righe italiane 1-2/.test(avviso) || !/riga inglese 1/.test(avviso)) fail('l\'avviso non dice dove: ' + avviso);
 if (!(await pg.locator('#c-list .cell.mis').count())) fail('le righe che non corrispondono non sono evidenziate');
 if (!(await pg.locator('#ackwrap').isVisible()) || !(await pg.locator('#dlbtn').isDisabled())) fail('con righe che non corrispondono serve la conferma per scaricare');
 await pg.click('#ackwrap');
@@ -145,13 +145,13 @@ await ackIf();
 const [dls] = await Promise.all([pg.waitForEvent('download'), pg.click('#dlbtn')]);
 await pg.waitForFunction(() => document.getElementById('dlbtn').dataset.state === 'done');
 if (!/\.pro$/.test(dls.suggestedFilename())) fail('nome file canzone inatteso: ' + dls.suggestedFilename());
-if (!/riletto il file/.test(await pg.locator('#dlstatus').innerText())) fail('manca la conferma della rilettura (canzoni)');
+if (!/controllato/.test(await pg.locator('#dlstatus').innerText())) fail('manca la conferma della rilettura (canzoni)');
 // ---------- caricare file ----------
 const pdfIt = fileURLToPath(new URL('./fixtures/taste-it.pdf', import.meta.url)), pdfEn = fileURLToPath(new URL('./fixtures/taste-en.pdf', import.meta.url));
 await pg.click('#c-clear');
 await pg.setInputFiles('#cf-en', pdfEn);
 await pg.waitForFunction(() => document.getElementById('c-en').value.includes('Sure as the sun'));
-if (!/Caricato da: taste-en\.pdf/.test(await pg.locator('#src-en').innerText())) fail('manca il nome del file caricato (inglese)');
+if (!/taste-en\.pdf/.test(await pg.locator('#src-en').innerText())) fail('manca il nome del file caricato (inglese)');
 if (await pg.locator('#fx-en').isVisible()) fail('il PDF inglese non dovrebbe chiedere conferme');
 await pg.setInputFiles('#cf-it', pdfIt);
 await pg.waitForSelector('#fx-it:not([hidden])');
