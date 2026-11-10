@@ -16,7 +16,8 @@ ProPresenter 7:
 
 ```
 src/index.html        struttura della pagina (con due segnaposto: stile e script)
-src/ui/stile.css      aspetto: una sola colonna, colori chiari e scuri, animazioni sobrie, telefono
+src/ui/stile.css      aspetto in stile Apple: caratteri di sistema, superfici raggruppate, barre traslucide,
+                      controlli segmentati e interruttori, colori chiari e scuri, animazioni a molla, telefono
 src/ui/*.js           interfaccia: base (strumenti), anteprima, controllo (riepilogo, schede e barra Scarica),
                       scarica, immagini (si ricordano per la volta dopo), ingrandimento, avvio
 src/engine/*.js       engine (canzoni.js e canzone.js per le canzoni, pdf.js e office.js per i file): formato Protocol Buffers, RTF, libri, lettura del messaggio,

@@ -15,6 +15,7 @@ function setMode(m){
   qsa('.m-canzoni').forEach(function(el){el.hidden=m!=='canzoni';});
   $('tab-bibbia').setAttribute('aria-selected',m==='bibbia'?'true':'false');
   $('tab-canzoni').setAttribute('aria-selected',m==='canzoni'?'true':'false');
+  $('hero-t').textContent=m==='canzoni'?'Canzoni':'Versetti';
   $('lead').textContent=m==='canzoni'?'Incolla il testo italiano e quello inglese di una canzone e scarica le slide per ProPresenter.':'Incolla il messaggio del pastore e scarica le slide dei versetti per ProPresenter.';
   state.done=null;
   if(!state.nameTouched){
@@ -139,6 +140,9 @@ function bindOutput(){
   window.addEventListener('drop',function(e){e.preventDefault();});
   ['bg','sep'].forEach(bindSlot);
   bindMessage();bindRules();bindOutput();bindViewer();bindSong();bindModes();
+  var topBar=$('top');
+  function onScroll(){topBar.classList.toggle('scrolled',window.scrollY>4);}
+  window.addEventListener('scroll',onScroll,{passive:true});onScroll();
   bindResume();
   var draft=draftLoad();
   if(draft)restoreDraft(draft);

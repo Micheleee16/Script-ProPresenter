@@ -22,7 +22,8 @@ const scarica = async () => {
 };
 
 // versione
-if (!/versione 2\.0\.0/.test(await pg.locator('.foot').innerText())) fail('manca il numero di versione');
+const versione = JSON.parse(readFileSync(fileURLToPath(new URL('../package.json', import.meta.url)), 'utf8')).version;
+if (!(await pg.locator('.foot').innerText()).includes('versione ' + versione)) fail('manca il numero di versione');
 
 // ---- file nei versetti: zip di WhatsApp e Word
 await pg.setInputFiles('#bf-msg', FX('whatsapp-esportazione.zip'));
