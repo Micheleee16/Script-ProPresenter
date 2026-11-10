@@ -464,3 +464,17 @@ dialog.show::backdrop{opacity:1}
   .bar{background:var(--surface);-webkit-backdrop-filter:none;backdrop-filter:none}
 }
 @media print{.bar,.top,#s-msg,#s-img,.more,.modes{display:none}}
+
+/* ---------- controlli prima di scaricare ---------- */
+.checks{margin-top:8px;font-size:14px;color:var(--muted)}
+.checks summary{cursor:pointer;padding:6px 0;list-style:none;display:flex;align-items:center;gap:6px;min-height:32px}
+.checks summary::-webkit-details-marker{display:none}
+.checks summary::before{content:"";width:7px;height:7px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:rotate(-45deg);transition:transform .25s var(--ease);margin:0 4px 0 2px}
+.checks[open] summary::before{transform:rotate(45deg)}
+.checks[data-state="warn"] summary{color:var(--warn)}
+.checks[data-state="err"] summary{color:var(--err)}
+.checks ul{display:grid;gap:6px;padding:2px 0 6px;list-style:none;max-height:34vh;overflow:auto}
+.checks li{display:flex;gap:8px;align-items:flex-start;color:var(--ink)}
+.checks li .ic{width:17px;height:17px;margin-top:2px;flex:none}
+.checks .ck-ok .ic{color:var(--ok)}.checks .ck-warn .ic{color:var(--warn)}.checks .ck-err .ic{color:var(--err)}
+.checks .dot{width:5px;height:5px;border-radius:50%;background:var(--faint);margin:9px 6px 0 6px;flex:none}

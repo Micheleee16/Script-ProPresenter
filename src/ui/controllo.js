@@ -71,7 +71,7 @@ function render(){
   r.errs.forEach(function(e){order.push({pid:e.pid,e:e});});
   order.sort(function(a,b){return a.pid-b.pid;});
 
-  var items=[],occ={},nslide=0,ip=0,nWarn=0;
+  var items=[],occ={},nslide=0,ip=0,nWarn=0;state.nFit=0;
   order.forEach(function(o){
     if(o.e){
       var ek='E|'+o.e.ref;occ[ek]=(occ[ek]||0)+1;
@@ -83,6 +83,7 @@ function render(){
     (byPid[p.pid]||[]).forEach(function(w){notes.push({k:'w',msg:w.msg});});
     g.forEach(function(sl,k){
       var fp=fitProblem(slideFitInfo(sl)),first=sl[0][0],last=sl[sl.length-1][0],ref=p.book+' '+p.chap+':'+first+(sl.length>1?'-'+last:'');
+      if(fp)state.nFit++;
       if(fp)notes.push({k:'w',msg:'Slide '+ref+': '+fp.msg});
       slides+=slideMarkup(sl,p.label,rl,'button',k);
       state.flat.push({sl:sl,label:p.label,pid:p.pid,p:p});
@@ -120,6 +121,7 @@ function render(){
 }
 
 function renderDock(){
+  renderChecks();
   if(state.mode==='canzoni')return renderDockSong();
   var r=state.res,btn=$('dlbtn'),st=$('dlstatus'),aw=$('ackwrap'),c=state.counts,anyImg=!!(state.img.bg||state.img.sep);
   function say(cls,icon,txt){

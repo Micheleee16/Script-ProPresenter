@@ -20,6 +20,19 @@ const box = await pg.locator('button.slide >> nth=0').evaluate((el) => {
   return { x: (t.left - r.left) / r.width * 1920, y: (t.top - r.top) / r.width * 1920, w: t.width / r.width * 1920, ry: (f.top - r.top) / r.width * 1920 };
 });
 if (Math.abs(box.x - 111.6) > 2 || Math.abs(box.y - 100.9) > 2 || Math.abs(box.w - 1696.7) > 2 || Math.abs(box.ry - 540) > 3) fail('posizioni diverse dal modello: ' + JSON.stringify(box));
+// controlli prima di scaricare
+if (!(await pg.locator('#checks').isVisible())) fail('manca l\'elenco dei controlli');
+if (!/1 punto da controllare/.test(await pg.locator('#checks-s').innerText())) fail('riepilogo controlli inatteso: ' + await pg.locator('#checks-s').innerText());
+await pg.click('#checks-s');
+const voci = await pg.locator('#checks-l li').allInnerTexts();
+if (!voci.some((t) => /non entra/.test(t)) || !voci.some((t) => /2 slide/.test(t))) fail('voci dei controlli inattese: ' + voci.join(' | '));
+// canzoni
+await pg.click('#tab-canzoni');
+await pg.fill('#c-it', 'Verse 1\nCome il sole che sorge\nLa tua bontà\n\nChorus\nBuono sei\nBuono sei');
+await pg.fill('#c-en', 'Verse 1\nSure as the sun\nYour goodness\n\nChorus\nYou are good\nYou are good');
+await pg.waitForFunction(() => /sezion/.test(document.getElementById('checks-l').innerText));
+const vs = await pg.locator('#checks-l li').allInnerTexts();
+if (!vs.some((t) => /2 sezioni/.test(t))) fail('controlli delle canzoni inattesi: ' + vs.join(' | '));
 await b.close();
 console.log({ lunghe, errori });
 if (errori.length) process.exit(1);
