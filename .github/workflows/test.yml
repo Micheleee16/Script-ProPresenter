@@ -18,10 +18,12 @@ jobs:
         run: node --test test/*.test.mjs
       - name: Installa Playwright e Chromium
         run: |
-          npm install --no-save --no-package-lock playwright@1
+          npm install --no-save --no-package-lock playwright@1 axe-core@4
           npx playwright install --with-deps chromium
       - name: Test dell'interfaccia
         run: |
           node test/ui-fumo.mjs
           node test/ui-novita.mjs
           node test/ui-layout.mjs
+          node test/ui-accessibilita.mjs
+          node test/ui-axe.mjs

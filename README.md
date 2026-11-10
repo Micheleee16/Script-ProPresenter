@@ -39,6 +39,8 @@ node --test test/*.test.mjs   # esegue i test dell'engine
 node test/ui-fumo.mjs         # prova l'interfaccia nel browser (serve Playwright)
 node test/ui-novita.mjs       # prova bozza, anteprima, annulla, video, colori, file Word e zip
 node test/ui-layout.mjs       # prova l'avviso quando il testo non entra nel riquadro della slide
+node test/ui-accessibilita.mjs # tastiera, nomi dei pulsanti, punti di riferimento
+node test/ui-axe.mjs          # controllo automatico di accessibilità (serve: npm install --no-save axe-core@4)
 ```
 
 Dopo ogni modifica ai sorgenti: `node build.mjs`, poi i test. I test dell'interfaccia aprono `dist/Script-Pro.html`, quindi vanno lanciati dopo la build. La CI esegue gli stessi passi a ogni push.
