@@ -26,7 +26,7 @@ let geometryCache = null;
 /** Misure della slide dei versetti, lette dal modello (con valori di riserva se il modello cambia). */
 function verseGeometry() {
   if (geometryCache) return geometryCache;
-  let g = JSON.parse(JSON.stringify(DEFAULT_GEOMETRY));
+  const g = JSON.parse(JSON.stringify(DEFAULT_GEOMETRY));
   try {
     const top = parse(b64ToBytes(TEMPLATE_B64));
     const grp = top.find((x) => x.f === 12);
@@ -91,3 +91,4 @@ function fitVerseSlide(sl, measure) {
   const room = Math.floor((g.ref.y - g.verse.y) / lineH + 1e-9);    // righe prima di toccare il riferimento
   return { lines, capacity, fits: lines <= capacity, collides: lines > room };
 }
+

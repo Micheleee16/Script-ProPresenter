@@ -24,7 +24,7 @@ export const SONG_TEMPLATE_FILE = 'template/Canzone_ITA-ENG.pro';
 export function templateLine() {
   const b64 = readFileSync(join(ROOT, TEMPLATE_FILE)).toString('base64');
   const song = readFileSync(join(ROOT, SONG_TEMPLATE_FILE)).toString('base64');
-  return `var TEMPLATE_B64 = "${b64}";\nvar SONG_TEMPLATE_B64 = "${song}";\n`;
+  return `const TEMPLATE_B64 = "${b64}";\nconst SONG_TEMPLATE_B64 = "${song}";\n`;
 }
 
 // Codice dell'engine (formato ProPresenter, lettura del messaggio, zip) con il template incorporato.

@@ -45,3 +45,4 @@ function renderChecks(){
   const label={ok:'A posto: ',warn:'Da controllare: ',err:'Blocca: ',info:''};
   $('checks-l').innerHTML=items.map((i)=>'<li class="ck-'+i.k+'">'+icon[i.k]+'<span><span class="sr">'+label[i.k]+'</span>'+h(i.t)+'</span></li>').join('');
 }
+

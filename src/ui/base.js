@@ -1,13 +1,13 @@
 // ====================== interfaccia: strumenti comuni ======================
-var $=function(id){return document.getElementById(id);};
-var qs=function(s,r){return (r||document).querySelector(s);};
-var qsa=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+const $=function(id){return document.getElementById(id);};
+const qs=function(s,r){return (r||document).querySelector(s);};
+const qsa=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
 function h(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function pl(n,u,p){return n+' '+(n===1?u:p);}
 function reduced(){return !!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);}
 
 function svg(d,cls){return '<svg class="ic'+(cls?' '+cls:'')+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+d+'</svg>';}
-var ICON={
+const ICON={
   check:svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),
   warn:svg('<path d="M12 4l9 16H3z"/><path d="M12 10v4.5M12 17.4v.01"/>'),
   err:svg('<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5M12 15.8v.01"/>'),
@@ -30,10 +30,10 @@ var ICON={
   pen:svg('<path d="M4.5 19.5l3.6-.9L19 7.7l-2.7-2.7L5.4 15.9z"/><path d="M14.6 6.7l2.7 2.7"/>'),
   spin:svg('<path d="M12 3.5a8.5 8.5 0 108.5 8.5" opacity=".95"/>')
 };
-var EMPTYTXT={bg:'Facoltativo',sep:'Facoltativa'};
-var MISSTXT={bg:'Slide senza sfondo',sep:'Nessuno stacco tra i passi'};
-var DEFAULTS={corto:120,max:200};
-var state={editing:null,mode:'bibbia',nameTouched:false,song:{vista:'table',undo:[],videoInfo:null,colors:null,fix:{it:[],en:[]},model:null,order:null,touched:false,uid:0,view:null,video:true,extra:{}},nFit:0,res:null,img:{bg:null,sep:null},flat:[],cur:0,done:null,busy:false,verified:false,ov:{},counts:{err:0,warn:0,slides:0,passages:0}};
+const EMPTYTXT={bg:'Facoltativo',sep:'Facoltativa'};
+const MISSTXT={bg:'Slide senza sfondo',sep:'Nessuno stacco tra i passi'};
+const DEFAULTS={corto:120,max:200};
+const state={editing:null,mode:'bibbia',nameTouched:false,song:{vista:'table',undo:[],videoInfo:null,colors:null,fix:{it:[],en:[]},model:null,order:null,touched:false,uid:0,view:null,video:true,extra:{}},nFit:0,res:null,img:{bg:null,sep:null},flat:[],cur:0,done:null,busy:false,verified:false,ov:{},counts:{err:0,warn:0,slides:0,passages:0}};
 
 // ---------- memoria del browser (può non essere disponibile: la pagina funziona lo stesso) ----------
 function store(k,v){
@@ -44,24 +44,24 @@ function store(k,v){
   return null;
 }
 function rules(){
-  function v(id,d){var n=parseInt($(id).value,10);return n>0?n:d;}
+  function v(id,d){const n=parseInt($(id).value,10);return n>0?n:d;}
   return {corto:v('corto',DEFAULTS.corto),max:v('max',DEFAULTS.max)};
 }
 function saveRules(){store('versi.regole',JSON.stringify(rules()));}
 function loadRules(){
-  try{var r=JSON.parse(store('versi.regole')||'null');if(r){['corto','max'].forEach(function(k){if(r[k]>0)$(k).value=r[k];});}}catch(e){}
+  try{const r=JSON.parse(store('versi.regole')||'null');if(r){['corto','max'].forEach(function(k){if(r[k]>0)$(k).value=r[k];});}}catch(e){}
 }
-function defaultName(){var d=new Date();function p(n){return ('0'+n).slice(-2);}return 'Versi '+p(d.getDate())+'-'+p(d.getMonth()+1)+'-'+d.getFullYear();}
+function defaultName(){const d=new Date();function p(n){return ('0'+n).slice(-2);}return 'Versi '+p(d.getDate())+'-'+p(d.getMonth()+1)+'-'+d.getFullYear();}
 function nome(){return ($('nome').value||'').trim()||defaultName();}
 
 // ---------- piccoli effetti ----------
 function replay(el,cls){el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);}
-var toastTimer=null;
+let toastTimer=null;
 function toast(msg){
-  var t=$('toast');t.textContent=msg;t.classList.add('show');
+  const t=$('toast');t.textContent=msg;t.classList.add('show');
   clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove('show');},3400);
 }
-function hash(s){var x=5381,i;for(i=0;i<s.length;i++)x=((x<<5)+x+s.charCodeAt(i))|0;return (x>>>0).toString(36);}
+function hash(s){let x=5381,i;for(i=0;i<s.length;i++)x=((x<<5)+x+s.charCodeAt(i))|0;return (x>>>0).toString(36);}
 function isMac(){return /Mac|iPhone|iPad/.test(navigator.platform||navigator.userAgent||'');}
 
 // Le correzioni a mano alla divisione delle slide valgono per un passo con quel testo preciso:
@@ -69,23 +69,24 @@ function isMac(){return /Mac|iPhone|iPad/.test(navigator.platform||navigator.use
 function ovKey(p){return p.label+'|'+hash(JSON.stringify(p.verses));}
 
 // ---------- bozza: il lavoro in corso si salva da solo nel browser ----------
-var DRAFT_KEY='versi.bozza',draftTimer=null;
+let DRAFT_KEY='versi.bozza',draftTimer=null;
 function draftQueue(){clearTimeout(draftTimer);draftTimer=setTimeout(draftWrite,500);}
 function draftWrite(){
-  var G=state.song,d={v:1,t:Date.now(),mode:state.mode,msg:$('msg').value,it:$('c-it').value,en:$('c-en').value,
+  const G=state.song,d={v:1,t:Date.now(),mode:state.mode,msg:$('msg').value,it:$('c-it').value,en:$('c-en').value,
     srcIt:$('src-it').hidden?'':$('src-it').textContent,srcEn:$('src-en').hidden?'':$('src-en').textContent,
     order:G.order,touched:G.touched,extra:G.extra,uid:G.uid,fix:G.fix,nome:state.nameTouched?$('nome').value:null,
     title:G.model&&G.model.title||''};
   if(!d.msg.trim()&&!d.it.trim()&&!d.en.trim()){store(DRAFT_KEY,null);return;}
-  var t=d.t;d.t=0;var sig=hash(JSON.stringify(d));d.t=t;d.sig=sig;
-  try{var old=JSON.parse(store(DRAFT_KEY)||'null');if(old&&old.sig===sig){return;}}catch(e){}
+  const t=d.t;d.t=0;const sig=hash(JSON.stringify(d));d.t=t;d.sig=sig;
+  try{const old=JSON.parse(store(DRAFT_KEY)||'null');if(old&&old.sig===sig){return;}}catch(e){}
   store(DRAFT_KEY,JSON.stringify(d));
 }
 function draftLoad(){
   try{
-    var d=JSON.parse(store(DRAFT_KEY)||'null');
+    const d=JSON.parse(store(DRAFT_KEY)||'null');
     if(!d||d.v!==1||Date.now()-d.t>30*864e5)return null;
     if(!String(d.msg||'').trim()&&!String(d.it||'').trim()&&!String(d.en||'').trim())return null;
     return d;
   }catch(e){return null;}
 }
+
