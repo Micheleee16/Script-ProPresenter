@@ -10,7 +10,7 @@ ProPresenter 7:
 - Il messaggio dei versetti si può caricare anche da una chat esportata da WhatsApp (`.zip` o `.txt`, formati computer, iPhone e Android).
 - Il lavoro in corso si salva da solo nel browser e si riprende alla prossima apertura.
 
-**Per usarla:** apri `dist/Script-Pro.html` nel browser.
+**Per usarla:** apri la pagina pubblicata su GitHub Pages (https://micheleee16.github.io/Script-ProPresenter/), oppure genera il file con `node build.mjs` e aprilo (`dist/Script-Pro.html`). Una volta aperta funziona anche offline.
 
 ## Struttura
 
@@ -27,7 +27,8 @@ template/             Messaggio_Modena.pro (versetti) e Canzone_ITA-ENG.pro (can
                       incorporati nella pagina in base64
 build.mjs             assembla dist/Script-Pro.html
 test/                 test automatici (node --test)
-dist/Script-Pro.html  il file finale, generato: non modificarlo a mano
+dist/Script-Pro.html  il file finale, generato (non è nel repo): lo crea `node build.mjs`, lo pubblica la CI su GitHub Pages
+.github/workflows/    test.yml: build e test a ogni push; pages.yml: pubblicazione su GitHub Pages dopo ogni merge su main
 ```
 
 ## Comandi (serve Node 18 o più recente, nessun pacchetto da installare)
@@ -39,4 +40,4 @@ node test/ui-fumo.mjs         # prova l'interfaccia nel browser (serve Playwrigh
 node test/ui-novita.mjs       # prova bozza, anteprima, annulla, video, colori, file Word e zip
 ```
 
-Dopo ogni modifica ai sorgenti: `node build.mjs`, poi i test (verificano anche che `dist/` sia aggiornato).
+Dopo ogni modifica ai sorgenti: `node build.mjs`, poi i test. I test dell'interfaccia aprono `dist/Script-Pro.html`, quindi vanno lanciati dopo la build. La CI esegue gli stessi passi a ogni push.

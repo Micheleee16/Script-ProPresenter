@@ -1,10 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 import { buildHtml } from '../build.mjs';
 
-test('dist/Script-Pro.html è aggiornato rispetto ai sorgenti (esegui: node build.mjs)', () => {
-  assert.equal(readFileSync(new URL('../dist/Script-Pro.html', import.meta.url), 'utf8'), buildHtml());
+test('la pagina si assembla e contiene versione, stile e script', () => {
+  const html = buildHtml();
+  assert.match(html, /<title>Script Pro<\/title>/);
+  assert.doesNotMatch(html, /@@[A-Z]+@@/, 'segnaposto non sostituiti');
+  assert.ok(html.length > 100000);
 });
 
 test('la pagina non ha dipendenze esterne', () => {
