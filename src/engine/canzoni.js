@@ -60,6 +60,11 @@ function sameLines(a,b){
 
 // Legge un testo: titolo, ordine indicato (se c'è), sezioni nell'ordine in cui compaiono,
 // righe di accordi tolte, righe che non appartengono a nessuna sezione.
+/**
+ * Divide il testo di una canzone in sezioni (Verse, Chorus, ...) e righe.
+ * @param {string} raw testo incollato o letto da file
+ * @param {string} lang 'it' o 'en'
+ */
 function parseSongText(raw,lang){
   let title='',arr=null,occ=[],cur=null,chords=[],strays=[],warns=[];
   // una riga con l'ordine può andare a capo (succede nei PDF): "… B×2," e poi "Outro×2"

@@ -5,6 +5,10 @@
 // Restituisce l'elenco dei problemi: vuoto = tutto corrisponde.
 function tokens(s){return s.normalize('NFC').toLowerCase().match(/[\p{L}\p{N}]+/gu)||[];}
 function sameTokens(a,b){if(a.length!==b.length)return false;for(let i=0;i<a.length;i++)if(a[i]!==b[i])return false;return true;}
+/**
+ * Rilegge il file appena costruito e confronta ogni slide con il testo previsto.
+ * @returns {string[]} i problemi trovati (vuoto = tutto corrisponde)
+ */
 function verifyPresentation(bytes,passages,corto,max,imgs){
   let problems=[],top=parse(bytes),grp=null,cues={},expected=[];
   top.forEach(function(x){if(x.f===12&&!grp)grp=x;if(x.f===13)cues[td.decode(path(x.v,1,1))]=x.v;});

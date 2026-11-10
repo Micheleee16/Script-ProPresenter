@@ -55,6 +55,11 @@ function leftover(body,verses){
   return {total:total,left:left,runs:runs};
 }
 
+/**
+ * Legge il messaggio incollato (anche con l'intestazione di WhatsApp) e ne ricava i passi.
+ * @param {string} raw testo del messaggio
+ * @returns {{passages:Array, errs:Array, warns:Array, ignored:string[]}} passi riconosciuti, passi con errore, avvisi, messaggi scartati
+ */
 function readMessage(raw){
   let warns=[],errs=[],ignored=[],out=[],pid=0,m,cw=0,cl=0;
   raw=raw.replace(/\r/g,'').replace(/[\u200e\u200f\u202a-\u202e]/g,'');   // i file esportati da iPhone hanno segni invisibili

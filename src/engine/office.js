@@ -44,6 +44,10 @@ function docxXmlToText(xml){
   if(cur)out.push(cur);
   return out.join('\n').replace(/\n{3,}/g,'\n\n').trim();
 }
+/**
+ * Estrae il testo da un file Word .docx.
+ * @param {Uint8Array} bytes contenuto del file
+ */
 function docxToText(bytes){
   return Promise.resolve().then(function(){
     const es=zipList(bytes),e=es.filter(function(x){return x.name==='word/document.xml';})[0];
@@ -61,6 +65,11 @@ function zipTextFile(bytes){
   });
 }
 // Qualunque file: PDF, Word, zip o testo. Restituisce {text, unknown}
+/**
+ * Legge un file caricato (.txt, .pdf, .docx, .zip di WhatsApp) e ne restituisce il testo.
+ * @param {string} name nome del file
+ * @param {Uint8Array} bytes contenuto
+ */
 function fileToText(name,bytes){
   const head=latin1Str(bytes.subarray(0,5)),n=(name||'').toLowerCase();
   if(head==='%PDF-'||/\.pdf$/.test(n))return pdfToText(bytes);

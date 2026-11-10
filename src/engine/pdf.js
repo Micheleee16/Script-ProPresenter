@@ -317,6 +317,10 @@ function pdfLines(frags){
 }
 // Il testo di un PDF, pagina dopo pagina. Restituisce una promessa con {text, unknown}:
 // unknown = lettere che il PDF non permette di leggere, segnate nel testo con {?1}, {?2}…
+/**
+ * Estrae il testo da un PDF (senza librerie). Restituisce stringa vuota se il PDF non contiene testo selezionabile.
+ * @param {Uint8Array} bytes contenuto del file
+ */
 function pdfToText(buf){
   const bytes=buf instanceof Uint8Array?buf:new Uint8Array(buf);
   return Promise.resolve().then(function(){

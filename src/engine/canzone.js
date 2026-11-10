@@ -82,6 +82,13 @@ function songCue(proto,sl){
   return b;
 }
 // blocks: da songBlocks().blocks. opts: {video: true/false}. Restituisce i byte del .pro
+/**
+ * Costruisce il file .pro di una canzone dal modello "Canzone ITA+ENG".
+ * @param {Array} blocks sezioni con le slide (italiano in slide, inglese nelle note)
+ * @param {string} nome nome della presentazione
+ * @param {Object} opts video di sfondo, colori delle sezioni
+ * @returns {Uint8Array}
+ */
 function buildSongFile(blocks,nome,opts){
   opts=opts||{};
   const T=tplSong(),lyric=T.cueOf(T.groupNamed('Verse 1',false),0),blank=T.cueOf(T.groupNamed('Tag',false),0),video=T.cueOf(0,0);
@@ -112,6 +119,10 @@ function buildSongFile(blocks,nome,opts){
 }
 
 // ====================== rilettura finale della canzone ======================
+/**
+ * Rilegge il file della canzone e confronta slide e note con quanto previsto.
+ * @returns {string[]} i problemi trovati (vuoto = tutto corrisponde)
+ */
 function verifySongFile(bytes,blocks,opts){
   opts=opts||{};
   const problems=[],top=parse(bytes),groups=[],cues={};

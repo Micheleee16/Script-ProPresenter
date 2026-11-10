@@ -40,6 +40,14 @@ function buildCue(tpl,name,vs,label,hdr,media){   // media: {name,w,h}, oppure n
   else if(media)b=setMedia(b,media.name,media.w,media.h);
   return b;
 }
+/**
+ * Costruisce il file .pro dei versetti partendo dal modello incorporato.
+ * @param {Array} passages passi letti dal messaggio
+ * @param {string} nome nome della presentazione
+ * @param {number} corto  @param {number} max regole di divisione
+ * @param {{bg:Object|null,sep:Object|null}} imgs immagine di sfondo e immagine tra i passi
+ * @returns {Uint8Array} il file .pro
+ */
 function buildPresentation(passages,nome,corto,max,imgs){
   imgs=imgs||{bg:null,sep:null};
   let top=parse(b64ToBytes(TEMPLATE_B64)),grp=null,i;

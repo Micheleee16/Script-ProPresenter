@@ -24,6 +24,14 @@ function autoJoins(verses,corto,max){
 }
 // Divisione automatica con le correzioni fatte a mano.
 // ov = {numero del versetto a sinistra: true (uniti) oppure false (separati)}
+/**
+ * Divide i versetti in slide: regola automatica più le correzioni fatte a mano.
+ * @param {Array<[number,string]>} verses versetti ([numero, testo])
+ * @param {number} corto sotto questa lunghezza un versetto può stare con il successivo
+ * @param {number} max lunghezza massima di due versetti insieme
+ * @param {Object<number,boolean>=} ov correzioni a mano: numero del versetto a sinistra -> true (uniti) / false (separati)
+ * @returns {Array<Array<[number,string]>>} le slide, ognuna con uno o due versetti
+ */
 function groupWith(verses,corto,max,ov){
   if(!ov)return group(verses,corto,max);
   let auto=autoJoins(verses,corto,max),out=[],cur=[verses[0]];

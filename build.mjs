@@ -15,7 +15,7 @@ export const ENGINE = [
 ].map((n) => `src/engine/${n}.js`);
 
 export const UI = [
-  'base', 'anteprima', 'controllo', 'controlli', 'canzoni', 'scarica', 'immagini', 'ingrandimento', 'avvio',
+  'base', 'anteprima', 'controllo', 'controlli', 'canzoni', 'canzoni-file', 'canzoni-azioni', 'canzoni-impostazioni', 'scarica', 'immagini', 'ingrandimento', 'avvio',
 ].map((n) => `src/ui/${n}.js`);
 
 export const TEMPLATE_FILE = 'template/Messaggio_Modena.pro';
