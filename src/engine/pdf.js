@@ -148,6 +148,28 @@ PdfDoc.prototype.streamOf=function(ref){
   });
   return p;
 };
+// PDF 1.5 e successivi (Word, Google Docs, Pages...) tengono molti oggetti compressi dentro "flussi di oggetti":
+// si aprono e gli oggetti contenuti si aggiungono a quelli normali.
+PdfDoc.prototype.expand=function(){
+  const self=this,ids=Object.keys(this.objs).filter(function(id){
+    const o=self.objs[id];return o.stream&&o.v&&o.v.d&&self.name(o.v.d.Type)==='ObjStm';
+  });
+  return ids.reduce(function(chain,id){
+    return chain.then(function(){
+      return self.streamOf({r:id}).then(function(b){
+        if(!b)return;
+        const d=self.objs[id].v.d,n=self.num(d.N,0),first=self.num(d.First,0),text=pdfLatin1(b);
+        const nums=text.slice(0,first).trim().split(/\s+/).map(Number);
+        for(let i=0;i<n;i++){
+          const num=nums[2*i],off=nums[2*i+1];
+          if(!(num>=0)||!(off>=0)||self.objs[num])continue;
+          const lex=new PdfLex(text);lex.i=first+off;
+          self.objs[num]={v:lex.value(),stream:null};
+        }
+      });
+    });
+  },Promise.resolve());
+};
 // le pagine, nell'ordine, con le risorse (anche ereditate)
 PdfDoc.prototype.pages=function(){
   let self=this,out=[],root=null,m=/\/Root\s+(\d+)\s+\d+\s+R/.exec(this.s);
@@ -328,7 +350,7 @@ function pdfToText(buf){
     if(head.indexOf('%PDF-')<0)throw new Error('Questo non sembra un PDF.');
     const doc=new PdfDoc(bytes);
     if(/\/Encrypt\b/.test(doc.s.slice(-4096)))throw new Error('Il PDF è protetto da password.');
-    if(/\/Type\s*\/ObjStm/.test(doc.s))throw new Error('Questo PDF ha una struttura che non so leggere.');
+    return doc.expand().then(function(){
     const pages=doc.pages(),texts=[];
     if(!pages.length)throw new Error('Non trovo pagine nel PDF.');
     return pages.reduce(function(chain,pg){
@@ -343,7 +365,10 @@ function pdfToText(buf){
       });
     },Promise.resolve()).then(function(){
       let t=texts.join('\n\n').replace(/\n{3,}/g,'\n\n').trim();
-      if(!/[\p{L}]{3}/u.test(t))throw new Error('Nel PDF non trovo testo: forse è una scansione. Incolla il testo a mano.');
+      if(!/[\p{L}]{3}/u.test(t)){
+        if(/\/Subtype\s*\/Image/.test(doc.s))throw new Error('Questo PDF contiene solo immagini (una scansione o una foto): il testo non si può leggere. Usa un PDF esportato da Word o Google Docs, oppure incolla il testo.');
+        throw new Error('Nel PDF non trovo testo. Incolla il testo a mano.');
+      }
       t=t.normalize('NFKC').replace(/\u00a0/g,' ');
       const unknown=[];
       doc.unk.forEach(function(u){
@@ -352,6 +377,7 @@ function pdfToText(buf){
         if(ctx.length)unknown.push({mark:u.mark,suggest:u.suggest,ctx:ctx});
       });
       return {text:t,unknown:unknown};
+    });
     });
   });
 }
